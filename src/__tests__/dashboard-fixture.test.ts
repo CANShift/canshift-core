@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -27,7 +27,17 @@ const FIXTURES: Fixture[] = [
 const loadJson = (absolutePath: string): Record<string, unknown> =>
   JSON.parse(readFileSync(absolutePath, 'utf8')) as Record<string, unknown>
 
-describe.each(FIXTURES)('bundled fixture — $label', ({ dashboardPath, signalsPath }) => {
+const PRESENT_FIXTURES = FIXTURES.filter((f) => existsSync(f.dashboardPath))
+
+const describeFixtures = PRESENT_FIXTURES.length > 0 ? describe.each(PRESENT_FIXTURES) : null
+
+if (describeFixtures === null) {
+  describe.skip('bundled fixtures (firmware tree not present)', () => {
+    it('skipped', () => undefined)
+  })
+}
+
+describeFixtures?.('bundled fixture — $label', ({ dashboardPath, signalsPath }) => {
   const dashboard = loadJson(dashboardPath)
   const signalCatalog = loadJson(signalsPath) as unknown as SignalConfig
 

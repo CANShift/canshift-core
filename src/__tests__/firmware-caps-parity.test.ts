@@ -22,7 +22,7 @@ const extractDefine = (source: string, name: string): number | null => {
 const describeIfFirmware = existsSync(APP_CONFIG) ? describe : describe.skip
 
 describeIfFirmware('firmware-caps parity', () => {
-  const source = readFileSync(APP_CONFIG, 'utf8')
+  const source = existsSync(APP_CONFIG) ? readFileSync(APP_CONFIG, 'utf8') : ''
 
   it('MAX_PAGES matches firmware CONFIG_MAX_PAGES', () => {
     const firmware = extractDefine(source, 'CONFIG_MAX_PAGES')
@@ -34,7 +34,7 @@ describeIfFirmware('firmware-caps parity', () => {
 const describeIfTypes = existsSync(CONFIG_TYPES) ? describe : describe.skip
 
 describeIfTypes('string caps firmware parity (config_types.h buffers minus NUL)', () => {
-  const source = readFileSync(CONFIG_TYPES, 'utf8')
+  const source = existsSync(CONFIG_TYPES) ? readFileSync(CONFIG_TYPES, 'utf8') : ''
 
   const extractStructArrayLen = (structName: string, fieldName: string): number | null => {
     const structMatch = new RegExp(`struct\\s+${structName}\\s*\\{([\\s\\S]*?)\\n\\};`).exec(source)
@@ -73,7 +73,7 @@ const describeIfLoaders = existsSync(CONFIG_FILE_LOADERS) ? describe : describe.
 
 describeIfLoaders('signal byteLength firmware parity', () => {
   it('SIGNAL_BYTE_LENGTHS matches the firmware byteLenValid check', () => {
-    const source = readFileSync(CONFIG_FILE_LOADERS, 'utf8')
+    const source = existsSync(CONFIG_FILE_LOADERS) ? readFileSync(CONFIG_FILE_LOADERS, 'utf8') : ''
     const match = /byteLenValid\s*=([^;]+);/.exec(source)
     expect(match).not.toBeNull()
     const firmwareLengths = [...(match?.[1] ?? '').matchAll(/byteLength\s*==\s*(\d+)/g)]
@@ -88,7 +88,7 @@ const LAYOUT_GRID_RS = resolve(here, '../../../canshift-firmware/rust/layout-gri
 const describeIfLayoutGrid = existsSync(LAYOUT_GRID_RS) ? describe : describe.skip
 
 describeIfLayoutGrid('layout grid firmware parity (rust/layout-grid)', () => {
-  const source = readFileSync(LAYOUT_GRID_RS, 'utf8')
+  const source = existsSync(LAYOUT_GRID_RS) ? readFileSync(LAYOUT_GRID_RS, 'utf8') : ''
 
   const extractRustConst = (name: string): number | null => {
     const pattern = new RegExp(`pub const ${name}: u(?:8|16|32) = (\\d+);`)

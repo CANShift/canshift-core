@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -12,8 +12,10 @@ const SIGNALS_JSON_PATH = resolve(REPO_ROOT, 'canshift-firmware/data/config/sign
 const loadFirmwareSignals = (): unknown =>
   JSON.parse(readFileSync(SIGNALS_JSON_PATH, 'utf8')) as unknown
 
-describe('bundled fixture — canshift-firmware/data/config/signals.json (#1303)', () => {
-  const signals = loadFirmwareSignals()
+const describeIfFirmware = existsSync(SIGNALS_JSON_PATH) ? describe : describe.skip
+
+describeIfFirmware('bundled fixture — canshift-firmware/data/config/signals.json (#1303)', () => {
+  const signals = existsSync(SIGNALS_JSON_PATH) ? loadFirmwareSignals() : null
 
   it('validates clean via validateSignalConfig', () => {
     const result = validateSignalConfig(signals)
