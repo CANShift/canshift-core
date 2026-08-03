@@ -239,19 +239,13 @@ instead of degrading silently.
 
 ## Installation In Consuming Projects
 
-Within the monorepo, link by relative path:
-
-```json
-"dependencies": {
-  "@tmbk/canshift-core": "file:../canshift-core"
-}
-```
-
-Always build before linking — consumers resolve the compiled `dist/`:
+Install from npm:
 
 ```bash
-cd canshift-core && npm install && npm run build
+npm install @canshift/core
 ```
+
+Local development against an unpublished change: `npm link` from this repo, or a temporary `file:` override — never committed.
 
 ---
 
