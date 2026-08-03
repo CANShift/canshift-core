@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 116 100" width="116" height="100" fill="none">
-  <g transform="translate(8,0) skewX(-11)" stroke-width="13">
-    <path d="M46 18 H26 V50 H16 H26 V82 H46" stroke="currentColor"></path>
-    <path d="M70 18 H90 V50 H100 H90 V82 H70" stroke="currentColor"></path>
-    <path d="M58 34 V66" stroke="#EC3013"></path>
+  <g transform="translate(10,0) skewX(-11)" fill="none">
+    <path d="M18 30 H102 V70 H18 Z" stroke="currentColor" stroke-width="7"></path>
+    <path d="M44 30 V70 M62 30 V70" stroke="currentColor" stroke-width="7"></path>
+    <path d="M76 52 H88" stroke="#EC3013" stroke-width="13"></path>
   </g>
 </svg>
