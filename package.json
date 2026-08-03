@@ -44,8 +44,6 @@
     "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.1.2",
-    "@typescript-eslint/eslint-plugin": "^8.59.1",
-    "@typescript-eslint/parser": "^8.59.1",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.3.0",
@@ -53,7 +51,7 @@
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.59.1",
+    "typescript-eslint": "^8.65.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.2.0"
   },
