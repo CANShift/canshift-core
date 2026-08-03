@@ -401,3 +401,52 @@ describe('migration round-trip — old fixtures validate against the current sch
     expectValid(again)
   })
 })
+
+describe('1.26.0 → 1.27.0 widget type ↔ config.type realignment (#20)', () => {
+  const layout = { col: 0, colSpan: 4, row: 0, rowSpan: 4, zOrder: 0 }
+  const imageConfig = { type: 'image', imagePath: '/images/logo.png' }
+
+  const dashboardWith = (widgetType: string): Record<string, unknown> => ({
+    version: '1.26.0',
+    name: 'Divergent',
+    defaultPageId: 'p1',
+    revLimitRpm: 7000,
+    topBar: { height: 30, bgColor: '#111111', textColor: '#FFFFFF' },
+    pages: [
+      {
+        id: 'p1',
+        backgroundImage: null,
+        backgroundColor: '#000000',
+        showTopBar: true,
+        widgets: [
+          {
+            id: 'w1',
+            type: widgetType,
+            signal: '',
+            layout,
+            style: fullStyle,
+            config: imageConfig,
+          },
+        ],
+      },
+    ],
+  })
+
+  const firstWidget = (config: Record<string, unknown>): Record<string, unknown> => {
+    const pages = config.pages as { widgets: Record<string, unknown>[] }[]
+    return pages[0]!.widgets[0]!
+  }
+
+  it('realigns a divergent top-level type to config.type and validates', () => {
+    const migrated = migrateToCurrent(dashboardWith('gauge'))
+    expect(migrated.version).toBe(CURRENT_SCHEMA_VERSION)
+    expect(firstWidget(migrated).type).toBe('image')
+    expectValid(migrated)
+  })
+
+  it('leaves an already-aligned widget untouched', () => {
+    const migrated = migrateToCurrent(dashboardWith('image'))
+    expect(firstWidget(migrated).type).toBe('image')
+    expectValid(migrated)
+  })
+})

@@ -302,7 +302,7 @@ export {
   fontTokensToCssVars,
 } from './design-tokens.js'
 
-export const CURRENT_SCHEMA_VERSION = '1.26.0' as const
+export const CURRENT_SCHEMA_VERSION = '1.27.0' as const
 
 export type { GridArea, GridPlacement, GridRect } from './layout-grid.js'
 export {

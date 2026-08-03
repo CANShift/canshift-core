@@ -1715,6 +1715,52 @@ describe('schema bounds hardening', () => {
     })
   })
 
+  describe('Widget type ↔ config.type cross-check (#20)', () => {
+    const gaugeConfig = {
+      type: 'gauge',
+      displayStyle: 'numeric',
+      minValue: 0,
+      maxValue: 100,
+      dangerLevel: 80,
+      decimalPlaces: 0,
+    }
+    const imageConfig = { type: 'image', imagePath: '/images/logo.png' }
+
+    const widgetWith = (
+      type: string,
+      config: Record<string, unknown>
+    ): Record<string, unknown> => ({
+      id: 'w1',
+      type,
+      signal: 'rpm',
+      layout: validLayout(),
+      style: validStyle(),
+      config,
+    })
+
+    it('accepts a widget whose type matches config.type', () => {
+      expect(WidgetSchema.safeParse(widgetWith('gauge', gaugeConfig)).success).toBe(true)
+    })
+
+    it('rejects a widget whose type diverges from config.type', () => {
+      const result = WidgetSchema.safeParse(widgetWith('gauge', imageConfig))
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(
+          result.error.issues.some(
+            (i) =>
+              i.path.join('.') === 'config.type' && i.message.includes('does not match config type')
+          )
+        ).toBe(true)
+      }
+    })
+
+    it('flipping only the top-level type on a valid widget makes it invalid', () => {
+      expect(WidgetSchema.safeParse(widgetWith('image', imageConfig)).success).toBe(true)
+      expect(WidgetSchema.safeParse(widgetWith('gauge', imageConfig)).success).toBe(false)
+    })
+  })
+
   describe('TopBarItem.signal bounds (#1289)', () => {
     const validStatusDot = (signal: string): Record<string, unknown> => ({
       type: 'statusDot',

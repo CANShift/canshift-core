@@ -88,6 +88,13 @@ export const WidgetSchema = z
   })
   .strict()
   .superRefine((w, ctx) => {
+    if (w.type !== w.config.type) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `widget type '${w.type}' does not match config type '${w.config.type}'`,
+        path: ['config', 'type'],
+      })
+    }
     if (SIGNAL_CONSUMING_WIDGET_TYPES.has(w.type) && w.signal.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
