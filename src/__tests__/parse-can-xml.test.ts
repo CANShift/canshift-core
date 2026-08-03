@@ -72,6 +72,36 @@ describe('frames baseId', () => {
   })
 })
 
+describe('hex/dec ambiguity warnings', () => {
+  const value = '<value name="s" offset="0" length="2"/>'
+
+  it('warns when a bareword frame id is read as decimal but could be hex', () => {
+    const { signals, warnings } = parseCanXml(xml('', frame('10', value)))
+    expect(signals[0]?.canFrameId).toBe('0xa')
+    expect(warnings.some((w) => w.includes('Ambiguous frame id "10"'))).toBe(true)
+  })
+
+  it('does not warn for a 0x-prefixed frame id', () => {
+    const { warnings } = parseCanXml(xml('', frame('0x10', value)))
+    expect(warnings.some((w) => w.includes('Ambiguous frame id'))).toBe(false)
+  })
+
+  it('does not warn for a frame id containing a hex letter', () => {
+    const { warnings } = parseCanXml(xml('', frame('1A', value)))
+    expect(warnings.some((w) => w.includes('Ambiguous frame id'))).toBe(false)
+  })
+
+  it('does not warn for a single-digit id that is identical in both bases', () => {
+    const { warnings } = parseCanXml(xml('', frame('5', value)))
+    expect(warnings.some((w) => w.includes('Ambiguous frame id'))).toBe(false)
+  })
+
+  it('warns when a bareword baseId is read as decimal but could be hex', () => {
+    const { warnings } = parseCanXml(xml('baseId="20"', frame('0x1', value)))
+    expect(warnings.some((w) => w.includes('Ambiguous baseId "20"'))).toBe(true)
+  })
+})
+
 describe('conversion parsing', () => {
   const singleSignal = (conversion: string) =>
     parseCanXml(simpleXml(`<value name="test" offset="0" length="2" conversion="${conversion}"/>`))
