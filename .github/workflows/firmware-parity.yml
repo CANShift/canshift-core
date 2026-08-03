@@ -1,0 +1,64 @@
+name: firmware-parity
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  NODE_VERSION: '24'
+  FIRMWARE_REPO: CANShift/canshift-firmware
+
+jobs:
+  firmware-parity:
+    name: firmware-parity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout canshift-core
+        uses: actions/checkout@v7
+        with:
+          path: canshift-core
+
+      - name: Checkout canshift-firmware (default branch, as sibling)
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.FIRMWARE_REPO }}
+          token: ${{ secrets.FIRMWARE_PARITY_TOKEN || github.token }}
+          path: canshift-firmware
+
+      - name: Verify firmware parity sources are present
+        run: |
+          missing=0
+          for f in \
+            canshift-firmware/data/config/dashboard.json \
+            canshift-firmware/data/config/signals.json \
+            canshift-firmware/core-schema-version.txt \
+            canshift-firmware/include/app_config.h \
+            canshift-firmware/src/config/config_types.h \
+            canshift-firmware/src/config/config_file_loaders.inc \
+            canshift-firmware/rust/layout-grid/src/lib.rs; do
+            if [ ! -f "$f" ]; then
+              echo "::error::firmware parity source missing: $f"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "canshift-firmware was checked out but expected parity sources are missing."
+            echo "The parity suites would silently skip, hiding schema drift — failing instead."
+            echo "If a file was intentionally moved or renamed in ${FIRMWARE_REPO}, update this workflow and the parity tests together."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: canshift-core/package-lock.json
+
+      - name: Install core dependencies
+        working-directory: canshift-core
+        run: npm ci
+
+      - name: Run full suite against the firmware sibling
+        working-directory: canshift-core
+        run: npm test
