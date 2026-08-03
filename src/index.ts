@@ -84,15 +84,16 @@ export {
 } from './schemas/obd2.js'
 export type { Obd2Mode01PidEntry } from './ecu-profiles/obd2-mode01-pids.js'
 export { OBD2_MODE01_PIDS, obd2PidLookup } from './ecu-profiles/obd2-mode01-pids.js'
-export type { DeviceConfig } from './schemas/device.js'
+export type { DeviceConfig, DeviceConfigResult } from './schemas/device.js'
 export type { CanSpeedKbps, SignalByteLength } from './schemas/signal.js'
 export { SIGNAL_BYTE_LENGTHS } from './schemas/signal.js'
 export { DEFAULT_DEVICE_CONFIG } from './schemas/device.js'
-export { deviceConfigFromWire, deviceConfigToWire } from './schemas/device.js'
+export { deviceConfigFromWire, deviceConfigToWire, parseDeviceConfig } from './schemas/device.js'
 
 export type {
   InputBinding,
   InputBindingsConfig,
+  InputBindingsResult,
   InputActiveLevel,
   InputPressKind,
 } from './schemas/input-bindings.js'
@@ -101,6 +102,7 @@ export {
   InputBindingsConfigWireSchema,
   inputBindingsFromWire,
   inputBindingsToWire,
+  parseInputBindings,
   MAX_INPUT_BINDINGS,
   INPUT_BINDING_ID_MAX_LEN,
 } from './schemas/input-bindings.js'

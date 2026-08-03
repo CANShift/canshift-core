@@ -5,8 +5,10 @@ import {
   Esp32InputGpioSchema,
   deviceConfigFromWire,
   deviceConfigToWire,
+  parseDeviceConfig,
   inputBindingsFromWire,
   inputBindingsToWire,
+  parseInputBindings,
   MAX_INPUT_BINDINGS,
   SAFE_OUTPUT_PINS_WROOM32,
   SAFE_INPUT_PINS_WROOM32,
@@ -820,6 +822,56 @@ describe('deviceConfigFromWire / deviceConfigToWire', () => {
   })
 })
 
+describe('parseDeviceConfig — untrusted wire input', () => {
+  const validRaw = JSON.stringify({ can_speed_kbps: 500, twai_tx_pin: 22, twai_rx_pin: 21 })
+
+  it('accepts a valid wire payload and remaps to the domain shape', () => {
+    const result = parseDeviceConfig(validRaw)
+    expect(result).toEqual({
+      kind: 'ok',
+      config: { canSpeedKbps: 500, twaiTxPin: 22, twaiRxPin: 21 },
+    })
+  })
+
+  it('flags invalid JSON', () => {
+    expect(parseDeviceConfig('{not json').kind).toBe('invalid_json')
+  })
+
+  it('flags non-object payloads', () => {
+    expect(parseDeviceConfig('42').kind).toBe('not_an_object')
+    expect(parseDeviceConfig('[1,2]').kind).toBe('not_an_object')
+    expect(parseDeviceConfig('null').kind).toBe('not_an_object')
+  })
+
+  it('rejects an SPI-flash tx pin (6-11) that would brick the device', () => {
+    const raw = JSON.stringify({ can_speed_kbps: 500, twai_tx_pin: 7, twai_rx_pin: 21 })
+    expect(parseDeviceConfig(raw).kind).toBe('wrong_shape')
+  })
+
+  it('rejects unknown wire keys (.strict)', () => {
+    const raw = JSON.stringify({
+      can_speed_kbps: 500,
+      twai_tx_pin: 22,
+      twai_rx_pin: 21,
+      rogue: 1,
+    })
+    expect(parseDeviceConfig(raw).kind).toBe('wrong_shape')
+  })
+
+  it('rejects a camelCase (already-domain) payload on the wire boundary', () => {
+    const raw = JSON.stringify({ canSpeedKbps: 500, twaiTxPin: 22, twaiRxPin: 21 })
+    expect(parseDeviceConfig(raw).kind).toBe('wrong_shape')
+  })
+
+  it('does not pollute Object.prototype via a __proto__ wire key', () => {
+    const raw =
+      '{"can_speed_kbps":500,"twai_tx_pin":22,"twai_rx_pin":21,"__proto__":{"polluted":true}}'
+    const result = parseDeviceConfig(raw)
+    expect(result.kind).toBe('wrong_shape')
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+  })
+})
+
 describe('ButtonActionSchema — cruise_control variant', () => {
   it('accepts a bare op (on/off/toggle/set/resume)', () => {
     for (const op of ['on', 'off', 'toggle', 'set', 'resume']) {
@@ -1028,6 +1080,61 @@ describe('inputBindingsFromWire / inputBindingsToWire', () => {
       ],
     }
     expect(inputBindingsFromWire(inputBindingsToWire(cfg))).toEqual(cfg)
+  })
+})
+
+describe('parseInputBindings — untrusted wire input', () => {
+  const validBinding = {
+    id: 'steering_set',
+    pin: 34,
+    active: 'low',
+    pullup: true,
+    debounce_ms: 25,
+    kind: 'short',
+    action: { category: 'ecu', type: 'cruise_control', op: 'set' },
+  }
+
+  it('accepts a valid wire payload and remaps to the domain shape', () => {
+    const result = parseInputBindings(JSON.stringify({ input_bindings: [validBinding] }))
+    expect(result.kind).toBe('ok')
+    if (result.kind === 'ok') {
+      expect(result.config.inputBindings[0]?.debounceMs).toBe(25)
+    }
+  })
+
+  it('flags invalid JSON', () => {
+    expect(parseInputBindings('{not json').kind).toBe('invalid_json')
+  })
+
+  it('flags non-object payloads', () => {
+    expect(parseInputBindings('42').kind).toBe('not_an_object')
+    expect(parseInputBindings('[1,2]').kind).toBe('not_an_object')
+    expect(parseInputBindings('null').kind).toBe('not_an_object')
+  })
+
+  it('rejects an SPI-flash pin (6-11) that would brick the device', () => {
+    const raw = JSON.stringify({ input_bindings: [{ ...validBinding, pin: 7 }] })
+    expect(parseInputBindings(raw).kind).toBe('wrong_shape')
+  })
+
+  it('rejects more bindings than the firmware cap', () => {
+    const tooMany = Array.from({ length: MAX_INPUT_BINDINGS + 1 }, (_, i) => ({
+      ...validBinding,
+      id: `b${String(i)}`,
+    }))
+    expect(parseInputBindings(JSON.stringify({ input_bindings: tooMany })).kind).toBe('wrong_shape')
+  })
+
+  it('rejects a camelCase (already-domain) payload on the wire boundary', () => {
+    const raw = JSON.stringify({ inputBindings: [validBinding] })
+    expect(parseInputBindings(raw).kind).toBe('wrong_shape')
+  })
+
+  it('does not pollute Object.prototype via a __proto__ wire key', () => {
+    const raw = `{"input_bindings":[${JSON.stringify(validBinding)}],"__proto__":{"polluted":true}}`
+    const result = parseInputBindings(raw)
+    expect(result.kind).toBe('wrong_shape')
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
   })
 })
 
