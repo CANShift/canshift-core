@@ -38,6 +38,8 @@ const toSnakeCase = (s: string): string =>
 const HEX_LITERAL_RE = /^[0-9a-fA-F]+$/
 const HAS_HEX_LETTER_RE = /[a-fA-F]/
 
+const DIGITS_ONLY_RE = /^[0-9]+$/
+
 const parseHexOrDec = (s: string): number => {
   const t = s.trim()
   if (t === '') return NaN
@@ -46,7 +48,13 @@ const parseHexOrDec = (s: string): number => {
   return parseInt(t, 10)
 }
 
+const isAmbiguousHexOrDec = (s: string): boolean => {
+  const t = s.trim()
+  if (t === '' || t.toLowerCase().startsWith('0x') || !DIGITS_ONLY_RE.test(t)) return false
+  return parseInt(t, 10) !== parseInt(t, 16)
+}
+
 const resolveEndian = (raw: string | undefined): boolean | null =>
   raw ? raw.toLowerCase() === 'big' : null
 
-export { escapeAttribGT, getAttrs, toSnakeCase, parseHexOrDec, resolveEndian }
+export { escapeAttribGT, getAttrs, toSnakeCase, parseHexOrDec, isAmbiguousHexOrDec, resolveEndian }

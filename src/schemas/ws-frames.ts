@@ -8,14 +8,12 @@ const LOG_TAG_MAX_LEN = 64
 const LOG_MESSAGE_MAX_LEN = 4_096
 const LOG_LEVELS = ['E', 'W', 'I', 'D', 'V'] as const
 
-export const LogFrameSchema = z
-  .object({
-    log: FiniteNumberSchema,
-    lvl: z.enum(LOG_LEVELS),
-    tag: z.string().max(LOG_TAG_MAX_LEN),
-    msg: z.string().max(LOG_MESSAGE_MAX_LEN),
-  })
-  .passthrough()
+export const LogFrameSchema = z.object({
+  log: FiniteNumberSchema,
+  lvl: z.enum(LOG_LEVELS),
+  tag: z.string().max(LOG_TAG_MAX_LEN),
+  msg: z.string().max(LOG_MESSAGE_MAX_LEN),
+})
 
 export type LogFrame = z.infer<typeof LogFrameSchema>
 
@@ -26,7 +24,6 @@ export const CanFrameSchema = z
     len: z.number().int().min(0).max(8),
     d: z.array(z.number().int().min(0).max(255)).max(8),
   })
-  .passthrough()
   .refine((f) => f.len === f.d.length, {
     message: 'len must equal d.length',
     path: ['len'],
@@ -34,25 +31,21 @@ export const CanFrameSchema = z
 
 export type CanFrame = z.infer<typeof CanFrameSchema>
 
-export const TeleFrameSchema = z
-  .object({
-    tele: FiniteNumberSchema,
-    v: z.record(z.string(), FiniteNumberSchema),
-  })
-  .passthrough()
+export const TeleFrameSchema = z.object({
+  tele: FiniteNumberSchema,
+  v: z.record(z.string(), FiniteNumberSchema),
+})
 
 export type TeleFrame = z.infer<typeof TeleFrameSchema>
 
-export const HeapStatsFrameWireSchema = z
-  .object({
-    heap_stats: FiniteNumberSchema,
-    ts: z.number().int().nonnegative(),
-    free_int: z.number().int().nonnegative(),
-    largest_int: z.number().int().nonnegative(),
-    free_psram: z.number().int().nonnegative().nullable(),
-    largest_psram: z.number().int().nonnegative().nullable(),
-  })
-  .passthrough()
+export const HeapStatsFrameWireSchema = z.object({
+  heap_stats: FiniteNumberSchema,
+  ts: z.number().int().nonnegative(),
+  free_int: z.number().int().nonnegative(),
+  largest_int: z.number().int().nonnegative(),
+  free_psram: z.number().int().nonnegative().nullable(),
+  largest_psram: z.number().int().nonnegative().nullable(),
+})
 
 export type HeapStatsFrameWire = z.infer<typeof HeapStatsFrameWireSchema>
 

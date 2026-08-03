@@ -159,6 +159,8 @@ export const DEFAULT_TOP_BAR_LAYOUT = [
   { type: 'themeToggle', position: 'right' },
 ] as const satisfies readonly z.infer<typeof TopBarItemSchema>[]
 
+export const DAY_NIGHT_SIGNAL_MAX_LEN = 31
+
 export const DashboardConfigSchema = z
   .object({
     _comment: z.string().optional(),
@@ -170,7 +172,7 @@ export const DashboardConfigSchema = z
     topBar: TopBarConfigSchema,
     dayTheme: ThemePresetSchema.optional(),
     nightTheme: ThemePresetSchema.optional(),
-    dayNightSignal: z.string().min(1).max(31).optional(),
+    dayNightSignal: z.string().min(1).max(DAY_NIGHT_SIGNAL_MAX_LEN).optional(),
     pages: z
       .array(PageConfigSchema)
       .min(1, 'pages must contain at least one entry')

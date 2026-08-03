@@ -1,5 +1,6 @@
 import {
   DashboardConfigSchema,
+  DAY_NIGHT_SIGNAL_MAX_LEN,
   DeviceConfigSchema,
   Esp32OutputGpioSchema,
   Esp32InputGpioSchema,
@@ -108,6 +109,25 @@ describe('DashboardConfigSchema', () => {
     expect(result.success).toBe(false)
     if (!result.success) {
       expect(result.error.issues.some((i) => i.code === 'unrecognized_keys')).toBe(true)
+    }
+  })
+
+  it('accepts dayNightSignal at the firmware ID-buffer cap', () => {
+    const result = DashboardConfigSchema.safeParse({
+      ...validDashboard,
+      dayNightSignal: 's'.repeat(DAY_NIGHT_SIGNAL_MAX_LEN),
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('rejects dayNightSignal one over the firmware ID-buffer cap', () => {
+    const result = DashboardConfigSchema.safeParse({
+      ...validDashboard,
+      dayNightSignal: 's'.repeat(DAY_NIGHT_SIGNAL_MAX_LEN + 1),
+    })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues.some((i) => i.path.includes('dayNightSignal'))).toBe(true)
     }
   })
 

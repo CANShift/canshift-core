@@ -4,12 +4,35 @@ import {
   MAX_SIGNAL_TIMEOUT_MS,
 } from '../constants/validation.js'
 import { SignalDefSchema, type SignalDef } from '../schemas/signal.js'
-import { escapeAttribGT, getAttrs, toSnakeCase, parseHexOrDec, resolveEndian } from './xml-lex.js'
+import {
+  escapeAttribGT,
+  getAttrs,
+  toSnakeCase,
+  parseHexOrDec,
+  isAmbiguousHexOrDec,
+  resolveEndian,
+} from './xml-lex.js'
 import { parseConversion, computeRange } from './conversion-parse.js'
 
 export interface ParseCanXmlResult {
   signals: SignalDef[]
   warnings: string[]
+}
+
+const resolveBaseId = (attrs: Record<string, string>, warnings: string[]): number => {
+  const raw = attrs.baseId
+  if (!raw) return 0
+  const parsed = parseHexOrDec(raw)
+  if (!Number.isFinite(parsed)) {
+    warnings.push(`Ignored unparseable baseId "${raw}" (using 0)`)
+    return 0
+  }
+  if (isAmbiguousHexOrDec(raw)) {
+    warnings.push(
+      `Ambiguous baseId "${raw}" read as decimal ${String(parsed)}; prefix with 0x if hex was intended`
+    )
+  }
+  return parsed
 }
 
 export const parseCanXml = (xml: string): ParseCanXmlResult => {
@@ -22,19 +45,8 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
 
   const safe = escapeAttribGT(xml)
 
-  let baseId = 0
   const framesTagMatch = /<frames\b([^>]*)>/.exec(safe)
-  if (framesTagMatch) {
-    const fa = getAttrs(framesTagMatch[1] ?? '')
-    if (fa.baseId) {
-      const parsedBase = parseHexOrDec(fa.baseId)
-      if (Number.isFinite(parsedBase)) {
-        baseId = parsedBase
-      } else {
-        warnings.push(`Ignored unparseable baseId "${fa.baseId}" (using 0)`)
-      }
-    }
-  }
+  const baseId = framesTagMatch ? resolveBaseId(getAttrs(framesTagMatch[1] ?? ''), warnings) : 0
 
   const frameRe = /<frame\b([^>]*)>([\s\S]*?)<\/frame>/g
   let frameMatch: RegExpExecArray | null
@@ -48,6 +60,11 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
     if (!Number.isFinite(frameIdNum)) {
       if (rawId !== '') warnings.push(`Skipped frame with unparseable id "${rawId}"`)
       continue
+    }
+    if (isAmbiguousHexOrDec(rawId)) {
+      warnings.push(
+        `Ambiguous frame id "${rawId}" read as decimal ${String(parseHexOrDec(rawId))}; prefix with 0x if hex was intended`
+      )
     }
     const canFrameId = `0x${frameIdNum.toString(16)}`
 

@@ -27,9 +27,35 @@ describe('LogFrameSchema', () => {
     expect(() => LogFrameSchema.parse({ log: 1, lvl: 'I', tag: 't', msg: 42 })).toThrow()
   })
 
-  it('passes through additive firmware fields', () => {
+  it('tolerates but strips unknown firmware fields', () => {
     const out = LogFrameSchema.parse({ log: 1, lvl: 'I', tag: 't', msg: 'm', seq: 99 })
-    expect(out).toMatchObject({ seq: 99 })
+    expect(out).toEqual({ log: 1, lvl: 'I', tag: 't', msg: 'm' })
+    expect(out).not.toHaveProperty('seq')
+  })
+})
+
+describe('ws frame strictness policy — unknown keys are stripped', () => {
+  it('strips unknown keys from CanFrame while keeping known fields', () => {
+    const out = CanFrameSchema.parse({ can: 1, id: 0x1, len: 1, d: [7], rssi: -40 })
+    expect(out).toEqual({ can: 1, id: 0x1, len: 1, d: [7] })
+  })
+
+  it('strips unknown keys from TeleFrame', () => {
+    const out = TeleFrameSchema.parse({ tele: 1, v: { rpm: 900 }, extra: 'x' })
+    expect(out).toEqual({ tele: 1, v: { rpm: 900 } })
+  })
+
+  it('strips unknown keys from HeapStatsFrameWire', () => {
+    const out = HeapStatsFrameWireSchema.parse({
+      heap_stats: 1,
+      ts: 10,
+      free_int: 100,
+      largest_int: 90,
+      free_psram: null,
+      largest_psram: null,
+      mystery: true,
+    })
+    expect(out).not.toHaveProperty('mystery')
   })
 })
 
