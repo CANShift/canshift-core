@@ -23,7 +23,9 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "export:sensor-defaults": "npm run build && node --experimental-strip-types scripts/export-sensor-defaults.ts"
+    "export:sensor-defaults": "npm run build && node --experimental-strip-types scripts/export-sensor-defaults.ts",
+    "prepare": "husky",
+    "lint:pre-commit": "lint-staged"
   },
   "keywords": [
     "canshift",
@@ -51,7 +53,9 @@
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.59.1"
+    "typescript-eslint": "^8.59.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2"
   },
   "publishConfig": {
     "access": "public"
@@ -59,5 +63,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/CANShift/canshift-core.git"
+  },
+  "lint-staged": {
+    "*.{ts,js,json,md,yml,yaml}": "prettier --write --ignore-unknown",
+    "*.ts": "eslint --fix --no-warn-ignored"
   }
 }
