@@ -2,6 +2,7 @@ import { HEX_REGEX } from '../colors/hex.js'
 import { CANVAS } from '../constants/firmware-caps.js'
 import { LAYOUT_GRID } from '../layout-grid.js'
 import { SCREEN_PROFILES, resolveScreenProfile } from '../schemas/screen-profile.js'
+import { isForbiddenKey } from '../wire/keymap.js'
 
 type Config = Record<string, unknown>
 
@@ -49,9 +50,12 @@ export const resizeWithinCanvas = (layout: Config, w: number, h: number): Config
   return { ...layout, x, y, w, h }
 }
 
+const stripForbiddenKeys = (key: string, value: unknown): unknown =>
+  isForbiddenKey(key) ? undefined : value
+
 export const deepClone = (value: Record<string, unknown>): Record<string, unknown> => {
   try {
-    return JSON.parse(JSON.stringify(value)) as Record<string, unknown>
+    return JSON.parse(JSON.stringify(value), stripForbiddenKeys) as Record<string, unknown>
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err)
     throw new Error(`Invalid config: not serializable to JSON (${reason})`, { cause: err })

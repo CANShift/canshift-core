@@ -84,3 +84,26 @@ export const deviceConfigFromWire = (wire: DeviceConfigWire): DeviceConfig =>
 
 export const deviceConfigToWire = (cfg: DeviceConfig): DeviceConfigWire =>
   mapObjectKeys(cfg, DEVICE_DOMAIN_TO_WIRE) as DeviceConfigWire
+
+export type DeviceConfigResult =
+  | { kind: 'ok'; config: DeviceConfig }
+  | { kind: 'invalid_json'; raw: string }
+  | { kind: 'not_an_object'; payload: unknown }
+  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+
+export const parseDeviceConfig = (raw: string): DeviceConfigResult => {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return { kind: 'invalid_json', raw }
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { kind: 'not_an_object', payload: parsed }
+  }
+  const result = DeviceConfigWireSchema.safeParse(parsed)
+  if (!result.success) {
+    return { kind: 'wrong_shape', issues: result.error.issues }
+  }
+  return { kind: 'ok', config: deviceConfigFromWire(result.data) }
+}
