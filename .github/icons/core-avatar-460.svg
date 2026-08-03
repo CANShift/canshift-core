@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 460" width="460" height="460" fill="none">
+  <rect width="460" height="460" fill="#151313"></rect>
+  <svg x="110.4" y="126.9" width="239.2" height="206.2" viewBox="0 0 116 100">
+  <g transform="translate(8,0) skewX(-11)" stroke-width="13">
+    <path d="M46 18 H26 V50 H16 H26 V82 H46" stroke="#F3F2F2"></path>
+    <path d="M70 18 H90 V50 H100 H90 V82 H70" stroke="#F3F2F2"></path>
+    <path d="M58 34 V66" stroke="#FF4747"></path>
+  </g>
+  </svg>
+</svg>
