@@ -120,6 +120,8 @@ export {
 
 export type { BleStatus, BleStatusResult } from './schemas/ble-status.js'
 export { BLE_STATUS_MAX_STRING_LEN, parseBleStatus } from './schemas/ble-status.js'
+export type { UsbStatus, UsbStatusResult } from './schemas/usb-status.js'
+export { USB_STATUS_MAX_STRING_LEN, parseUsbStatus } from './schemas/usb-status.js'
 export type {
   TimerBleLap,
   TimerBleState,
