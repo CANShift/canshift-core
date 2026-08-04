@@ -303,7 +303,7 @@ export {
   fontTokensToCssVars,
 } from './design-tokens.js'
 
-export const CURRENT_SCHEMA_VERSION = '1.27.0' as const
+export { CURRENT_SCHEMA_VERSION } from './schema-version.js'
 
 export type { GridArea, GridPlacement, GridRect } from './layout-grid.js'
 export {
@@ -329,4 +329,18 @@ export {
   ProjectSchema,
 } from './schemas/project.js'
 export type { Project, ProjectMeta } from './schemas/project.js'
+export {
+  CANSHIFT_FILE_FORMAT,
+  CANSHIFT_FILE_FORMAT_VERSION,
+  CANSHIFT_FILE_EXTENSION,
+  CANSHIFT_FILE_MIME,
+  serializeCanshiftFile,
+  parseCanshiftFile,
+  describeCanshiftFileError,
+} from './schemas/canshift-file.js'
+export type {
+  CanshiftFile,
+  CanshiftFileResult,
+  CanshiftFileError,
+} from './schemas/canshift-file.js'
 export { SignalDefSchema } from './schemas/signal.js'
