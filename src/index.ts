@@ -346,3 +346,38 @@ export type {
   CanshiftFileError,
 } from './schemas/canshift-file.js'
 export { SignalDefSchema } from './schemas/signal.js'
+
+export {
+  CHIP_FAMILIES,
+  LCD_DRIVERS,
+  TOUCH_DRIVERS,
+  CAN_CONTROLLERS,
+  BOARD_ID_MAX_LEN,
+  BOARD_NAME_MAX_LEN,
+  BoardProfileWireSchema,
+  boardProfileFromWire,
+  boardProfileToWire,
+  BOARD_PROFILE_MAGIC,
+  BOARD_PROFILE_SCHEMA,
+  BOARD_PROFILE_FORMAT_VERSION,
+  serializeBoardProfile,
+  parseBoardProfile,
+  BOARD_PROFILES,
+  getBoardProfile,
+} from './board-profile/index.js'
+export type {
+  ChipFamily,
+  LcdDriver,
+  TouchDriver,
+  CanController,
+  LcdProfile,
+  BacklightProfile,
+  TouchProfile,
+  CanProfile,
+  StorageProfile,
+  ConnectivityProfile,
+  BoardProfile,
+  BoardProfileWire,
+  BoardProfileBlob,
+  BoardProfileResult,
+} from './board-profile/index.js'
