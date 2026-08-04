@@ -73,6 +73,7 @@ export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
   }
   if (
     typeof record.formatVersion === 'number' &&
+    Number.isInteger(record.formatVersion) &&
     record.formatVersion > CANSHIFT_FILE_FORMAT_VERSION
   ) {
     return {
