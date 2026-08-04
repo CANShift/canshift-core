@@ -20,6 +20,12 @@ describe('BleStatusWireSchema', () => {
     expect(parsed.ver).toBe('1.0.0')
   })
 
+  it('accepts an optional board_id slug', () => {
+    expect(BleStatusWireSchema.parse({ ver: '2.5.0', board_id: 'crowpanel_28' }).board_id).toBe(
+      'crowpanel_28'
+    )
+  })
+
   it('rejects strings longer than the cap', () => {
     expect(() => BleStatusWireSchema.parse({ ver: 'x'.repeat(33) })).toThrow()
   })
@@ -68,6 +74,14 @@ describe('bleStatusFromWire', () => {
     expect(bleStatusFromWire({ ver: '0.1.0' })).toEqual({ firmwareVersion: '0.1.0' })
     expect(Object.keys(bleStatusFromWire({ ver: '0.1.0' }))).toEqual(['firmwareVersion'])
   })
+
+  it('exposes board_id as boardId, and omits it when absent', () => {
+    expect(bleStatusFromWire({ ver: '2.5.0', board_id: 'crowpanel_28' })).toEqual({
+      firmwareVersion: '2.5.0',
+      boardId: 'crowpanel_28',
+    })
+    expect(bleStatusFromWire({ ver: '2.5.0' })).not.toHaveProperty('boardId')
+  })
 })
 
 describe('parseBleStatus', () => {
@@ -78,6 +92,19 @@ describe('parseBleStatus', () => {
       kind: 'ok',
       status: {
         firmwareVersion: '1.0',
+        canHealthy: true,
+        isDay: true,
+      },
+    })
+  })
+
+  it('exposes boardId from a STATUS payload carrying board_id', () => {
+    const result = parseBleStatus('{"ver":"2.5.0","board_id":"crowpanel_28","can":1,"is_day":1}')
+    expect(result).toEqual({
+      kind: 'ok',
+      status: {
+        firmwareVersion: '2.5.0',
+        boardId: 'crowpanel_28',
         canHealthy: true,
         isDay: true,
       },

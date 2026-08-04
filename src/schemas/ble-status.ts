@@ -9,6 +9,7 @@ const ZeroOrOneSchema = z.union([z.literal(0), z.literal(1)])
 export const BleStatusWireSchema = z
   .object({
     ver: CappedStringSchema.optional(),
+    board_id: CappedStringSchema.optional(),
     can: ZeroOrOneSchema.optional(),
     is_day: ZeroOrOneSchema.optional(),
   })
@@ -18,6 +19,7 @@ export type BleStatusWire = z.infer<typeof BleStatusWireSchema>
 
 export interface BleStatus {
   firmwareVersion?: string
+  boardId?: string
   canHealthy?: boolean
   isDay?: boolean
 }
@@ -25,6 +27,7 @@ export interface BleStatus {
 export const bleStatusFromWire = (wire: BleStatusWire): BleStatus => {
   const out: BleStatus = {}
   if (wire.ver !== undefined) out.firmwareVersion = wire.ver
+  if (wire.board_id !== undefined) out.boardId = wire.board_id
   if (wire.can !== undefined) out.canHealthy = wire.can !== 0
   if (wire.is_day !== undefined) out.isDay = wire.is_day !== 0
   return out
