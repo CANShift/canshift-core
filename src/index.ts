@@ -119,8 +119,8 @@ export {
   INPUT_BINDING_ID_MAX_LEN,
 } from './schemas/input-bindings.js'
 
-export type { TrackTelemetry } from './schemas/track-telemetry.js'
-export { TrackTelemetrySchema } from './schemas/track-telemetry.js'
+export type { TrackTelemetry, TrackTelemetryResult } from './schemas/track-telemetry.js'
+export { TrackTelemetrySchema, parseTrackTelemetry } from './schemas/track-telemetry.js'
 
 export type { ScreenSettings, ScreenSettingsResult } from './schemas/screen-settings.js'
 export {
