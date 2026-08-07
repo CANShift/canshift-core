@@ -257,6 +257,7 @@ export {
   gaugeValueFontSize,
   gaugeArcStrokeWidth,
   gaugeValueAngle,
+  gaugeArcPath,
   gaugeGradientColorAt,
   LABEL_FONT_RATIO,
   labelFontSize,

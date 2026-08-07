@@ -105,6 +105,24 @@ export const gaugeValueAngle = (value: number, min: number, max: number): number
   return pct * GAUGE_ARC.sweepDeg
 }
 
+const gaugeArcPoint = (cx: number, cy: number, r: number, angleDeg: number): [number, number] => {
+  const rad = (angleDeg * Math.PI) / 180
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)]
+}
+
+export const gaugeArcPath = (
+  cx: number,
+  cy: number,
+  r: number,
+  startDeg: number,
+  endDeg: number
+): string => {
+  const [x0, y0] = gaugeArcPoint(cx, cy, r, startDeg)
+  const [x1, y1] = gaugeArcPoint(cx, cy, r, endDeg)
+  const largeArc = endDeg - startDeg > 180 ? 1 : 0
+  return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${String(r)} ${String(r)} 0 ${String(largeArc)} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`
+}
+
 const GAUGE_GRADIENT_RAMP: ColorRamp = {
   interpolate: 'linear',
   stops: [
