@@ -121,26 +121,6 @@ export {
 
 export type { TrackTelemetry, TrackTelemetryResult } from './schemas/track-telemetry.js'
 export { TrackTelemetrySchema, parseTrackTelemetry } from './schemas/track-telemetry.js'
-export type {
-  GeoPoint,
-  StartFinishLine,
-  TrackSample,
-  TrackSession,
-} from './schemas/track-session.js'
-export {
-  TRACK_SESSION_NAME_MAX_LEN,
-  GeoPointSchema,
-  StartFinishLineSchema,
-  TrackSampleSchema,
-  TrackSessionSchema,
-} from './schemas/track-session.js'
-export type { LapCrossing, Lap, LapSummary } from './track/lap-detection.js'
-export {
-  DEFAULT_MIN_LAP_MS,
-  detectLapCrossings,
-  lapTimesFromCrossings,
-  computeLaps,
-} from './track/lap-detection.js'
 
 export type { ScreenSettings, ScreenSettingsResult } from './schemas/screen-settings.js'
 export {
