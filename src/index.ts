@@ -136,6 +136,15 @@ export {
 export type { StartFinishLine } from './track/start-finish-line.js'
 export { DEFAULT_HALF_WIDTH_M, startFinishLineFromPosition } from './track/start-finish-line.js'
 
+export type { TelemetryFieldKey, TelemetryFrame } from './wire/telemetry-frame.js'
+export {
+  TELEMETRY_FIELDS,
+  TELEMETRY_FRAME_VERSION,
+  TELEMETRY_SCALE,
+  encodeTelemetryFrame,
+  decodeTelemetryFrame,
+} from './wire/telemetry-frame.js'
+
 export type { ScreenSettings, ScreenSettingsResult } from './schemas/screen-settings.js'
 export {
   ScreenSettingsSchema,
