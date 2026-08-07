@@ -37,3 +37,26 @@ export const TrackTelemetrySchema = z
   .strict()
 
 export type TrackTelemetry = z.infer<typeof TrackTelemetrySchema>
+
+export type TrackTelemetryResult =
+  | { kind: 'ok'; telemetry: TrackTelemetry }
+  | { kind: 'invalid_json'; raw: string }
+  | { kind: 'not_an_object'; payload: unknown }
+  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+
+export const parseTrackTelemetry = (raw: string): TrackTelemetryResult => {
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    return { kind: 'invalid_json', raw }
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return { kind: 'not_an_object', payload: parsed }
+  }
+  const result = TrackTelemetrySchema.safeParse(parsed)
+  if (!result.success) {
+    return { kind: 'wrong_shape', issues: result.error.issues }
+  }
+  return { kind: 'ok', telemetry: result.data }
+}
