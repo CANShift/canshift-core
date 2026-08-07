@@ -85,6 +85,17 @@ export {
 } from './schemas/obd2.js'
 export type { Obd2Mode01PidEntry } from './ecu-profiles/obd2-mode01-pids.js'
 export { OBD2_MODE01_PIDS, obd2PidLookup } from './ecu-profiles/obd2-mode01-pids.js'
+export type { DtcSystem } from './ecu-profiles/obd2-dtc.js'
+export {
+  OBD2_MODE_READ_DTC,
+  OBD2_MODE_CLEAR_DTC,
+  OBD2_POSITIVE_RESPONSE_OFFSET,
+  OBD2_MODE_READ_DTC_RESPONSE,
+  OBD2_MODE_CLEAR_DTC_RESPONSE,
+  decodeDtc,
+  decodeDtcList,
+  dtcSystem,
+} from './ecu-profiles/obd2-dtc.js'
 export type { DeviceConfig, DeviceConfigResult } from './schemas/device.js'
 export type { CanSpeedKbps, SignalByteLength } from './schemas/signal.js'
 export { SIGNAL_BYTE_LENGTHS } from './schemas/signal.js'
