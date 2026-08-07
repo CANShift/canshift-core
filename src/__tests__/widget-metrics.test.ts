@@ -17,6 +17,7 @@ import {
   gaugeValueFontSize,
   gaugeArcStrokeWidth,
   gaugeValueAngle,
+  gaugeArcPath,
   gaugeGradientColorAt,
   labelFontSize,
   gearFontSize,
@@ -304,5 +305,35 @@ describe('sensorDefaultDangerThreshold', () => {
         expect(invertLogic).toBe(false)
       }
     }
+  })
+})
+
+describe('gaugeArcPath', () => {
+  it('builds an SVG arc "d" from start/end angles', () => {
+    const d = gaugeArcPath(
+      50,
+      50,
+      40,
+      GAUGE_ARC.rotationDeg,
+      GAUGE_ARC.rotationDeg + GAUGE_ARC.sweepDeg
+    )
+    expect(d).toBe('M 21.72 78.28 A 40 40 0 1 1 78.28 78.28')
+  })
+
+  it('flags largeArc only when the sweep exceeds 180°', () => {
+    expect(gaugeArcPath(0, 0, 10, 0, 90)).toContain(' 0 1 ')
+    expect(gaugeArcPath(0, 0, 10, 0, 200)).toContain(' 1 1 ')
+  })
+
+  it('reproduces a percentage-based gauge fill via the rotation/sweep constants', () => {
+    const pct = 0.65
+    const fromPct = gaugeArcPath(
+      50,
+      50,
+      40,
+      GAUGE_ARC.rotationDeg,
+      GAUGE_ARC.rotationDeg + pct * GAUGE_ARC.sweepDeg
+    )
+    expect(fromPct.startsWith('M 21.72 78.28 A 40 40 0')).toBe(true)
   })
 })
