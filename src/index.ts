@@ -121,6 +121,20 @@ export {
 
 export type { TrackTelemetry, TrackTelemetryResult } from './schemas/track-telemetry.js'
 export { TrackTelemetrySchema, parseTrackTelemetry } from './schemas/track-telemetry.js'
+export type {
+  GeoPoint,
+  LineSegment,
+  LapCrossingDetector,
+  LapCrossingDetectorOptions,
+} from './track/lap-detection.js'
+export {
+  createLapCrossingDetector,
+  segmentIntersect,
+  bearingDeg,
+  signedAngleDelta,
+} from './track/lap-detection.js'
+export type { StartFinishLine } from './track/start-finish-line.js'
+export { DEFAULT_HALF_WIDTH_M, startFinishLineFromPosition } from './track/start-finish-line.js'
 
 export type { ScreenSettings, ScreenSettingsResult } from './schemas/screen-settings.js'
 export {
