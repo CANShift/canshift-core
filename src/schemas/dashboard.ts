@@ -135,6 +135,7 @@ export const TopBarItemSchema = z.discriminatedUnion('type', [
   iconOnlyTopBarItemShape.extend({ type: z.literal('themeToggle') }).strict(),
   signalBoundTopBarItemShape.extend({ type: z.literal('modeFlag'), text: z.string() }).strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('trackBadge') }).strict(),
+  iconOnlyTopBarItemShape.extend({ type: z.literal('canRate') }).strict(),
 ])
 
 export const TopBarConfigSchema = z
