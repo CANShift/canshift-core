@@ -31,7 +31,7 @@ describe('DARK_TOKENS', () => {
         primaryForeground: '#FFFFFF',
         secondary: '#292929',
         secondaryForeground: '#FFFFFF',
-        accent: '#FF8800',
+        accent: '#FF4747',
         accentForeground: '#FFFFFF',
         accentDim: '#1A0808',
         destructive: '#FF0000',
@@ -308,7 +308,7 @@ describe('tokensToCssVars', () => {
   it('converts each color to HSL channel format', () => {
     const vars = tokensToCssVars(DARK_TOKENS)
     expect(vars['--primary']).toBe('0 100% 64%')
-    expect(vars['--accent']).toBe('32 100% 50%')
+    expect(vars['--accent']).toBe('0 100% 64%')
     expect(vars['--text']).toBe('0 0% 100%')
     expect(vars['--bg']).toBe('0 0% 7%')
     expect(vars['--danger']).toBe('0 100% 50%')

@@ -116,7 +116,7 @@ export const DARK_TOKENS = {
     primaryForeground: '#FFFFFF',
     secondary: '#292929',
     secondaryForeground: '#FFFFFF',
-    accent: '#FF8800',
+    accent: '#FF4747',
     accentForeground: '#FFFFFF',
     accentDim: '#1A0808',
     destructive: '#FF0000',
