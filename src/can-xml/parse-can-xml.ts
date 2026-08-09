@@ -1,8 +1,4 @@
-import {
-  DEFAULT_FRAME_TIMEOUT_MS,
-  MAX_BITMASK_SHIFT_BITS,
-  MAX_SIGNAL_TIMEOUT_MS,
-} from '../constants/validation.js'
+import { DEFAULT_FRAME_TIMEOUT_MS, MAX_SIGNAL_TIMEOUT_MS } from '../constants/validation.js'
 import { SignalDefSchema, type SignalDef } from '../schemas/signal.js'
 import {
   escapeAttribGT,
@@ -33,6 +29,27 @@ const resolveBaseId = (attrs: Record<string, string>, warnings: string[]): numbe
     )
   }
   return parsed
+}
+
+interface BitField {
+  startByte: number
+  bitMask: string
+}
+
+const resolveBitField = (
+  bitIndex: number,
+  startByte: number,
+  byteLength: number,
+  bigEndian: boolean
+): BitField | null => {
+  const byteOffset = Math.floor(bitIndex / 8)
+  if (byteOffset >= byteLength) return null
+  const carrier = bigEndian ? byteLength - 1 - byteOffset : byteOffset
+  const mask = 1 << (bitIndex % 8)
+  return {
+    startByte: startByte + carrier,
+    bitMask: `0x${mask.toString(16).padStart(2, '0')}`,
+  }
 }
 
 export const parseCanXml = (xml: string): ParseCanXmlResult => {
@@ -124,21 +141,19 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
       const bitShift = conv.kind === 'linear' ? conv.bitShift : null
       const exprText = conv.kind === 'expr' ? conv.expr : undefined
 
-      if (bitShift !== null && bitShift > MAX_BITMASK_SHIFT_BITS) {
+      const bitField =
+        bitShift === null ? null : resolveBitField(bitShift, startByte, byteLength, bigEndian)
+
+      if (bitShift !== null && bitField === null) {
         warnings.push(
-          `Rejected signal "${name}" (frame ${canFrameId}): bit index ${String(bitShift)} exceeds ` +
-            `${String(MAX_BITMASK_SHIFT_BITS)} — bitMask must fit in 8 bits (firmware stores uint8_t)`
+          `Rejected signal "${name}" (frame ${canFrameId}): bit index ${String(bitShift)} falls ` +
+            `outside the ${String(byteLength)}-byte value`
         )
         valueIndex++
         continue
       }
 
-      const bitMask =
-        bitShift !== null
-          ? `0x${(2 ** bitShift).toString(16).padStart(2, '0')}`
-          : unit === 'bit' && !va.conversion
-            ? '0x01'
-            : undefined
+      const bitMask = bitField?.bitMask ?? (unit === 'bit' && !va.conversion ? '0x01' : undefined)
 
       const isBit = bitMask !== undefined
 
@@ -153,8 +168,8 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
       const candidate = {
         name,
         canFrameId,
-        startByte,
-        byteLength,
+        startByte: bitField?.startByte ?? startByte,
+        byteLength: bitField ? 1 : byteLength,
         bigEndian,
         signed,
         scale,

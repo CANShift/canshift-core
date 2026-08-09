@@ -224,23 +224,52 @@ describe('conversion parsing', () => {
     expect(singleSignal('V>>7')?.bitMask).toBe('0x80')
   })
 
-  it('V>>8 → rejected (mask would not fit firmware uint8_t)', () => {
+  it('V>>8 on a little-endian pair → bit 0 of the second byte', () => {
     const { signals, warnings } = parseCanXml(
       simpleXml('<value name="hi_bit" offset="0" length="2" conversion="V&gt;&gt;8"/>')
     )
-    expect(signals).toHaveLength(0)
-    expect(warnings).toHaveLength(1)
-    expect(warnings[0]).toMatch(/Rejected signal "hi_bit"/)
-    expect(warnings[0]).toMatch(/8 bits/)
+    expect(warnings).toHaveLength(0)
+    expect(signals[0]).toMatchObject({ startByte: 1, byteLength: 1, bitMask: '0x01' })
   })
 
-  it('V & 0x100 → rejected (bit index 8 exceeds 8-bit mask range)', () => {
-    const { signals, warnings } = parseCanXml(
+  it('V>>15 on a little-endian pair → top bit of the second byte', () => {
+    const { signals } = parseCanXml(
+      simpleXml('<value name="top_bit" offset="2" length="2" conversion="V&gt;&gt;15"/>')
+    )
+    expect(signals[0]).toMatchObject({ startByte: 3, byteLength: 1, bitMask: '0x80' })
+  })
+
+  it('V>>8 on a big-endian pair → bit 0 of the first byte', () => {
+    const { signals } = parseCanXml(
+      simpleXml(
+        '<value name="hi_bit_be" offset="0" length="2" endianess="big" conversion="V&gt;&gt;8"/>'
+      )
+    )
+    expect(signals[0]).toMatchObject({ startByte: 0, byteLength: 1, bitMask: '0x01' })
+  })
+
+  it('V>>24 on a four-byte value → bit 0 of the fourth byte', () => {
+    const { signals } = parseCanXml(
+      simpleXml('<value name="msb_flag" offset="0" length="4" conversion="V&gt;&gt;24"/>')
+    )
+    expect(signals[0]).toMatchObject({ startByte: 3, byteLength: 1, bitMask: '0x01' })
+  })
+
+  it('V & 0x100 on a pair → bit 0 of the second byte', () => {
+    const { signals } = parseCanXml(
       simpleXml('<value name="wide_mask" offset="0" length="2" conversion="V&amp;0x100"/>')
+    )
+    expect(signals[0]).toMatchObject({ startByte: 1, byteLength: 1, bitMask: '0x01' })
+  })
+
+  it('rejects a bit index that falls outside the value', () => {
+    const { signals, warnings } = parseCanXml(
+      simpleXml('<value name="oob_bit" offset="0" length="2" conversion="V&gt;&gt;16"/>')
     )
     expect(signals).toHaveLength(0)
     expect(warnings).toHaveLength(1)
-    expect(warnings[0]).toMatch(/Rejected signal "wide_mask"/)
+    expect(warnings[0]).toMatch(/Rejected signal "oob_bit"/)
+    expect(warnings[0]).toMatch(/outside the 2-byte value/)
   })
 
   it('no conversion + units="bit" → bitMask 0x01', () => {
