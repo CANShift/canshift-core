@@ -52,7 +52,10 @@ export const ColorRampSchema = z
   })
   .strict()
 
-export const SignalByteLengthSchema = z.union([z.literal(1), z.literal(2), z.literal(4)])
+export const SignalByteLengthSchema = z.union(
+  [z.literal(1), z.literal(2), z.literal(3), z.literal(4)],
+  { errorMap: () => ({ message: 'must be 1, 2, 3 or 4 bytes' }) }
+)
 
 export type SignalByteLength = z.infer<typeof SignalByteLengthSchema>
 

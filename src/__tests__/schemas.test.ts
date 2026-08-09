@@ -377,8 +377,8 @@ describe('SignalConfigSchema', () => {
     }
   })
 
-  it('rejects byteLengths the firmware cannot decode (3, 5, 8)', () => {
-    for (const len of [3, 5, 8]) {
+  it('rejects byteLengths the firmware cannot decode (5, 8)', () => {
+    for (const len of [5, 8]) {
       const broken = {
         ...validSignals,
         signals: [{ ...validSignals.signals[0], byteLength: len }],

@@ -473,15 +473,20 @@ describe('shift bounds', () => {
 })
 
 describe('schema validation', () => {
-  it('length=3 and length=8 are rejected (firmware decodes only 1/2/4)', () => {
-    for (const len of [3, 8]) {
-      const { signals, warnings } = parseCanXml(
-        simpleXml(`<value name="wide_${String(len)}" offset="0" length="${String(len)}"/>`)
-      )
-      expect(signals).toHaveLength(0)
-      expect(warnings).toHaveLength(1)
-      expect(warnings[0]).toMatch(/byteLength/)
-    }
+  it('length=3 passes through unchanged', () => {
+    const { signals, warnings } = parseCanXml(simpleXml('<value name="s" offset="0" length="3"/>'))
+    expect(signals).toHaveLength(1)
+    expect(signals[0]?.byteLength).toBe(3)
+    expect(warnings).toHaveLength(0)
+  })
+
+  it('length=8 is rejected (firmware decodes 1, 2, 3 or 4)', () => {
+    const { signals, warnings } = parseCanXml(
+      simpleXml('<value name="wide_8" offset="0" length="8"/>')
+    )
+    expect(signals).toHaveLength(0)
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0]).toMatch(/byteLength/)
   })
 
   it('length=4 passes through unchanged', () => {
