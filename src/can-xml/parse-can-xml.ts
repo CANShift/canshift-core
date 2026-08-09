@@ -1,13 +1,6 @@
 import { DEFAULT_FRAME_TIMEOUT_MS, MAX_SIGNAL_TIMEOUT_MS } from '../constants/validation.js'
 import { SignalDefSchema, type SignalDef } from '../schemas/signal.js'
-import {
-  escapeAttribGT,
-  getAttrs,
-  toSnakeCase,
-  parseHexOrDec,
-  isAmbiguousHexOrDec,
-  resolveEndian,
-} from './xml-lex.js'
+import { escapeAttribGT, getAttrs, toSnakeCase, parseHexOrDec, resolveEndian } from './xml-lex.js'
 import { parseConversion, computeRange } from './conversion-parse.js'
 
 export interface ParseCanXmlResult {
@@ -22,11 +15,6 @@ const resolveBaseId = (attrs: Record<string, string>, warnings: string[]): numbe
   if (!Number.isFinite(parsed)) {
     warnings.push(`Ignored unparseable baseId "${raw}" (using 0)`)
     return 0
-  }
-  if (isAmbiguousHexOrDec(raw)) {
-    warnings.push(
-      `Ambiguous baseId "${raw}" read as decimal ${String(parsed)}; prefix with 0x if hex was intended`
-    )
   }
   return parsed
 }
@@ -77,11 +65,6 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
     if (!Number.isFinite(frameIdNum)) {
       if (rawId !== '') warnings.push(`Skipped frame with unparseable id "${rawId}"`)
       continue
-    }
-    if (isAmbiguousHexOrDec(rawId)) {
-      warnings.push(
-        `Ambiguous frame id "${rawId}" read as decimal ${String(parseHexOrDec(rawId))}; prefix with 0x if hex was intended`
-      )
     }
     const canFrameId = `0x${frameIdNum.toString(16)}`
 
