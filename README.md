@@ -1,10 +1,5 @@
 # canshift-core
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/icons/core-dark.svg">
-  <img src=".github/icons/core.svg" alt="" height="72">
-</picture>
-
 `canshift-core` — pure TypeScript contract layer for the CANShift ecosystem.
 
 ---
