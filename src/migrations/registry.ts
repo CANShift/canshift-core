@@ -23,7 +23,45 @@ const CAPS_1_24 = {
   protocol: 31,
 } as const
 
+const LEGACY_FLAG_TOP_BAR = [
+  { type: 'label', text: 'CAN', position: 'left' },
+  { type: 'statusDot', signal: 'any', position: 'left' },
+  { type: 'modeFlag', signal: 'flag_anti_lag', text: 'ALS', position: 'center' },
+  { type: 'separator', position: 'center' },
+  { type: 'modeFlag', signal: 'flag_launch_ctrl', text: 'LC', position: 'center' },
+  { type: 'separator', position: 'center' },
+  { type: 'modeFlag', signal: 'flag_flat_shift', text: 'FS', position: 'center' },
+  { type: 'separator', position: 'center' },
+  { type: 'modeFlag', signal: 'flag_traction_cut', text: 'TC', position: 'center' },
+  { type: 'signal', signal: 'map_number', format: 'MAP%.0f', position: 'right' },
+  { type: 'separator', position: 'right' },
+  { type: 'bleIcon', position: 'right' },
+  { type: 'themeToggle', position: 'right' },
+]
+
+const TRACK_TOP_BAR = [
+  { type: 'label', text: 'CAN', position: 'left' },
+  { type: 'canRate', position: 'left' },
+  { type: 'label', text: 'MAP', position: 'center' },
+  { type: 'signal', signal: 'map_number', format: '%.0f', position: 'center' },
+  { type: 'trackBadge', position: 'right' },
+]
+
+const isLegacyFlagTopBar = (layout: unknown): boolean =>
+  JSON.stringify(layout) === JSON.stringify(LEGACY_FLAG_TOP_BAR)
+
+const retrackTopBar = (config: Record<string, unknown>): Record<string, unknown> => {
+  const topBar = asObject(config.topBar)
+  if (!topBar || !isLegacyFlagTopBar(topBar.layout)) return config
+  return { ...config, topBar: { ...topBar, layout: TRACK_TOP_BAR.map((item) => ({ ...item })) } }
+}
+
 export const MIGRATIONS: Migration[] = [
+  {
+    fromVersion: '1.28.0',
+    toVersion: '1.29.0',
+    migrate: (config) => ({ ...retrackTopBar(config), version: '1.29.0' }),
+  },
   {
     fromVersion: '1.27.0',
     toVersion: '1.28.0',
