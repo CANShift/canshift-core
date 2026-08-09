@@ -450,3 +450,86 @@ describe('1.26.0 → 1.27.0 widget type ↔ config.type realignment (#20)', () =
     expectValid(migrated)
   })
 })
+
+describe('1.28.0 → 1.29.0 track top bar', () => {
+  const LEGACY_LAYOUT = [
+    { type: 'label', text: 'CAN', position: 'left' },
+    { type: 'statusDot', signal: 'any', position: 'left' },
+    { type: 'modeFlag', signal: 'flag_anti_lag', text: 'ALS', position: 'center' },
+    { type: 'separator', position: 'center' },
+    { type: 'modeFlag', signal: 'flag_launch_ctrl', text: 'LC', position: 'center' },
+    { type: 'separator', position: 'center' },
+    { type: 'modeFlag', signal: 'flag_flat_shift', text: 'FS', position: 'center' },
+    { type: 'separator', position: 'center' },
+    { type: 'modeFlag', signal: 'flag_traction_cut', text: 'TC', position: 'center' },
+    { type: 'signal', signal: 'map_number', format: 'MAP%.0f', position: 'right' },
+    { type: 'separator', position: 'right' },
+    { type: 'bleIcon', position: 'right' },
+    { type: 'themeToggle', position: 'right' },
+  ]
+
+  const dashboardWithLayout = (layout: unknown): Record<string, unknown> => ({
+    version: '1.28.0',
+    name: 'Top bar',
+    defaultPageId: 'p1',
+    revLimitRpm: 7000,
+    topBar: { height: 16, bgColor: '#0D0D0D', textColor: '#AAAAAA', layout },
+    pages: [
+      {
+        id: 'p1',
+        backgroundImage: null,
+        backgroundColor: '#000000',
+        palette: fullPalette,
+        showTopBar: true,
+        widgets: [],
+      },
+    ],
+  })
+
+  const layoutOf = (config: Record<string, unknown>): unknown =>
+    (config.topBar as Record<string, unknown>).layout
+
+  it('replaces the untouched legacy flag bar with the track bar', () => {
+    const migrated = migrateToCurrent(dashboardWithLayout(LEGACY_LAYOUT))
+
+    expect(layoutOf(migrated)).toEqual([
+      { type: 'label', text: 'CAN', position: 'left' },
+      { type: 'canRate', position: 'left' },
+      { type: 'label', text: 'MAP', position: 'center' },
+      { type: 'signal', signal: 'map_number', format: '%.0f', position: 'center' },
+      { type: 'trackBadge', position: 'right' },
+    ])
+    expectValid(migrated)
+  })
+
+  it('leaves a customised bar alone', () => {
+    const customised = LEGACY_LAYOUT.filter((item) => item.text !== 'TC')
+    const migrated = migrateToCurrent(dashboardWithLayout(customised))
+
+    expect(layoutOf(migrated)).toEqual(customised)
+    expectValid(migrated)
+  })
+
+  it('leaves a bar that is already on the track layout alone', () => {
+    const trackBar = [
+      { type: 'label', text: 'CAN', position: 'left' },
+      { type: 'canRate', position: 'left' },
+      { type: 'label', text: 'MAP', position: 'center' },
+      { type: 'signal', signal: 'map_number', format: '%.0f', position: 'center' },
+      { type: 'trackBadge', position: 'right' },
+    ]
+    const migrated = migrateToCurrent(dashboardWithLayout(trackBar))
+
+    expect(layoutOf(migrated)).toEqual(trackBar)
+    expectValid(migrated)
+  })
+
+  it('tolerates a top bar with no layout at all', () => {
+    const bare = dashboardWithLayout(undefined)
+    delete (bare.topBar as Record<string, unknown>).layout
+    const migrated = migrateToCurrent(bare)
+
+    expect(layoutOf(migrated)).toBeUndefined()
+    expectValid(migrated)
+  })
+})
