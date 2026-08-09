@@ -72,6 +72,40 @@ describe('frames baseId', () => {
   })
 })
 
+describe('frame id attribute', () => {
+  const value = '<value name="s" offset="0" length="2"/>'
+
+  it('accepts canId as an alias for id', () => {
+    const { signals, warnings } = parseCanXml(
+      xml('', `<frame canId="0x24" timeout="2000">${value}</frame>`)
+    )
+    expect(signals[0]?.canFrameId).toBe('0x24')
+    expect(warnings).toHaveLength(0)
+  })
+
+  it('prefers id when a frame carries both', () => {
+    const { signals } = parseCanXml(
+      xml('', `<frame id="0x1d0" canId="0x24" timeout="2000">${value}</frame>`)
+    )
+    expect(signals[0]?.canFrameId).toBe('0x1d0')
+  })
+
+  it('warns instead of silently dropping a frame with no id at all', () => {
+    const { signals, warnings } = parseCanXml(xml('', `<frame timeout="2000">${value}</frame>`))
+    expect(signals).toHaveLength(0)
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0]).toMatch(/no id/)
+  })
+
+  it('still warns for an unparseable id', () => {
+    const { signals, warnings } = parseCanXml(
+      xml('', `<frame id="zz" timeout="2000">${value}</frame>`)
+    )
+    expect(signals).toHaveLength(0)
+    expect(warnings[0]).toMatch(/unparseable id "zz"/)
+  })
+})
+
 describe('frame id base (spec: bareword is decimal, 0x prefix is hex)', () => {
   const value = '<value name="s" offset="0" length="2"/>'
 

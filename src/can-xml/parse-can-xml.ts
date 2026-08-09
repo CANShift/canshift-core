@@ -60,10 +60,14 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
     const frameAttrs = getAttrs(frameMatch[1] ?? '')
     const frameBody = frameMatch[2] ?? ''
 
-    const rawId = (frameAttrs.id ?? '').split(':')[0] ?? ''
+    const rawId = (frameAttrs.id ?? frameAttrs.canId ?? '').split(':')[0] ?? ''
     const frameIdNum = parseHexOrDec(rawId) + baseId
     if (!Number.isFinite(frameIdNum)) {
-      if (rawId !== '') warnings.push(`Skipped frame with unparseable id "${rawId}"`)
+      warnings.push(
+        rawId === ''
+          ? 'Skipped frame with no id — expected an id or canId attribute'
+          : `Skipped frame with unparseable id "${rawId}"`
+      )
       continue
     }
     const canFrameId = `0x${frameIdNum.toString(16)}`
