@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 export const USB_STATUS_MAX_STRING_LEN = 64
 
@@ -35,25 +36,12 @@ export const usbStatusFromWire = (wire: UsbStatusWire): UsbStatus => {
   return out
 }
 
-export type UsbStatusResult =
-  | { kind: 'ok'; status: UsbStatus }
-  | { kind: 'invalid_json'; raw: string }
-  | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
+export type UsbStatusResult = { kind: 'ok'; status: UsbStatus } | WireEnvelopeFailure
 
 export const parseUsbStatus = (raw: string): UsbStatusResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
-  const result = UsbStatusWireSchema.safeParse(parsed)
-  if (!result.success) {
-    return { kind: 'wrong_shape', issues: result.error.issues }
-  }
+  const json = parseJsonObject(raw)
+  if (json.kind !== 'ok') return json
+  const result = UsbStatusWireSchema.safeParse(json.value)
+  if (!result.success) return { kind: 'wrong_shape', issues: result.error.issues }
   return { kind: 'ok', status: usbStatusFromWire(result.data) }
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 const LAP_MAX_MS = 60 * 60 * 1000
 
@@ -38,25 +39,12 @@ export const TrackTelemetrySchema = z
 
 export type TrackTelemetry = z.infer<typeof TrackTelemetrySchema>
 
-export type TrackTelemetryResult =
-  | { kind: 'ok'; telemetry: TrackTelemetry }
-  | { kind: 'invalid_json'; raw: string }
-  | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
+export type TrackTelemetryResult = { kind: 'ok'; telemetry: TrackTelemetry } | WireEnvelopeFailure
 
 export const parseTrackTelemetry = (raw: string): TrackTelemetryResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
-  const result = TrackTelemetrySchema.safeParse(parsed)
-  if (!result.success) {
-    return { kind: 'wrong_shape', issues: result.error.issues }
-  }
+  const json = parseJsonObject(raw)
+  if (json.kind !== 'ok') return json
+  const result = TrackTelemetrySchema.safeParse(json.value)
+  if (!result.success) return { kind: 'wrong_shape', issues: result.error.issues }
   return { kind: 'ok', telemetry: result.data }
 }

@@ -3,7 +3,8 @@ import { z } from 'zod'
 import { ButtonActionSchema } from './dashboard.js'
 import { Esp32InputGpioSchema } from './device.js'
 import { STRING_CAPS } from '../constants/firmware-caps.js'
-import { findForbiddenKey, mapObjectKeys } from '../wire/keymap.js'
+import { mapObjectKeys } from '../wire/keymap.js'
+import { parseUntrustedJsonObject, type WireParseFailure } from '../wire/parse-envelope.js'
 
 const BINDING_WIRE_TO_DOMAIN = { debounce_ms: 'debounceMs' } as const
 const BINDING_DOMAIN_TO_WIRE = { debounceMs: 'debounce_ms' } as const
@@ -105,28 +106,12 @@ export const inputBindingsToWire = (cfg: InputBindingsConfig): InputBindingsConf
   input_bindings: cfg.inputBindings.map(inputBindingToWire),
 })
 
-export type InputBindingsResult =
-  | { kind: 'ok'; config: InputBindingsConfig }
-  | { kind: 'invalid_json'; raw: string }
-  | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
-  | { kind: 'forbidden_key'; key: string }
+export type InputBindingsResult = { kind: 'ok'; config: InputBindingsConfig } | WireParseFailure
 
 export const parseInputBindings = (raw: string): InputBindingsResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
-  const forbidden = findForbiddenKey(parsed)
-  if (forbidden !== null) {
-    return { kind: 'forbidden_key', key: forbidden }
-  }
-  const result = InputBindingsConfigWireSchema.safeParse(parsed)
+  const json = parseUntrustedJsonObject(raw)
+  if (json.kind !== 'ok') return json
+  const result = InputBindingsConfigWireSchema.safeParse(json.value)
   if (!result.success) {
     return { kind: 'wrong_shape', issues: result.error.issues }
   }

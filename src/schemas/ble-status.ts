@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 export const BLE_STATUS_MAX_STRING_LEN = 32
 
@@ -33,25 +34,12 @@ export const bleStatusFromWire = (wire: BleStatusWire): BleStatus => {
   return out
 }
 
-export type BleStatusResult =
-  | { kind: 'ok'; status: BleStatus }
-  | { kind: 'invalid_json'; raw: string }
-  | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
+export type BleStatusResult = { kind: 'ok'; status: BleStatus } | WireEnvelopeFailure
 
 export const parseBleStatus = (raw: string): BleStatusResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
-  const result = BleStatusWireSchema.safeParse(parsed)
-  if (!result.success) {
-    return { kind: 'wrong_shape', issues: result.error.issues }
-  }
+  const json = parseJsonObject(raw)
+  if (json.kind !== 'ok') return json
+  const result = BleStatusWireSchema.safeParse(json.value)
+  if (!result.success) return { kind: 'wrong_shape', issues: result.error.issues }
   return { kind: 'ok', status: bleStatusFromWire(result.data) }
 }
