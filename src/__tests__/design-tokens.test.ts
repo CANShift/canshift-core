@@ -27,6 +27,8 @@ describe('DARK_TOKENS', () => {
         surface: '#1F1F1F',
         surface2: '#292929',
         border: '#333333',
+        ruleHair: '#262323',
+        track: '#222222',
         primary: '#FF4747',
         primaryForeground: '#FFFFFF',
         secondary: '#292929',
@@ -34,7 +36,8 @@ describe('DARK_TOKENS', () => {
         accent: '#FF4747',
         accentForeground: '#FFFFFF',
         accentDim: '#1A0808',
-        destructive: '#FF0000',
+        selectedBg: '#1A1717',
+        destructive: '#FF4747',
         destructiveForeground: '#FFFFFF',
         text: '#FFFFFF',
         textDim: '#BABABA',
@@ -43,7 +46,7 @@ describe('DARK_TOKENS', () => {
         successBg: '#1A3A1A',
         successBorder: '#336633',
         warning: '#FF8800',
-        danger: '#FF0000',
+        danger: '#FF4444',
         statusDanger: '#E03030',
         statusDangerDim: '#3A1A1A',
         scrim: '#000000',
@@ -275,6 +278,8 @@ describe('tokensToCssVars', () => {
     '--surface',
     '--surface-2',
     '--border',
+    '--rule-hair',
+    '--track',
     '--primary',
     '--primary-foreground',
     '--secondary',
@@ -282,6 +287,7 @@ describe('tokensToCssVars', () => {
     '--accent',
     '--accent-foreground',
     '--accent-dim',
+    '--selected-bg',
     '--destructive',
     '--destructive-foreground',
     '--text',
@@ -311,7 +317,7 @@ describe('tokensToCssVars', () => {
     expect(vars['--accent']).toBe('0 100% 64%')
     expect(vars['--text']).toBe('0 0% 100%')
     expect(vars['--bg']).toBe('0 0% 7%')
-    expect(vars['--danger']).toBe('0 100% 50%')
+    expect(vars['--danger']).toBe('0 100% 63%')
   })
 })
 

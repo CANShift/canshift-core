@@ -7,6 +7,8 @@ export interface DesignTokens {
     surface: string
     surface2: string
     border: string
+    ruleHair: string
+    track: string
     primary: string
     primaryForeground: string
     secondary: string
@@ -14,6 +16,7 @@ export interface DesignTokens {
     accent: string
     accentForeground: string
     accentDim: string
+    selectedBg: string
     destructive: string
     destructiveForeground: string
     text: string
@@ -112,6 +115,8 @@ export const DARK_TOKENS = {
     surface: '#1F1F1F',
     surface2: '#292929',
     border: '#333333',
+    ruleHair: '#262323',
+    track: '#222222',
     primary: '#FF4747',
     primaryForeground: '#FFFFFF',
     secondary: '#292929',
@@ -119,7 +124,8 @@ export const DARK_TOKENS = {
     accent: '#FF4747',
     accentForeground: '#FFFFFF',
     accentDim: '#1A0808',
-    destructive: '#FF0000',
+    selectedBg: '#1A1717',
+    destructive: '#FF4747',
     destructiveForeground: '#FFFFFF',
     text: '#FFFFFF',
     textDim: '#BABABA',
@@ -128,7 +134,7 @@ export const DARK_TOKENS = {
     successBg: '#1A3A1A',
     successBorder: '#336633',
     warning: '#FF8800',
-    danger: '#FF0000',
+    danger: '#FF4444',
     statusDanger: '#E03030',
     statusDangerDim: '#3A1A1A',
     scrim: '#000000',
@@ -194,6 +200,8 @@ export const COLOR_KEY_TO_CSS_VAR: Record<keyof DesignTokens['colors'], string> 
   surface: '--surface',
   surface2: '--surface-2',
   border: '--border',
+  ruleHair: '--rule-hair',
+  track: '--track',
   primary: '--primary',
   primaryForeground: '--primary-foreground',
   secondary: '--secondary',
@@ -201,6 +209,7 @@ export const COLOR_KEY_TO_CSS_VAR: Record<keyof DesignTokens['colors'], string> 
   accent: '--accent',
   accentForeground: '--accent-foreground',
   accentDim: '--accent-dim',
+  selectedBg: '--selected-bg',
   destructive: '--destructive',
   destructiveForeground: '--destructive-foreground',
   text: '--text',
