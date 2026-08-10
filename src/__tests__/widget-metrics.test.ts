@@ -6,6 +6,11 @@ import {
   widgetStaleTextColor,
   WIDGET_FONT_CLAMP,
   VALUE_FRAC_FONT_RATIO,
+  GEAR_FONT_RATIO,
+  LABEL_FONT_RATIO,
+  TIMER_FONT_BREAKPOINTS,
+  GAUGE_VALUE_FONT_BREAKPOINTS,
+  ratioScale,
   VALUE_UNIT_FONT_SIZE,
   WIDGET_TOP_RULE,
   valueUnitFontSize,
@@ -78,7 +83,7 @@ describe('shared value-cluster rules', () => {
     expect(WIDGET_FONT_CLAMP).toEqual({ min: 12, max: 48 })
   })
   it('pins int/frac split at 70% and 12px unit font', () => {
-    expect(VALUE_FRAC_FONT_RATIO).toBe(0.7)
+    expect(ratioScale(VALUE_FRAC_FONT_RATIO)).toBe(0.7)
     expect(VALUE_UNIT_FONT_SIZE).toBe(12)
   })
   it('pins the stale placeholder "--"', () => {
@@ -335,5 +340,61 @@ describe('gaugeArcPath', () => {
       GAUGE_ARC.rotationDeg + pct * GAUGE_ARC.sweepDeg
     )
     expect(fromPct.startsWith('M 21.72 78.28 A 40 40 0')).toBe(true)
+  })
+})
+
+describe('every exported ratio constant is read by the function it names', () => {
+  const applyRatio = (value: number, r: { numerator: number; denominator: number }): number =>
+    Math.trunc((value * r.numerator) / r.denominator)
+
+  const clamp = (size: number): number =>
+    Math.min(WIDGET_FONT_CLAMP.max, Math.max(WIDGET_FONT_CLAMP.min, size))
+
+  const BOXES: [number, number][] = [
+    [40, 30],
+    [120, 90],
+    [200, 400],
+    [200, 100],
+    [100, 300],
+    [77, 61],
+  ]
+
+  it('widgetFracFontSize derives from VALUE_FRAC_FONT_RATIO, not a second hardcoded pair', () => {
+    for (const size of [20, 33, 48, 100]) {
+      expect(widgetFracFontSize(size)).toBe(
+        Math.max(WIDGET_FONT_CLAMP.min, applyRatio(size, VALUE_FRAC_FONT_RATIO))
+      )
+    }
+  })
+
+  it('labelFontSize derives from LABEL_FONT_RATIO on both axes', () => {
+    for (const [w, h] of BOXES) {
+      const expected = Math.min(
+        applyRatio(h, LABEL_FONT_RATIO.height),
+        applyRatio(w, LABEL_FONT_RATIO.width)
+      )
+      expect(labelFontSize(w, h)).toBe(clamp(expected))
+    }
+  })
+
+  it('gearFontSize derives from GEAR_FONT_RATIO on both axes', () => {
+    for (const [w, h] of BOXES) {
+      const expected = Math.min(
+        applyRatio(h, GEAR_FONT_RATIO.height),
+        applyRatio(w, GEAR_FONT_RATIO.width)
+      )
+      expect(gearFontSize(w, h)).toBe(clamp(expected))
+    }
+  })
+
+  it('label and gear differ only by their ratios, so the constants are what drive them', () => {
+    expect(labelFontSize(60, 60)).not.toBe(gearFontSize(60, 60))
+  })
+
+  it('the breakpoint fallback is the table terminal, not a second literal', () => {
+    const lastGauge = GAUGE_VALUE_FONT_BREAKPOINTS[GAUGE_VALUE_FONT_BREAKPOINTS.length - 1]
+    const lastTimer = TIMER_FONT_BREAKPOINTS[TIMER_FONT_BREAKPOINTS.length - 1]
+    expect(gaugeValueFontSize(-1)).toBe(lastGauge?.size)
+    expect(timerFontSize(-1)).toBe(lastTimer?.size)
   })
 })

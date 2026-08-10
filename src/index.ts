@@ -257,6 +257,7 @@ export {
   widgetStaleTextColor,
   WIDGET_FONT_CLAMP,
   VALUE_FRAC_FONT_RATIO,
+  ratioScale,
   VALUE_UNIT_FONT_SIZE,
   STALE_PLACEHOLDER,
   widgetFracFontSize,
