@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { isForbiddenKey } from '../wire/keymap.js'
+import { stripForbiddenKeys } from '../wire/keymap.js'
 
 import {
   BoardProfileWireSchema,
@@ -35,22 +35,12 @@ export type BoardProfileResult =
   | { kind: 'not_an_object'; payload: unknown }
   | { kind: 'unsupported_blob_version'; blobVersion: number; supported: number }
   | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
+  | { kind: 'not_a_board_profile'; magic: unknown }
 
 const asPlainObject = (value: unknown): Record<string, unknown> | null =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : null
-
-const stripForbiddenKeys = (key: string, value: unknown): unknown =>
-  isForbiddenKey(key) ? undefined : value
-
-const badMagicIssue: z.core.$ZodIssue[] = [
-  {
-    code: 'custom' as const,
-    path: ['magic'],
-    message: `not a CANShift board profile blob (expected magic "${BOARD_PROFILE_MAGIC}")`,
-  },
-]
 
 export const serializeBoardProfile = (profile: BoardProfile): string => {
   const validated = BoardProfileWireSchema.parse(boardProfileToWire(profile))
@@ -76,7 +66,7 @@ export const parseBoardProfile = (raw: string): BoardProfileResult => {
     return { kind: 'not_an_object', payload: parsed }
   }
   if (record.magic !== BOARD_PROFILE_MAGIC) {
-    return { kind: 'wrong_shape', issues: badMagicIssue }
+    return { kind: 'not_a_board_profile', magic: record.magic }
   }
   if (
     typeof record.formatVersion === 'number' &&

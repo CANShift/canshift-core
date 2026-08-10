@@ -15,6 +15,20 @@ Shared TypeScript contracts for the CANShift ecosystem (org: github.com/CANShift
 - Publishing: tag `vX.Y.Z` → the publish workflow ships to npm with provenance. npm version is independent from `CURRENT_SCHEMA_VERSION`.
 - Consumers (tuner, mobile) install from npm — after a publish they bump their dependency.
 
+## Code shape
+
+Non-negotiable. Reviewed on every PR, ahead of feature count.
+
+- Guard clauses first. Nesting depth 2 max — a third level means extract a named function.
+- One `try` per function. Never a `try` inside a `try`, a `catch` or a `finally`. No empty catch, no catch that only logs, no wrapper that rethrows unchanged.
+- Errors are typed — an error class or a discriminated Result union. No stringly-typed catch funnel, no `err.message` sniffing, no raw internal message reaching a consumer.
+- Chained `else if` and `kind === 'a' ? … : kind === 'b' ? …` are a union that lost its type. Use a `Record<Kind, …>` lookup table.
+- ~30 lines per function, ~300 per file. Past that, split before adding.
+- Third copy gets extracted. Cross-file boilerplate (JSON envelope parsing, key mapping, hex/colour conversion, error→string) lives in one shared helper under `src/wire/` or `src/colors/` and is imported, never re-typed.
+- An `index.ts` may only re-export. An `index.ts` containing a declaration is a bug.
+- A constant must be read by the code it names. An exported constant nothing reads — or that duplicates a number the function hardcodes — is a bug, not documentation.
+- CI gates must cover every file extension in the repo. A green check that silently skipped files is a broken gate.
+
 ## Workflow
 
 - Branch `type/short-description`; Conventional Commits, subject only.

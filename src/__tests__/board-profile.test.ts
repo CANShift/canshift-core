@@ -106,11 +106,11 @@ describe('parseBoardProfile rejection paths', () => {
     expect(parseBoardProfile('[1,2]').kind).toBe('not_an_object')
   })
 
-  it('flags a blob with the wrong magic as wrong_shape', () => {
+  it('tells "wrong file type" apart from "malformed file"', () => {
     const result = parseBoardProfile(JSON.stringify({ magic: 'nope', profile: {} }))
-    expect(result.kind).toBe('wrong_shape')
-    if (result.kind === 'wrong_shape') {
-      expect(result.issues[0]?.path).toEqual(['magic'])
+    expect(result.kind).toBe('not_a_board_profile')
+    if (result.kind === 'not_a_board_profile') {
+      expect(result.magic).toBe('nope')
     }
   })
 

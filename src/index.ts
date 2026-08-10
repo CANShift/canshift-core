@@ -311,11 +311,13 @@ export { THEME_PRESETS, themePresetById } from './theme-presets.js'
 
 export {
   BUILTIN_MIGRATIONS,
+  MigrationError,
   migrateConfig,
   validateMigrationChain,
 } from './migrations/migration-runner.js'
 export type {
   Migration,
+  MigrationErrorCode,
   MigrationFn,
   MigrationRegistry,
   MigrationResult,

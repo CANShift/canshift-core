@@ -887,7 +887,8 @@ describe('parseDeviceConfig — untrusted wire input', () => {
     const raw =
       '{"can_speed_kbps":500,"twai_tx_pin":22,"twai_rx_pin":21,"__proto__":{"polluted":true}}'
     const result = parseDeviceConfig(raw)
-    expect(result.kind).toBe('wrong_shape')
+    expect(result.kind).toBe('forbidden_key')
+    if (result.kind === 'forbidden_key') expect(result.key).toBe('__proto__')
     expect(({} as Record<string, unknown>).polluted).toBeUndefined()
   })
 })
@@ -1153,7 +1154,8 @@ describe('parseInputBindings — untrusted wire input', () => {
   it('does not pollute Object.prototype via a __proto__ wire key', () => {
     const raw = `{"input_bindings":[${JSON.stringify(validBinding)}],"__proto__":{"polluted":true}}`
     const result = parseInputBindings(raw)
-    expect(result.kind).toBe('wrong_shape')
+    expect(result.kind).toBe('forbidden_key')
+    if (result.kind === 'forbidden_key') expect(result.key).toBe('__proto__')
     expect(({} as Record<string, unknown>).polluted).toBeUndefined()
   })
 })

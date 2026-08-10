@@ -302,23 +302,10 @@ export const compileExpr = (expr: string): ExprFn | null => {
 }
 
 export const evalExprChecked = (expr: string, ctx: EvalContext): number | null => {
-  try {
-    const fn = compileExpr(expr)
-    if (!fn) return null
-    const result = fn(ctx)
-    return Number.isFinite(result) ? result : null
-  } catch {
-    return null
-  }
+  const fn = compileExpr(expr)
+  if (!fn) return null
+  const result = fn(ctx)
+  return Number.isFinite(result) ? result : null
 }
 
-export const evalExpr = (expr: string, ctx: EvalContext): number => {
-  try {
-    const fn = compileExpr(expr)
-    if (!fn) return 0
-    const result = fn(ctx)
-    return Number.isFinite(result) ? result : 0
-  } catch {
-    return 0
-  }
-}
+export const evalExpr = (expr: string, ctx: EvalContext): number => evalExprChecked(expr, ctx) ?? 0
