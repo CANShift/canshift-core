@@ -3,6 +3,7 @@ import { MAX_EXPR_LENGTH } from '../constants/validation.js'
 export interface EvalContext {
   v: number
   bytes: readonly number[]
+  refs?: ReadonlyMap<number, number>
 }
 
 interface Token {
@@ -270,6 +271,11 @@ const parsePrimary = (s: ParseState): ExprFn | null => {
       s.pos++
       return (c) => readByte(c, idx)
     }
+    if (/^ID\d+$/i.test(t.text)) {
+      const targetId = parseInt(t.text.slice(2), 10)
+      s.pos++
+      return (c) => c.refs?.get(targetId) ?? NaN
+    }
     if (FN_NAMES.has(t.text)) {
       s.pos++
       if (!eat(s, '(')) return null
@@ -293,6 +299,17 @@ export const compileExpr = (expr: string): ExprFn | null => {
   const root = parseOrExpr(state)
   if (root === null || state.pos !== tokens.length) return null
   return root
+}
+
+export const evalExprChecked = (expr: string, ctx: EvalContext): number | null => {
+  try {
+    const fn = compileExpr(expr)
+    if (!fn) return null
+    const result = fn(ctx)
+    return Number.isFinite(result) ? result : null
+  } catch {
+    return null
+  }
 }
 
 export const evalExpr = (expr: string, ctx: EvalContext): number => {

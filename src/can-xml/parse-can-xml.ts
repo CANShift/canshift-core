@@ -108,13 +108,6 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
       const unit = va.units ?? ''
 
       const conv = parseConversion(va.conversion)
-      if (conv.kind === 'cross-signal') {
-        warnings.push(
-          `Cross-signal expression "${va.conversion ?? ''}" on "${name}" (frame ${canFrameId}) — deferred to v2`
-        )
-        valueIndex++
-        continue
-      }
       if (conv.kind === 'invalid') {
         warnings.push(
           `Skipped unsupported conversion "${va.conversion ?? ''}" on "${name}" (frame ${canFrameId})`
@@ -127,6 +120,7 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
       const offset = conv.kind === 'linear' ? conv.offset : 0
       const bitShift = conv.kind === 'linear' ? conv.bitShift : null
       const exprText = conv.kind === 'expr' ? conv.expr : undefined
+      const exprRefs = conv.kind === 'expr' && conv.refs.length > 0 ? conv.refs : undefined
 
       const bitField =
         bitShift === null ? null : resolveBitField(bitShift, startByte, byteLength, bigEndian)
@@ -167,6 +161,7 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
         timeoutMs,
         ...(bitMask !== undefined ? { bitMask } : {}),
         ...(exprText !== undefined ? { expr: exprText } : {}),
+        ...(exprRefs !== undefined ? { exprRefs } : {}),
       }
 
       const parsed = SignalDefSchema.safeParse(candidate)

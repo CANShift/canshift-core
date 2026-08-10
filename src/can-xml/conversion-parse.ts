@@ -134,25 +134,26 @@ const matchBitExtract = (expr: string): Conversion | null => {
 interface ExprEmission {
   kind: 'expr'
   expr: string
+  refs: number[]
 }
 
 interface ParseRejection {
-  kind: 'cross-signal' | 'invalid'
+  kind: 'invalid'
 }
 
 type ParseConversionResult = Conversion | ExprEmission | ParseRejection
 
-const CROSS_SIGNAL_REF_RE = /\bID\d+\b/i
+const CROSS_SIGNAL_REF_RE = /\bID(\d+)\b/gi
 
 const tryEmitExpr = (raw: string): ExprEmission | ParseRejection => {
   const normalised = normaliseExpr(raw)
   if (normalised === null) return { kind: 'invalid' }
   const cleaned = normalised.replace(/(?<![<>=!])=(?!=)/g, '==')
-  if (CROSS_SIGNAL_REF_RE.test(cleaned)) return { kind: 'cross-signal' }
   if (!SAFE_EXPR_REGEX.test(cleaned)) return { kind: 'invalid' }
   const compact = cleaned.replace(/\s+/g, ' ').trim()
   if (compact.length === 0 || compact.length > MAX_EXPR_LENGTH) return { kind: 'invalid' }
-  return { kind: 'expr', expr: compact }
+  const refs = [...compact.matchAll(CROSS_SIGNAL_REF_RE)].map((m) => parseInt(m[1] ?? '', 10))
+  return { kind: 'expr', expr: compact, refs: [...new Set(refs)] }
 }
 
 const parseConversion = (expr: string | undefined): ParseConversionResult => {
