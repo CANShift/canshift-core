@@ -325,13 +325,28 @@ describe('conversion parsing', () => {
     expect(warnings).toHaveLength(0)
   })
 
-  it('rejects V+ID formula with a quieter cross-signal warning', () => {
+  it('keeps a V+ID formula and records the signal it depends on', () => {
     const { signals, warnings } = parseCanXml(
       simpleXml('<value name="r" offset="0" length="2" conversion="V+ID200-74.3"/>')
     )
-    expect(signals).toHaveLength(0)
-    expect(warnings).toHaveLength(1)
-    expect(warnings[0]).toMatch(/Cross-signal/)
+    expect(warnings).toHaveLength(0)
+    expect(signals[0]?.expr).toBe('V+ID200-74.3')
+    expect(signals[0]?.exprRefs).toEqual([200])
+  })
+
+  it('deduplicates and collects every referenced signal', () => {
+    const { signals } = parseCanXml(
+      simpleXml('<value name="s" offset="0" length="2" conversion="ID481||ID482||ID481"/>')
+    )
+    expect(signals[0]?.exprRefs).toEqual([481, 482])
+  })
+
+  it('leaves exprRefs unset for an expression that references nothing', () => {
+    const { signals } = parseCanXml(
+      simpleXml('<value name="s" offset="0" length="2" conversion="V*V"/>')
+    )
+    expect(signals[0]?.expr).toBe('V*V')
+    expect(signals[0]?.exprRefs).toBeUndefined()
   })
 })
 

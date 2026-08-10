@@ -358,7 +358,7 @@ export { ECU_PROFILES, DEFAULT_PROFILE_ID, MAXXECU_SIGNAL_UNITS } from './ecu-pr
 export type { ParseCanXmlResult } from './can-xml/parse-can-xml.js'
 export { parseCanXml } from './can-xml/parse-can-xml.js'
 export type { EvalContext } from './can-xml/eval-expr.js'
-export { compileExpr, evalExpr } from './can-xml/eval-expr.js'
+export { compileExpr, evalExpr, evalExprChecked } from './can-xml/eval-expr.js'
 export {
   PROJECT_FILE_VERSION,
   PROJECT_NAME_MAX,

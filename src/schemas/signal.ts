@@ -10,7 +10,12 @@ import {
   MAX_RAMP_STOPS,
   STRING_CAPS,
 } from '../constants/firmware-caps.js'
-import { MAX_EXPR_LENGTH, MAX_SIGNAL_TIMEOUT_MS, SAFE_EXPR_REGEX } from '../constants/validation.js'
+import {
+  MAX_EXPR_LENGTH,
+  MAX_EXPR_REFS,
+  MAX_SIGNAL_TIMEOUT_MS,
+  SAFE_EXPR_REGEX,
+} from '../constants/validation.js'
 
 const CAN_FRAME_ID_REGEX = /^0[xX][0-9a-fA-F]{1,8}$/
 
@@ -97,6 +102,10 @@ export const SignalDefSchema = z
       .string()
       .max(MAX_EXPR_LENGTH, `expr cannot exceed ${String(MAX_EXPR_LENGTH)} chars`)
       .regex(SAFE_EXPR_REGEX, 'expr contains disallowed characters')
+      .optional(),
+    exprRefs: z
+      .array(z.number().int().nonnegative())
+      .max(MAX_EXPR_REFS, `exprRefs cannot exceed ${String(MAX_EXPR_REFS)} entries`)
       .optional(),
     unit: z.string().max(STRING_CAPS.SIGNAL_UNIT),
     min: z.number(),

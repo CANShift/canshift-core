@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { evalExpr } from '../can-xml/eval-expr.js'
+import { evalExpr, evalExprChecked } from '../can-xml/eval-expr.js'
 
 const ctx = (v: number, bytes: number[] = []) => ({ v, bytes })
 
@@ -144,5 +144,33 @@ describe('evalExpr — untrusted input hardening (#1654)', () => {
   it('returns 0 (no throw) for malformed input', () => {
     expect(evalExpr('((((', ctx(0))).toBe(0)
     expect(evalExpr('@#$%', ctx(0))).toBe(0)
+  })
+})
+
+describe('cross-signal references', () => {
+  it('resolves IDnnn from the refs map', () => {
+    const refs = new Map([[37, 100]])
+    expect(evalExprChecked('ID37-(V*0.25)', { v: 40, bytes: [], refs })).toBeCloseTo(90, 4)
+  })
+
+  it('yields null when a referenced signal is absent, never a substituted zero', () => {
+    expect(evalExprChecked('ID37-(V*0.25)', { v: 40, bytes: [], refs: new Map() })).toBeNull()
+  })
+
+  it('yields null when the context carries no refs at all', () => {
+    expect(evalExprChecked('ID409', { v: 1, bytes: [] })).toBeNull()
+  })
+
+  it('propagates a missing reference through a boolean or', () => {
+    const refs = new Map([
+      [481, 0],
+      [482, 0],
+    ])
+    expect(evalExprChecked('ID481||ID482||ID483', { v: 0, bytes: [], refs })).toBeNull()
+  })
+
+  it('does not divide by a substituted zero', () => {
+    const refs = new Map([[301, 5]])
+    expect(evalExprChecked('V*0.25/ID409-ID301', { v: 8, bytes: [], refs })).toBeNull()
   })
 })

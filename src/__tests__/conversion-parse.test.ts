@@ -55,7 +55,7 @@ describe('parseConversion — linear detection (compileExpr-backed)', () => {
 
 describe('parseConversion — non-linear / expr emission', () => {
   it('emits V*V as an expression (not mis-detected as linear)', () => {
-    expect(parseConversion('V*V')).toEqual({ kind: 'expr', expr: 'V*V' })
+    expect(parseConversion('V*V')).toEqual({ kind: 'expr', expr: 'V*V', refs: [] })
   })
 
   it('emits byte-ref expressions instead of mis-detecting them as a zero scale', () => {
