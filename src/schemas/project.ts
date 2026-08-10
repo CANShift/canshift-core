@@ -7,7 +7,7 @@ import { SemVerSchema } from './common.js'
 export const PROJECT_FILE_VERSION = SemVerSchema.parse('1.0.0')
 export const PROJECT_NAME_MAX = 80
 
-const IsoDateTimeSchema = z.string().datetime({ offset: true })
+const IsoDateTimeSchema = z.iso.datetime({ offset: true })
 
 export const ProjectMetaSchema = z
   .object({

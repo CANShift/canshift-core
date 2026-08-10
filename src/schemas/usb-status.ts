@@ -14,7 +14,7 @@ export const UsbStatusWireSchema = z
     is_day: ZeroOrOneSchema,
     board_id: CappedStringSchema.optional(),
   })
-  .passthrough()
+  .loose()
 
 export type UsbStatusWire = z.infer<typeof UsbStatusWireSchema>
 
@@ -39,7 +39,7 @@ export type UsbStatusResult =
   | { kind: 'ok'; status: UsbStatus }
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export const parseUsbStatus = (raw: string): UsbStatusResult => {
   let parsed: unknown

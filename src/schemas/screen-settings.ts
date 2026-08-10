@@ -32,7 +32,7 @@ export type ScreenSettingsResult =
   | { kind: 'ok'; settings: ScreenSettings }
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export const parseSettings = (raw: string): ScreenSettingsResult => {
   let parsed: unknown

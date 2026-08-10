@@ -54,7 +54,7 @@ export const ColorRampSchema = z
 
 export const SignalByteLengthSchema = z.union(
   [z.literal(1), z.literal(2), z.literal(3), z.literal(4)],
-  { errorMap: () => ({ message: 'must be 1, 2, 3 or 4 bytes' }) }
+  { error: 'must be 1, 2, 3 or 4 bytes' }
 )
 
 export type SignalByteLength = z.infer<typeof SignalByteLengthSchema>
@@ -91,8 +91,8 @@ export const SignalDefSchema = z
         'bitMask must fit in 8 bits (≤ 0xFF, firmware stores uint8_t)'
       )
       .optional(),
-    scale: z.number().finite(),
-    offset: z.number().finite(),
+    scale: z.number(),
+    offset: z.number(),
     expr: z
       .string()
       .max(MAX_EXPR_LENGTH, `expr cannot exceed ${String(MAX_EXPR_LENGTH)} chars`)
@@ -131,7 +131,7 @@ export const SignalDefSchema = z
       if (v === undefined) continue
       if (v < s.min || v > s.max) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom' as const,
           message: `${key} (${v.toString()}) must be within [min=${s.min.toString()}, max=${s.max.toString()}]`,
           path: [key],
         })
@@ -144,7 +144,7 @@ export const SignalDefSchema = z
       s.warningLevel === s.dangerLevel
     ) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom' as const,
         message:
           'warningLevel and dangerLevel must differ to form a monotonic ramp: ' +
           'use warningLevel < dangerLevel for high-side, ' +
@@ -159,7 +159,7 @@ export const SignalDefSchema = z
       s.highWarningLevel > s.highDangerLevel
     ) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom' as const,
         message: 'highWarningLevel must be <= highDangerLevel (high-side ramp)',
         path: ['highDangerLevel'],
       })
@@ -174,7 +174,7 @@ export const SignalDefSchema = z
       s.warningLevel >= s.highWarningLevel
     ) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom' as const,
         message: 'low-side warningLevel must be below highWarningLevel',
         path: ['highWarningLevel'],
       })

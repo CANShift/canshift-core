@@ -13,7 +13,7 @@ export const BleStatusWireSchema = z
     can: ZeroOrOneSchema.optional(),
     is_day: ZeroOrOneSchema.optional(),
   })
-  .passthrough()
+  .loose()
 
 export type BleStatusWire = z.infer<typeof BleStatusWireSchema>
 
@@ -37,7 +37,7 @@ export type BleStatusResult =
   | { kind: 'ok'; status: BleStatus }
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export const parseBleStatus = (raw: string): BleStatusResult => {
   let parsed: unknown

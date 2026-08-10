@@ -34,7 +34,7 @@ export type CanshiftFileResult =
   | { kind: 'unsupported_format_version'; fileVersion: number; supported: number }
   | { kind: 'schema_too_new'; fileSchemaVersion: string; supported: string }
   | { kind: 'migration_failed'; reason: string }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export type CanshiftFileError = Exclude<CanshiftFileResult, { kind: 'ok' }>
 
@@ -126,7 +126,7 @@ export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
   }
 }
 
-const summarizeIssues = (issues: z.ZodIssue[]): string =>
+const summarizeIssues = (issues: z.core.$ZodIssue[]): string =>
   issues
     .slice(0, 3)
     .map((issue) => {
