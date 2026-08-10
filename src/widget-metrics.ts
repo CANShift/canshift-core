@@ -7,8 +7,42 @@ const asHex = (value: string): HexColor => value as HexColor
 
 const clamp01 = (value: number): number => (value < 0 ? 0 : value > 1 ? 1 : value)
 
+export interface Ratio {
+  numerator: number
+  denominator: number
+}
+
 const truncDiv = (value: number, numerator: number, denominator: number): number =>
   Math.trunc((value * numerator) / denominator)
+
+const applyRatio = (value: number, ratio: Ratio): number =>
+  truncDiv(value, ratio.numerator, ratio.denominator)
+
+export const ratioScale = (ratio: Ratio): number => ratio.numerator / ratio.denominator
+
+const clampFont = (size: number): number => {
+  if (size < WIDGET_FONT_CLAMP.min) return WIDGET_FONT_CLAMP.min
+  if (size > WIDGET_FONT_CLAMP.max) return WIDGET_FONT_CLAMP.max
+  return size
+}
+
+interface FontBreakpoint {
+  minHeight: number
+  size: number
+}
+
+const sizeForHeight = (breakpoints: readonly FontBreakpoint[], height: number): number => {
+  for (const bp of breakpoints) {
+    if (height >= bp.minHeight) return bp.size
+  }
+  return breakpoints[breakpoints.length - 1]?.size ?? WIDGET_FONT_CLAMP.min
+}
+
+const fontSizeFromRatios = (
+  width: number,
+  height: number,
+  ratios: { height: Ratio; width: Ratio }
+): number => clampFont(Math.min(applyRatio(height, ratios.height), applyRatio(width, ratios.width)))
 
 export const WIDGET_ZONE_COLORS = {
   normal: asHex('#00CC44'),
@@ -33,7 +67,7 @@ export const widgetStaleTextColor = (isDayMode: boolean): HexColor =>
   isDayMode ? WIDGET_STALE_TEXT_COLORS.day : WIDGET_STALE_TEXT_COLORS.night
 
 export const WIDGET_FONT_CLAMP = { min: 12, max: 48 } as const
-export const VALUE_FRAC_FONT_RATIO = 0.7
+export const VALUE_FRAC_FONT_RATIO = { numerator: 7, denominator: 10 } as const
 export const VALUE_UNIT_FONT_SIZE = 12
 export const VALUE_UNIT_RATIO = { numerator: 1, denominator: 4 } as const
 export const VALUE_UNIT_FONT_MIN = 10
@@ -45,7 +79,7 @@ export const valueUnitFontSize = (valueFontSize: number): number => {
 }
 
 export const widgetFracFontSize = (intFontSize: number): number => {
-  const frac = truncDiv(intFontSize, 7, 10)
+  const frac = applyRatio(intFontSize, VALUE_FRAC_FONT_RATIO)
   return frac < WIDGET_FONT_CLAMP.min ? WIDGET_FONT_CLAMP.min : frac
 }
 
@@ -86,12 +120,8 @@ export const GAUGE_VALUE_FONT_BREAKPOINTS = [
   { minHeight: 0, size: 20 },
 ] as const
 
-export const gaugeValueFontSize = (height: number): number => {
-  for (const bp of GAUGE_VALUE_FONT_BREAKPOINTS) {
-    if (height >= bp.minHeight) return bp.size
-  }
-  return 20
-}
+export const gaugeValueFontSize = (height: number): number =>
+  sizeForHeight(GAUGE_VALUE_FONT_BREAKPOINTS, height)
 
 export const gaugeArcStrokeWidth = (width: number, height: number): number => {
   const radius = Math.min(width * GAUGE_ARC.strokeWidthRatioW, height * GAUGE_ARC.strokeWidthRatioH)
@@ -135,27 +165,21 @@ const GAUGE_GRADIENT_RAMP: ColorRamp = {
 export const gaugeGradientColorAt = (pct: number): HexColor =>
   colorAtValue(GAUGE_GRADIENT_RAMP, clamp01(pct))
 
-export const LABEL_FONT_RATIO = { height: 0.65, width: 0.52 } as const
+export const LABEL_FONT_RATIO = {
+  height: { numerator: 65, denominator: 100 },
+  width: { numerator: 52, denominator: 100 },
+} as const
 
-export const labelFontSize = (width: number, height: number): number => {
-  const byHeight = truncDiv(height, 65, 100)
-  const byWidth = truncDiv(width, 52, 100)
-  const size = Math.min(byHeight, byWidth)
-  if (size < WIDGET_FONT_CLAMP.min) return WIDGET_FONT_CLAMP.min
-  if (size > WIDGET_FONT_CLAMP.max) return WIDGET_FONT_CLAMP.max
-  return size
-}
+export const labelFontSize = (width: number, height: number): number =>
+  fontSizeFromRatios(width, height, LABEL_FONT_RATIO)
 
-export const GEAR_FONT_RATIO = { height: 0.85, width: 0.72 } as const
+export const GEAR_FONT_RATIO = {
+  height: { numerator: 85, denominator: 100 },
+  width: { numerator: 72, denominator: 100 },
+} as const
 
-export const gearFontSize = (width: number, height: number): number => {
-  const byHeight = truncDiv(height, 85, 100)
-  const byWidth = truncDiv(width, 72, 100)
-  const size = Math.min(byHeight, byWidth)
-  if (size < WIDGET_FONT_CLAMP.min) return WIDGET_FONT_CLAMP.min
-  if (size > WIDGET_FONT_CLAMP.max) return WIDGET_FONT_CLAMP.max
-  return size
-}
+export const gearFontSize = (width: number, height: number): number =>
+  fontSizeFromRatios(width, height, GEAR_FONT_RATIO)
 
 export const GEAR_NEUTRAL_GLYPH = 'N'
 export const GEAR_REVERSE_GLYPH = 'R'
@@ -193,12 +217,8 @@ export const TIMER_FONT_BREAKPOINTS = [
   { minHeight: 0, size: 20 },
 ] as const
 
-export const timerFontSize = (height: number): number => {
-  for (const bp of TIMER_FONT_BREAKPOINTS) {
-    if (height >= bp.minHeight) return bp.size
-  }
-  return 20
-}
+export const timerFontSize = (height: number): number =>
+  sizeForHeight(TIMER_FONT_BREAKPOINTS, height)
 
 const pad = (value: number, width: number): string => String(value).padStart(width, '0')
 
