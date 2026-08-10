@@ -1,3 +1,5 @@
 export { BUILTIN_MIGRATIONS } from './registry.js'
 export { migrateConfig, validateMigrationChain } from './runner.js'
+export { MigrationError } from './errors.js'
+export type { MigrationErrorCode } from './errors.js'
 export type { Migration, MigrationFn, MigrationRegistry, MigrationResult } from './types.js'

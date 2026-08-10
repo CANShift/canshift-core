@@ -3,7 +3,8 @@ import { z } from 'zod'
 import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
 import { migrateConfig } from '../migrations/migration-runner.js'
 import { isSemverGreater } from '../migrations/semver.js'
-import { isForbiddenKey } from '../wire/keymap.js'
+import { stripForbiddenKeys } from '../wire/keymap.js'
+import { MigrationError, type MigrationErrorCode } from '../migrations/errors.js'
 
 import { ProjectSchema, type Project } from './project.js'
 
@@ -33,7 +34,7 @@ export type CanshiftFileResult =
   | { kind: 'not_a_canshift_file'; payload: unknown }
   | { kind: 'unsupported_format_version'; fileVersion: number; supported: number }
   | { kind: 'schema_too_new'; fileSchemaVersion: string; supported: string }
-  | { kind: 'migration_failed'; reason: string }
+  | { kind: 'migration_failed'; code: MigrationErrorCode; reason: string }
   | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export type CanshiftFileError = Exclude<CanshiftFileResult, { kind: 'ok' }>
@@ -42,9 +43,6 @@ const asPlainObject = (value: unknown): Record<string, unknown> | null =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : null
-
-const stripForbiddenKeys = (key: string, value: unknown): unknown =>
-  isForbiddenKey(key) ? undefined : value
 
 export const serializeCanshiftFile = (project: Project): string => {
   const validated = ProjectSchema.parse(project)
@@ -107,7 +105,7 @@ export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
       const migrated = migrateConfig(dashboard, CURRENT_SCHEMA_VERSION)
       candidate = { ...project, dashboard: migrated.config }
     } catch (err) {
-      return { kind: 'migration_failed', reason: err instanceof Error ? err.message : String(err) }
+      return toMigrationFailure(err)
     }
   }
 
@@ -124,6 +122,29 @@ export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
         ? dashboardVersion
         : null,
   }
+}
+
+const toMigrationFailure = (err: unknown): CanshiftFileError => {
+  if (err instanceof MigrationError) {
+    return { kind: 'migration_failed', code: err.code, reason: err.message }
+  }
+  return {
+    kind: 'migration_failed',
+    code: 'registry_corrupt',
+    reason: err instanceof Error ? err.message : String(err),
+  }
+}
+
+const MIGRATION_FAILURE_COPY: Record<MigrationErrorCode, string> = {
+  downgrade:
+    'This project was saved by a newer version of CANShift and cannot be downgraded. Update CANShift to open it.',
+  invalid_input:
+    'The project’s dashboard is missing a usable schema version, so it cannot be upgraded.',
+  not_serializable: 'The project contains values that cannot be saved, so it cannot be upgraded.',
+  incomplete_chain:
+    'This project cannot be upgraded to the current schema — the upgrade path is missing a step. Please report this.',
+  registry_corrupt:
+    'The upgrade could not run because of a defect in CANShift. Please report this.',
 }
 
 const summarizeIssues = (issues: z.core.$ZodIssue[]): string =>
@@ -148,7 +169,7 @@ export const describeCanshiftFileError = (error: CanshiftFileError): string => {
     case 'schema_too_new':
       return `This project uses a newer dashboard schema (${error.fileSchemaVersion}) than this app supports (${error.supported}). Update CANShift to open it.`
     case 'migration_failed':
-      return `The project could not be upgraded to the current schema: ${error.reason}`
+      return MIGRATION_FAILURE_COPY[error.code]
     case 'wrong_shape':
       return `The project is malformed: ${summarizeIssues(error.issues)}`
   }

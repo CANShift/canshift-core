@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { CanSpeedKbpsSchema } from './signal.js'
-import { hasForbiddenKey, mapObjectKeys } from '../wire/keymap.js'
+import { findForbiddenKey, mapObjectKeys } from '../wire/keymap.js'
 
 const DEVICE_WIRE_TO_DOMAIN = {
   can_speed_kbps: 'canSpeedKbps',
@@ -90,6 +90,7 @@ export type DeviceConfigResult =
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
   | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
+  | { kind: 'forbidden_key'; key: string }
 
 export const parseDeviceConfig = (raw: string): DeviceConfigResult => {
   let parsed: unknown
@@ -101,8 +102,9 @@ export const parseDeviceConfig = (raw: string): DeviceConfigResult => {
   if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
     return { kind: 'not_an_object', payload: parsed }
   }
-  if (hasForbiddenKey(parsed)) {
-    return { kind: 'wrong_shape', issues: [] }
+  const forbidden = findForbiddenKey(parsed)
+  if (forbidden !== null) {
+    return { kind: 'forbidden_key', key: forbidden }
   }
   const result = DeviceConfigWireSchema.safeParse(parsed)
   if (!result.success) {

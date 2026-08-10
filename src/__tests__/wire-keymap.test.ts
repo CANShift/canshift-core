@@ -1,5 +1,5 @@
 import { mapObjectKeys } from '../wire/keymap.js'
-import { deepClone } from '../migrations/helpers.js'
+import { cloneAndStripForbiddenKeys } from '../migrations/helpers.js'
 
 describe('mapObjectKeys — prototype-pollution hardening', () => {
   it('renames mapped keys and passes through the rest', () => {
@@ -39,10 +39,10 @@ describe('mapObjectKeys — prototype-pollution hardening', () => {
   })
 })
 
-describe('deepClone — prototype-pollution hardening', () => {
+describe('cloneAndStripForbiddenKeys — prototype-pollution hardening', () => {
   it('clones nested data structurally', () => {
     const source = { a: 1, nested: { b: [2, 3] } }
-    const clone = deepClone(source)
+    const clone = cloneAndStripForbiddenKeys(source)
     expect(clone).toEqual(source)
     expect(clone.nested).not.toBe(source.nested)
   })
@@ -52,7 +52,7 @@ describe('deepClone — prototype-pollution hardening', () => {
       string,
       unknown
     >
-    const clone = deepClone(malicious)
+    const clone = cloneAndStripForbiddenKeys(malicious)
     expect(clone).toEqual({ keep: 1 })
     expect(({} as Record<string, unknown>).polluted).toBeUndefined()
     expect(Object.getPrototypeOf(clone)).toBe(Object.prototype)
