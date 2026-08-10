@@ -42,7 +42,7 @@ export type TrackTelemetryResult =
   | { kind: 'ok'; telemetry: TrackTelemetry }
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export const parseTrackTelemetry = (raw: string): TrackTelemetryResult => {
   let parsed: unknown

@@ -90,14 +90,14 @@ export const WidgetSchema = z
   .superRefine((w, ctx) => {
     if (w.type !== w.config.type) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom' as const,
         message: `widget type '${w.type}' does not match config type '${w.config.type}'`,
         path: ['config', 'type'],
       })
     }
     if (SIGNAL_CONSUMING_WIDGET_TYPES.has(w.type) && w.signal.length === 0) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom' as const,
         message: `signal must be a non-empty string for ${w.type} widgets`,
         path: ['signal'],
       })
@@ -106,14 +106,14 @@ export const WidgetSchema = z
     if (cfg.type === 'gauge') {
       if (cfg.minValue >= cfg.maxValue) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom' as const,
           message: 'gauge: minValue must be less than maxValue',
           path: ['config', 'maxValue'],
         })
       }
       if (cfg.dangerLevel < cfg.minValue || cfg.dangerLevel > cfg.maxValue) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom' as const,
           message: 'gauge: dangerLevel must be in [minValue, maxValue]',
           path: ['config', 'dangerLevel'],
         })
@@ -122,7 +122,7 @@ export const WidgetSchema = z
     if (cfg.type === 'button' && cfg.mode === 'cycle') {
       if (cfg.initialActiveIndex >= cfg.states.length) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom' as const,
           message: `initialActiveIndex (${String(cfg.initialActiveIndex)}) must be less than states.length (${String(cfg.states.length)})`,
           path: ['config', 'initialActiveIndex'],
         })

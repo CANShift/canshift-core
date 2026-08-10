@@ -29,7 +29,7 @@ export const TimerStateWireSchema = z
     sid: NonNegativeIntSchema,
     ver: NonNegativeIntSchema,
   })
-  .passthrough()
+  .loose()
 
 export type TimerStateWire = z.infer<typeof TimerStateWireSchema>
 
@@ -56,7 +56,7 @@ export const TimerLapWireSchema = z
     lap_ms: NonNegativeIntSchema,
     total_ms: NonNegativeIntSchema,
   })
-  .passthrough()
+  .loose()
 
 export type TimerLapWire = z.infer<typeof TimerLapWireSchema>
 
@@ -77,7 +77,7 @@ export const timerLapFromWire = (wire: TimerLapWire): TimerBleLap => ({
 type ParseFailure =
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export type TimerStateResult = { kind: 'ok'; state: TimerBleState } | ParseFailure
 

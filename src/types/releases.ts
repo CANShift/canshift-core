@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const ReleaseAssetSchema = z.object({
   name: z.string(),
   downloadUrl: z.string(),
-  sizeBytes: z.number().finite(),
+  sizeBytes: z.number(),
   contentType: z.string().optional(),
   digest: z.string().nullable().optional(),
 })

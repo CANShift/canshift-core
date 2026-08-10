@@ -30,7 +30,7 @@ const MapSwitchActionSchema = z
   .strict()
 
 const CanRawDataSchema = z
-  .string({ invalid_type_error: 'data must be a string' })
+  .string({ error: 'data must be a string' })
   .max(CAN_RAW_DATA_MAX_HEX_CHARS, {
     message: `data must be at most ${String(CAN_RAW_DATA_MAX_HEX_CHARS)} hex characters (8 bytes)`,
   })
@@ -44,7 +44,7 @@ const CanRawActionSchema = z
     frameId: z.number().int().min(0).max(CAN_29BIT_MAX),
     data: CanRawDataSchema,
     dataOff: CanRawDataSchema.optional(),
-    extended: z.boolean({ invalid_type_error: 'extended must be a boolean when set' }).optional(),
+    extended: z.boolean({ error: 'extended must be a boolean when set' }).optional(),
   })
   .strict()
 
@@ -80,7 +80,7 @@ export const ButtonActionSchema = z
   .superRefine((a, ctx) => {
     if (a.type === 'can_raw' && !a.extended && a.frameId > CAN_11BIT_MAX) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom' as const,
         path: ['frameId'],
         message: '11-bit frameId must be <= 0x7FF unless extended=true',
       })

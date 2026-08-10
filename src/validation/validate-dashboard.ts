@@ -18,12 +18,14 @@ export interface ValidateDashboardOptions {
 
 const TOPBAR_LAYOUT_ANY_SIGNAL = 'any'
 
-const formatPath = (path: readonly (string | number)[]): string => {
+const formatPath = (path: readonly PropertyKey[]): string => {
   if (path.length === 0) return ''
   let out = ''
   for (const seg of path) {
     if (typeof seg === 'number') {
       out += `[${String(seg)}]`
+    } else if (typeof seg === 'symbol') {
+      out += out.length === 0 ? seg.toString() : `.${seg.toString()}`
     } else {
       out += out.length === 0 ? seg : `.${seg}`
     }
@@ -31,12 +33,13 @@ const formatPath = (path: readonly (string | number)[]): string => {
   return out
 }
 
-const formatZodIssue = (issue: z.ZodIssue): string => {
+const formatZodIssue = (issue: z.core.$ZodIssue): string => {
   const path = formatPath(issue.path)
   return path.length === 0 ? issue.message : `${path}: ${issue.message}`
 }
 
-const formatZodIssues = (issues: readonly z.ZodIssue[]): string[] => issues.map(formatZodIssue)
+const formatZodIssues = (issues: readonly z.core.$ZodIssue[]): string[] =>
+  issues.map(formatZodIssue)
 
 const validateSignalCatalogIssues = (catalog: SignalConfig): string[] => {
   const errors: string[] = []

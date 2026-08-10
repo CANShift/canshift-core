@@ -34,7 +34,7 @@ export type BoardProfileResult =
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
   | { kind: 'unsupported_blob_version'; blobVersion: number; supported: number }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 const asPlainObject = (value: unknown): Record<string, unknown> | null =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -44,9 +44,9 @@ const asPlainObject = (value: unknown): Record<string, unknown> | null =>
 const stripForbiddenKeys = (key: string, value: unknown): unknown =>
   isForbiddenKey(key) ? undefined : value
 
-const badMagicIssue: z.ZodIssue[] = [
+const badMagicIssue: z.core.$ZodIssue[] = [
   {
-    code: z.ZodIssueCode.custom,
+    code: 'custom' as const,
     path: ['magic'],
     message: `not a CANShift board profile blob (expected magic "${BOARD_PROFILE_MAGIC}")`,
   },

@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { ButtonActionSchema } from './dashboard.js'
 import { Esp32InputGpioSchema } from './device.js'
 import { STRING_CAPS } from '../constants/firmware-caps.js'
-import { mapObjectKeys } from '../wire/keymap.js'
+import { hasForbiddenKey, mapObjectKeys } from '../wire/keymap.js'
 
 const BINDING_WIRE_TO_DOMAIN = { debounce_ms: 'debounceMs' } as const
 const BINDING_DOMAIN_TO_WIRE = { debounceMs: 'debounce_ms' } as const
@@ -109,7 +109,7 @@ export type InputBindingsResult =
   | { kind: 'ok'; config: InputBindingsConfig }
   | { kind: 'invalid_json'; raw: string }
   | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.ZodIssue[] }
+  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export const parseInputBindings = (raw: string): InputBindingsResult => {
   let parsed: unknown
@@ -120,6 +120,9 @@ export const parseInputBindings = (raw: string): InputBindingsResult => {
   }
   if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
     return { kind: 'not_an_object', payload: parsed }
+  }
+  if (hasForbiddenKey(parsed)) {
+    return { kind: 'wrong_shape', issues: [] }
   }
   const result = InputBindingsConfigWireSchema.safeParse(parsed)
   if (!result.success) {

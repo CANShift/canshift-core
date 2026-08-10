@@ -2,6 +2,8 @@ const FORBIDDEN_KEYS = new Set<string>(['__proto__', 'constructor', 'prototype']
 
 export const isForbiddenKey = (key: string): boolean => FORBIDDEN_KEYS.has(key)
 
+export const hasForbiddenKey = (value: object): boolean => Object.keys(value).some(isForbiddenKey)
+
 export const mapObjectKeys = <Source extends Record<string, unknown>>(
   source: Source,
   keyMap: Partial<Record<keyof Source, string>>
