@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { stripForbiddenKeys } from '../wire/keymap.js'
+import { isIntegerFormatVersion, parseJsonObject } from '../wire/parse-envelope.js'
 
 import {
   BoardProfileWireSchema,
@@ -37,11 +38,6 @@ export type BoardProfileResult =
   | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
   | { kind: 'not_a_board_profile'; magic: unknown }
 
-const asPlainObject = (value: unknown): Record<string, unknown> | null =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : null
-
 export const serializeBoardProfile = (profile: BoardProfile): string => {
   const validated = BoardProfileWireSchema.parse(boardProfileToWire(profile))
   const blob: BoardProfileBlob = {
@@ -54,22 +50,16 @@ export const serializeBoardProfile = (profile: BoardProfile): string => {
 }
 
 export const parseBoardProfile = (raw: string): BoardProfileResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw, stripForbiddenKeys)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
+  const json = parseJsonObject(raw, stripForbiddenKeys)
+  if (json.kind !== 'ok') return json
+  const parsed = json.value
+  const record = parsed as Record<string, unknown>
 
-  const record = asPlainObject(parsed)
-  if (record === null) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
   if (record.magic !== BOARD_PROFILE_MAGIC) {
     return { kind: 'not_a_board_profile', magic: record.magic }
   }
   if (
-    typeof record.formatVersion === 'number' &&
+    isIntegerFormatVersion(record.formatVersion) &&
     record.formatVersion > BOARD_PROFILE_FORMAT_VERSION
   ) {
     return {

@@ -311,6 +311,14 @@ export type { ThemePresetEntry } from './theme-presets.js'
 export { THEME_PRESETS, themePresetById } from './theme-presets.js'
 
 export {
+  describeWireParseFailure,
+  parseJsonObject,
+  parseUntrustedJsonObject,
+  parseWireJson,
+} from './wire/parse-envelope.js'
+export type { WireEnvelopeFailure, WireParseFailure } from './wire/parse-envelope.js'
+
+export {
   BUILTIN_MIGRATIONS,
   MigrationError,
   migrateConfig,

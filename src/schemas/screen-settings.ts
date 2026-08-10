@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 const BRIGHTNESS_MIN_PCT = 10
 const BRIGHTNESS_MAX_PCT = 100
@@ -28,25 +29,12 @@ export const SCREEN_SETTINGS_BOUNDS = {
   allowedRotations: ALLOWED_ROTATIONS,
 } as const
 
-export type ScreenSettingsResult =
-  | { kind: 'ok'; settings: ScreenSettings }
-  | { kind: 'invalid_json'; raw: string }
-  | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
+export type ScreenSettingsResult = { kind: 'ok'; settings: ScreenSettings } | WireEnvelopeFailure
 
 export const parseSettings = (raw: string): ScreenSettingsResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
-  const result = ScreenSettingsSchema.safeParse(parsed)
-  if (!result.success) {
-    return { kind: 'wrong_shape', issues: result.error.issues }
-  }
+  const json = parseJsonObject(raw)
+  if (json.kind !== 'ok') return json
+  const result = ScreenSettingsSchema.safeParse(json.value)
+  if (!result.success) return { kind: 'wrong_shape', issues: result.error.issues }
   return { kind: 'ok', settings: result.data }
 }

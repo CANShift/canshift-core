@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 export const TIMER_LAP_BUFFER_CAPACITY = 32
 
@@ -74,27 +75,9 @@ export const timerLapFromWire = (wire: TimerLapWire): TimerBleLap => ({
   totalMs: wire.total_ms,
 })
 
-type ParseFailure =
-  | { kind: 'invalid_json'; raw: string }
-  | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
+export type TimerStateResult = { kind: 'ok'; state: TimerBleState } | WireEnvelopeFailure
 
-export type TimerStateResult = { kind: 'ok'; state: TimerBleState } | ParseFailure
-
-export type TimerLapResult = { kind: 'ok'; lap: TimerBleLap } | ParseFailure
-
-const parseJsonObject = (raw: string): { kind: 'ok'; value: object } | ParseFailure => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
-  return { kind: 'ok', value: parsed }
-}
+export type TimerLapResult = { kind: 'ok'; lap: TimerBleLap } | WireEnvelopeFailure
 
 export const parseTimerState = (raw: string): TimerStateResult => {
   const json = parseJsonObject(raw)

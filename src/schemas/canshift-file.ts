@@ -4,6 +4,7 @@ import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
 import { migrateConfig } from '../migrations/migration-runner.js'
 import { isSemverGreater } from '../migrations/semver.js'
 import { stripForbiddenKeys } from '../wire/keymap.js'
+import { isIntegerFormatVersion, parseJsonObject } from '../wire/parse-envelope.js'
 import { MigrationError, type MigrationErrorCode } from '../migrations/errors.js'
 
 import { ProjectSchema, type Project } from './project.js'
@@ -55,23 +56,16 @@ export const serializeCanshiftFile = (project: Project): string => {
 }
 
 export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw, stripForbiddenKeys)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
+  const json = parseJsonObject(raw, stripForbiddenKeys)
+  if (json.kind !== 'ok') return json
+  const parsed = json.value
+  const record = parsed as Record<string, unknown>
 
-  const record = asPlainObject(parsed)
-  if (record === null) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
   if (record.format !== CANSHIFT_FILE_FORMAT) {
     return { kind: 'not_a_canshift_file', payload: parsed }
   }
   if (
-    typeof record.formatVersion === 'number' &&
-    Number.isInteger(record.formatVersion) &&
+    isIntegerFormatVersion(record.formatVersion) &&
     record.formatVersion > CANSHIFT_FILE_FORMAT_VERSION
   ) {
     return {

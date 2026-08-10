@@ -1,7 +1,8 @@
 import { z } from 'zod'
 
 import { CanSpeedKbpsSchema } from './signal.js'
-import { findForbiddenKey, mapObjectKeys } from '../wire/keymap.js'
+import { mapObjectKeys } from '../wire/keymap.js'
+import { parseUntrustedJsonObject, type WireParseFailure } from '../wire/parse-envelope.js'
 
 const DEVICE_WIRE_TO_DOMAIN = {
   can_speed_kbps: 'canSpeedKbps',
@@ -85,28 +86,12 @@ export const deviceConfigFromWire = (wire: DeviceConfigWire): DeviceConfig =>
 export const deviceConfigToWire = (cfg: DeviceConfig): DeviceConfigWire =>
   mapObjectKeys(cfg, DEVICE_DOMAIN_TO_WIRE) as DeviceConfigWire
 
-export type DeviceConfigResult =
-  | { kind: 'ok'; config: DeviceConfig }
-  | { kind: 'invalid_json'; raw: string }
-  | { kind: 'not_an_object'; payload: unknown }
-  | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
-  | { kind: 'forbidden_key'; key: string }
+export type DeviceConfigResult = { kind: 'ok'; config: DeviceConfig } | WireParseFailure
 
 export const parseDeviceConfig = (raw: string): DeviceConfigResult => {
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(raw)
-  } catch {
-    return { kind: 'invalid_json', raw }
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return { kind: 'not_an_object', payload: parsed }
-  }
-  const forbidden = findForbiddenKey(parsed)
-  if (forbidden !== null) {
-    return { kind: 'forbidden_key', key: forbidden }
-  }
-  const result = DeviceConfigWireSchema.safeParse(parsed)
+  const json = parseUntrustedJsonObject(raw)
+  if (json.kind !== 'ok') return json
+  const result = DeviceConfigWireSchema.safeParse(json.value)
   if (!result.success) {
     return { kind: 'wrong_shape', issues: result.error.issues }
   }
