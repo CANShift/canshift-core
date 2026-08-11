@@ -35,7 +35,6 @@ export type {
   WidgetConfig,
   GaugeWidgetConfig,
   GaugeDisplayStyle,
-  GaugeArcFillStyle,
   WarningWidgetConfig,
   ButtonWidgetConfig,
   SingleActionButtonConfig,
@@ -203,9 +202,6 @@ export {
 } from './sensor-defaults.js'
 export type { SensorKind } from './sensor-defaults.js'
 
-export { SENSOR_PALETTE, sensorOkColor, sensorWarningColor } from './sensor-palette.js'
-export type { SensorPaletteEntry } from './sensor-palette.js'
-
 export { SIGNAL_TYPES, SignalTypeSchema } from './schemas/signal-type.js'
 export type { SignalType } from './schemas/signal-type.js'
 
@@ -251,6 +247,8 @@ export type { TopBarMetricsRatios } from './topbar-metrics.js'
 
 export {
   WIDGET_ZONE_COLORS,
+  WIDGET_ACCENT_COLOR,
+  WIDGET_MUTED_COLOR,
   WIDGET_TEXT_COLORS,
   WIDGET_STALE_TEXT_COLORS,
   widgetTextColor,
@@ -268,7 +266,6 @@ export {
   gaugeArcStrokeWidth,
   gaugeValueAngle,
   gaugeArcPath,
-  gaugeGradientColorAt,
   LABEL_FONT_RATIO,
   labelFontSize,
   WIDGET_TOP_RULE,

@@ -18,12 +18,8 @@ import { WarningWidgetConfigSchema } from './warning.js'
 export { SensorIconNameSchema } from './sensor-icon.js'
 export type { SensorIconName } from './sensor-icon.js'
 
-export {
-  GaugeArcFillStyleSchema,
-  GaugeDisplayStyleSchema,
-  GaugeWidgetConfigSchema,
-} from './gauge.js'
-export type { GaugeArcFillStyle, GaugeDisplayStyle } from './gauge.js'
+export { GaugeDisplayStyleSchema, GaugeWidgetConfigSchema } from './gauge.js'
+export type { GaugeDisplayStyle } from './gauge.js'
 
 export { WarningWidgetConfigSchema } from './warning.js'
 
