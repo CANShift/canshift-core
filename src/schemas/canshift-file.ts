@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
 import { migrateConfig } from '../migrations/index.js'
 import { isSemverGreater } from '../migrations/semver.js'
-import { stripForbiddenKeys } from '../wire/keymap.js'
+import { asPlainObject, stripForbiddenKeys } from '../wire/plain-object.js'
 import { isIntegerFormatVersion, parseJsonObject } from '../wire/parse-envelope.js'
 import { MigrationError, type MigrationErrorCode } from '../migrations/errors.js'
 
@@ -39,11 +39,6 @@ export type CanshiftFileResult =
   | { kind: 'wrong_shape'; issues: z.core.$ZodIssue[] }
 
 export type CanshiftFileError = Exclude<CanshiftFileResult, { kind: 'ok' }>
-
-const asPlainObject = (value: unknown): Record<string, unknown> | null =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : null
 
 export const serializeCanshiftFile = (project: Project): string => {
   const validated = ProjectSchema.parse(project)

@@ -1,10 +1,10 @@
-import { asObject, flatMapWidgets } from '../config-traverse.js'
+import { asPlainObject, flatMapWidgets } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
 
 export const defaultButtonModeSingle: MigrationFn = (config) =>
   flatMapWidgets(config, '1.23.0', (widget) => {
     if (widget.type !== 'button') return [widget]
-    const cfg = asObject(widget.config)
+    const cfg = asPlainObject(widget.config)
     if (!cfg) return [widget]
     if (cfg.mode === 'cycle') return [widget]
     if (Array.isArray(cfg.actions) && cfg.actions.length === 0) return []

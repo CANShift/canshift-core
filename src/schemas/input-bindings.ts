@@ -1,13 +1,10 @@
 import { z } from 'zod'
 
-import { ButtonActionSchema } from './dashboard.js'
+import { ButtonActionSchema } from './widgets/button-action.js'
 import { Esp32InputGpioSchema } from './device.js'
 import { STRING_CAPS } from '../constants/firmware-caps.js'
-import { mapObjectKeys } from '../wire/keymap.js'
+import { camelToSnakeKeys, snakeToCamelKeys } from '../wire/keymap.js'
 import { parseUntrustedJsonObject, type WireParseFailure } from '../wire/parse-envelope.js'
-
-const BINDING_WIRE_TO_DOMAIN = { debounce_ms: 'debounceMs' } as const
-const BINDING_DOMAIN_TO_WIRE = { debounceMs: 'debounce_ms' } as const
 
 export const MAX_INPUT_BINDINGS = 16
 
@@ -93,10 +90,10 @@ export const InputBindingsConfigSchema = z
 export type InputBindingsConfig = z.infer<typeof InputBindingsConfigSchema>
 
 const inputBindingFromWire = (wire: InputBindingWire): InputBinding =>
-  mapObjectKeys(wire, BINDING_WIRE_TO_DOMAIN) as InputBinding
+  snakeToCamelKeys(wire) as InputBinding
 
 const inputBindingToWire = (binding: InputBinding): InputBindingWire =>
-  mapObjectKeys(binding, BINDING_DOMAIN_TO_WIRE) as InputBindingWire
+  camelToSnakeKeys(binding) as InputBindingWire
 
 export const inputBindingsFromWire = (wire: InputBindingsConfigWire): InputBindingsConfig => ({
   inputBindings: wire.input_bindings.map(inputBindingFromWire),

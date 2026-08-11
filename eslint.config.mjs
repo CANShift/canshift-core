@@ -31,6 +31,35 @@ const noCommentsPlugin = {
   },
 }
 
+const barrelOnlyPlugin = {
+  rules: {
+    'barrel-only': {
+      meta: {
+        type: 'problem',
+        docs: { description: 'An index.ts may only re-export.' },
+        schema: [],
+        messages: {
+          forbidden:
+            'An index.ts may only re-export. Move this declaration to a sibling module and re-export it here.',
+        },
+      },
+      create(context) {
+        return {
+          Program(node) {
+            for (const statement of node.body) {
+              const isReExport =
+                statement.type === 'ExportAllDeclaration' ||
+                (statement.type === 'ExportNamedDeclaration' && statement.source !== null)
+              if (isReExport) continue
+              context.report({ node: statement, messageId: 'forbidden' })
+            }
+          },
+        }
+      },
+    },
+  },
+}
+
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
@@ -63,6 +92,13 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+    },
+  },
+  {
+    files: ['src/**/index.ts'],
+    plugins: { 'barrel-only': barrelOnlyPlugin },
+    rules: {
+      'barrel-only/barrel-only': 'error',
     },
   },
   {

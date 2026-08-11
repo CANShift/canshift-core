@@ -1,4 +1,4 @@
-import { asObject, mapPages } from '../config-traverse.js'
+import { asPlainObject, mapPages } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
 
 export const dropPageNamesAndMapFlags: MigrationFn = (config) => {
@@ -7,7 +7,7 @@ export const dropPageNamesAndMapFlags: MigrationFn = (config) => {
     delete rest.name
     return rest
   })
-  const topBar = asObject(config.topBar)
+  const topBar = asPlainObject(config.topBar)
   if (!topBar) return withPages
   const rest = { ...topBar }
   delete rest.showMapName

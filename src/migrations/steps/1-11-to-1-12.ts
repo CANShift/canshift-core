@@ -1,8 +1,8 @@
-import { asObject } from '../config-traverse.js'
+import { asPlainObject } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
 
 export const raiseTopBarHeight: MigrationFn = (config) => {
-  const topBar = asObject(config.topBar)
+  const topBar = asPlainObject(config.topBar)
   if (topBar?.height !== 24) {
     return { ...config, version: '1.12.0' }
   }

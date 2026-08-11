@@ -44,7 +44,7 @@ import {
   sensorDefaultRange,
   SENSOR_DANGER_COLOR,
   sensorDefaultDangerThreshold,
-} from '../widget-metrics.js'
+} from '../widget-metrics/index.js'
 import { SENSOR_DEFAULT_RAMPS, SENSOR_KINDS } from '../sensor-defaults.js'
 import type { SensorKind } from '../sensor-defaults.js'
 

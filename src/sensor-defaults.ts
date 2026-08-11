@@ -1,10 +1,8 @@
-import { HEX_REGEX } from './colors/hex.js'
-import { HexColorSchema } from './schemas/common.js'
+import { hex, hexToRgb255, rgb255ToHex } from './colors/hex.js'
+import type { RgbChannels } from './colors/hex.js'
 import type { HexColor } from './schemas/common.js'
 import type { ColorRamp } from './schemas/signal.js'
 import type { SensorIconName } from './schemas/widgets/sensor-icon.js'
-
-const hex = (value: string): HexColor => HexColorSchema.parse(value)
 
 export const SENSOR_KINDS = [
   'coolant_temp',
@@ -116,26 +114,11 @@ export const SENSOR_DEFAULT_RAMPS: Record<SensorKind, ColorRamp> = {
   },
 }
 
-interface RgbChannels {
-  r: number
-  g: number
-  b: number
-}
-
-const parseHex = (color: HexColor): RgbChannels => {
-  const m = HEX_REGEX.exec(color)
-  if (!m) return { r: 0, g: 0, b: 0 }
-  const n = Number.parseInt(m[1] ?? '000000', 16)
-  return { r: (n >> 16) & 0xff, g: (n >> 8) & 0xff, b: n & 0xff }
-}
-
 const BLACK = hex('#000000')
 
-const toHex = (channels: RgbChannels): HexColor => {
-  const clamp = (v: number): number => (v < 0 ? 0 : v > 255 ? 255 : Math.round(v))
-  const byte = (v: number): string => clamp(v).toString(16).padStart(2, '0').toUpperCase()
-  return hex(`#${byte(channels.r)}${byte(channels.g)}${byte(channels.b)}`)
-}
+const BLACK_CHANNELS: RgbChannels = { r: 0, g: 0, b: 0 }
+
+const channelsOf = (color: HexColor): RgbChannels => hexToRgb255(color) ?? BLACK_CHANNELS
 
 export const colorAtValue = (ramp: ColorRamp, value: number): HexColor => {
   const stops = ramp.stops
@@ -162,9 +145,9 @@ export const colorAtValue = (ramp: ColorRamp, value: number): HexColor => {
     if (value >= lower.value && value <= upper.value) {
       const span = upper.value - lower.value
       const t = span > 0 ? (value - lower.value) / span : 0
-      const a = parseHex(lower.color)
-      const b = parseHex(upper.color)
-      return toHex({
+      const a = channelsOf(lower.color)
+      const b = channelsOf(upper.color)
+      return rgb255ToHex({
         r: a.r + (b.r - a.r) * t,
         g: a.g + (b.g - a.g) * t,
         b: a.b + (b.b - a.b) * t,

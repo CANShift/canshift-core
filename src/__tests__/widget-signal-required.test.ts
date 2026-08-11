@@ -1,5 +1,5 @@
 import { HexColorSchema } from '../schemas/common.js'
-import { WidgetSchema } from '../schemas/dashboard.js'
+import { WidgetSchema } from '../schemas/widgets/index.js'
 
 const hex = (value: string): ReturnType<typeof HexColorSchema.parse> => HexColorSchema.parse(value)
 

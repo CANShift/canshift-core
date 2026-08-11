@@ -1,5 +1,5 @@
-const GT_PUA = ''
-const GT_PUA_RE = //g
+const GT_PUA = '\uE001'
+const GT_PUA_RE = /\uE001/g
 
 const escapeAttribGT = (xml: string): string =>
   xml.replace(/"[^"]*"/g, (match) => match.replace(/>/g, GT_PUA))

@@ -27,51 +27,66 @@ export type {
   PageConfig,
   PagePalette,
   PageTemplate,
-  Widget,
-  WidgetType,
+  ThemePreset,
   TopBarConfig,
   TopBarItem,
   TopBarItemPosition,
-  WidgetConfig,
-  GaugeWidgetConfig,
-  GaugeDisplayStyle,
-  WarningWidgetConfig,
-  ButtonWidgetConfig,
-  SingleActionButtonConfig,
-  CycleButtonConfig,
-  CycleButtonState,
-  TimerWidgetConfig,
-  GearWidgetConfig,
-  ImageWidgetConfig,
-  SensorIconName,
-  ThemePreset,
+} from './schemas/dashboard.js'
+export {
+  DashboardConfigSchema,
+  DAY_NIGHT_SIGNAL_MAX_LEN,
+  DEFAULT_PAGE_PALETTE,
+  DEFAULT_TOP_BAR_LAYOUT,
+  PAGE_TEMPLATES,
+  PageTemplateSchema,
+} from './schemas/dashboard.js'
+
+export type {
   ButtonAction,
-  DashboardButtonAction,
-  EcuButtonAction,
-  NavigateAction,
-  MapSwitchAction,
+  ButtonWidgetConfig,
   CanRawAction,
   CruiseControlAction,
   CruiseControlOp,
-} from './schemas/dashboard.js'
+  CycleButtonConfig,
+  CycleButtonState,
+  DashboardButtonAction,
+  EcuButtonAction,
+  GaugeDisplayStyle,
+  GaugeWidgetConfig,
+  GearWidgetConfig,
+  ImageWidgetConfig,
+  MapSwitchAction,
+  NavigateAction,
+  SensorIconName,
+  ShiftLightWidgetConfig,
+  SingleActionButtonConfig,
+  TimerWidgetConfig,
+  WarningWidgetConfig,
+  Widget,
+  WidgetConfig,
+  WidgetType,
+} from './schemas/widgets/index.js'
+export {
+  CRUISE_CONTROL_OPS,
+  MAX_CYCLE_STATES,
+  MIN_CYCLE_STATES,
+  SensorIconNameSchema,
+  SHIFT_LIGHT_SEGMENT_COUNT,
+  ShiftLightWidgetConfigSchema,
+  WidgetSchema,
+} from './schemas/widgets/index.js'
 
-export { DEFAULT_PAGE_PALETTE, DEFAULT_TOP_BAR_LAYOUT } from './schemas/dashboard.js'
-export { CRUISE_CONTROL_OPS } from './schemas/dashboard.js'
-export { MIN_CYCLE_STATES, MAX_CYCLE_STATES } from './schemas/dashboard.js'
-export { PAGE_TEMPLATES, PageTemplateSchema } from './schemas/dashboard.js'
-export { DAY_NIGHT_SIGNAL_MAX_LEN } from './schemas/dashboard.js'
-export { SHIFT_LIGHT_SEGMENT_COUNT, ShiftLightWidgetConfigSchema } from './schemas/widgets/index.js'
-export { WidgetSchema } from './schemas/widgets/index.js'
-export { SensorIconNameSchema } from './schemas/widgets/sensor-icon.js'
-export type { ShiftLightWidgetConfig } from './schemas/widgets/index.js'
 export type {
-  SignalConfig,
-  SignalDef,
+  CanSpeedKbps,
   ColorRamp,
   ColorRampStop,
-  RampInterpolation,
   OutboundCanSignal,
+  RampInterpolation,
+  SignalByteLength,
+  SignalConfig,
+  SignalDef,
 } from './schemas/signal.js'
+export { SIGNAL_BYTE_LENGTHS, SignalConfigSchema, SignalDefSchema } from './schemas/signal.js'
 
 export type { Obd2Mode, Obd2Pid, Obd2Polling } from './schemas/obd2.js'
 export {
@@ -96,10 +111,18 @@ export {
   dtcSystem,
 } from './ecu-profiles/obd2-dtc.js'
 export type { DeviceConfig, DeviceConfigResult } from './schemas/device.js'
-export type { CanSpeedKbps, SignalByteLength } from './schemas/signal.js'
-export { SIGNAL_BYTE_LENGTHS } from './schemas/signal.js'
-export { DEFAULT_DEVICE_CONFIG } from './schemas/device.js'
-export { deviceConfigFromWire, deviceConfigToWire, parseDeviceConfig } from './schemas/device.js'
+export {
+  DEFAULT_DEVICE_CONFIG,
+  DeviceConfigSchema,
+  DeviceConfigWireSchema,
+  Esp32InputGpioSchema,
+  Esp32OutputGpioSchema,
+  SAFE_INPUT_PINS_WROOM32,
+  SAFE_OUTPUT_PINS_WROOM32,
+  deviceConfigFromWire,
+  deviceConfigToWire,
+  parseDeviceConfig,
+} from './schemas/device.js'
 
 export type {
   InputBinding,
@@ -212,17 +235,6 @@ export { validateDashboard } from './validation/validate-dashboard.js'
 export type { ValidationResult, ValidateDashboardOptions } from './validation/validate-dashboard.js'
 export { validateSignalConfig } from './validation/validate-signal-config.js'
 
-export { DashboardConfigSchema } from './schemas/dashboard.js'
-export { SignalConfigSchema } from './schemas/signal.js'
-export {
-  DeviceConfigSchema,
-  DeviceConfigWireSchema,
-  Esp32OutputGpioSchema,
-  Esp32InputGpioSchema,
-  SAFE_OUTPUT_PINS_WROOM32,
-  SAFE_INPUT_PINS_WROOM32,
-} from './schemas/device.js'
-
 export {
   SCREEN_PROFILES,
   DEFAULT_SCREEN_PROFILE_ID,
@@ -242,7 +254,7 @@ export {
   MAX_RAMP_STOPS,
 } from './constants/firmware-caps.js'
 
-export { TopBarMetrics } from './topbar-metrics.js'
+export { TOP_BAR_METRICS } from './topbar-metrics.js'
 export type { TopBarMetricsRatios } from './topbar-metrics.js'
 
 export {
@@ -300,8 +312,8 @@ export {
   SECONDARY_BAR,
   SHIFT_LIGHT,
   shiftLightLitSegments,
-} from './widget-metrics.js'
-export type { SensorDangerThreshold } from './widget-metrics.js'
+} from './widget-metrics/index.js'
+export type { SensorDangerThreshold } from './widget-metrics/index.js'
 
 export { DAY_PALETTE_DEFAULT, DAY_BG_DEFAULT, DAY_THEME_PRESET } from './day-theme-defaults.js'
 
@@ -330,7 +342,12 @@ export type {
   MigrationResult,
 } from './migrations/index.js'
 
-export type { DesignTokens, BrandTokens, BrandNeutralStep, FontTokens } from './design-tokens.js'
+export type {
+  DesignTokens,
+  BrandTokens,
+  BrandNeutralStep,
+  FontTokens,
+} from './design-tokens/index.js'
 export {
   COLOR_KEY_TO_CSS_VAR,
   DARK_TOKENS,
@@ -347,7 +364,7 @@ export {
   FONT_UI_CSS_VAR,
   FONT_MONO_CSS_VAR,
   fontTokensToCssVars,
-} from './design-tokens.js'
+} from './design-tokens/index.js'
 
 export { CURRENT_SCHEMA_VERSION } from './schema-version.js'
 
@@ -389,7 +406,6 @@ export type {
   CanshiftFileResult,
   CanshiftFileError,
 } from './schemas/canshift-file.js'
-export { SignalDefSchema } from './schemas/signal.js'
 
 export {
   CHIP_FAMILIES,

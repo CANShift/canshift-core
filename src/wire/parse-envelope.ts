@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { findForbiddenKey } from './keymap.js'
+import { findForbiddenKey } from './plain-object.js'
 
 export type WireEnvelopeFailure =
   | { kind: 'invalid_json'; raw: string }

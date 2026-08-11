@@ -1,4 +1,4 @@
-import { findForbiddenKey } from '../wire/keymap.js'
+import { findForbiddenKey } from '../wire/plain-object.js'
 import { parseDeviceConfig } from '../schemas/device.js'
 import { parseInputBindings } from '../schemas/input-bindings.js'
 import { migrateConfig, validateMigrationChain } from '../migrations/runner.js'

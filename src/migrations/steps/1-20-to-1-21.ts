@@ -1,11 +1,11 @@
-import { asObject, flatMapWidgets } from '../config-traverse.js'
+import { asPlainObject, flatMapWidgets } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
 
 export const retireBarWidgets: MigrationFn = (config) =>
   flatMapWidgets(config, '1.21.0', (widget) => {
     if (widget.type === 'bar') return []
     if (widget.type !== 'gauge') return [widget]
-    const cfg = asObject(widget.config)
+    const cfg = asPlainObject(widget.config)
     if (!cfg) return [widget]
     const hadBarStyle = cfg.displayStyle === 'bar'
     if (!hadBarStyle && !('barOrientation' in cfg)) return [widget]

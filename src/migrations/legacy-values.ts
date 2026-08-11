@@ -1,8 +1,8 @@
-import { HEX_REGEX } from '../colors/hex.js'
+import { hexToRgb255, rgb255ToHex } from '../colors/hex.js'
 
 type Config = Record<string, unknown>
 
-export const DEFAULT_PALETTE = {
+export const PALETTE_1_3 = {
   surface: '#1E1E1E',
   primary: '#FF4444',
   accent: '#FF8800',
@@ -21,15 +21,11 @@ export const clipField = (obj: Config, key: string, max: number): Config => {
 }
 
 export const brightenHex = (hex: string, delta = 0x33): string => {
-  const m = HEX_REGEX.exec(hex)
-  if (!m) return hex
-  const value = m[1]
-  if (!value) return hex
-  const channels = [0, 2, 4].map((i) => {
-    const c = parseInt(value.substring(i, i + 2), 16)
-    return Math.min(0xff, c + delta)
-      .toString(16)
-      .padStart(2, '0')
+  const channels = hexToRgb255(hex)
+  if (channels === null) return hex
+  return rgb255ToHex({
+    r: channels.r + delta,
+    g: channels.g + delta,
+    b: channels.b + delta,
   })
-  return `#${channels.join('').toUpperCase()}`
 }

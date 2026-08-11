@@ -1,4 +1,4 @@
-import { asObject, mapWidgets } from '../config-traverse.js'
+import { asPlainObject, mapWidgets } from '../config-traverse.js'
 import { STANDARD_WIDGET_TYPES, resizeWithinCanvas, upgradeLegacySize } from '../legacy-layout.js'
 import type { MigrationFn } from '../types.js'
 
@@ -7,7 +7,7 @@ export const upgradeLegacyWidgetSizes: MigrationFn = (config) =>
     const type = widget.type
     if (typeof type !== 'string' || !STANDARD_WIDGET_TYPES.has(type)) return widget
 
-    const layout = asObject(widget.layout)
+    const layout = asPlainObject(widget.layout)
     if (!layout) return widget
     const w = layout.w
     const h = layout.h

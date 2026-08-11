@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { stripForbiddenKeys } from '../wire/keymap.js'
+import { stripForbiddenKeys } from '../wire/plain-object.js'
 import { isIntegerFormatVersion, parseJsonObject } from '../wire/parse-envelope.js'
 
 import {
