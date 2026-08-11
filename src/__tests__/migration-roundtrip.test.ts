@@ -389,7 +389,7 @@ describe('migration round-trip — old fixtures validate against the current sch
     expect(gear!.suffix).toBe(' of six forward')
 
     expect(button!.label).toBe('An exceedingly verbose button l')
-    expect((button!.iconPath as string).length).toBe(63)
+    expect('iconPath' in button!).toBe(false)
 
     expect((image!.imagePath as string).length).toBe(63)
   })

@@ -4,7 +4,6 @@ import { FIRMWARE_CAPS, STRING_CAPS } from '../../constants/firmware-caps.js'
 import { HexColorSchema } from '../common.js'
 
 import { ButtonActionSchema } from './button-action.js'
-import { SensorIconNameSchema } from './sensor-icon.js'
 
 export const MIN_CYCLE_STATES = 2
 export const MAX_CYCLE_STATES = 4
@@ -13,7 +12,6 @@ export const CycleButtonStateSchema = z
   .object({
     id: z.string().min(1).optional(),
     label: z.string().min(1).max(STRING_CAPS.WIDGET_LABEL),
-    iconName: SensorIconNameSchema.optional(),
     colors: z
       .object({
         normal: HexColorSchema,
@@ -28,9 +26,6 @@ export const CycleButtonStateSchema = z
 const buttonBaseFields = {
   type: z.literal('button'),
   label: z.string().max(STRING_CAPS.WIDGET_LABEL),
-  iconName: SensorIconNameSchema.optional(),
-  iconPath: z.string().max(STRING_CAPS.ICON_PATH).optional(),
-  showIcon: z.boolean().optional(),
   showLabel: z.boolean().optional(),
   isToggle: z.boolean().optional(),
   colors: z

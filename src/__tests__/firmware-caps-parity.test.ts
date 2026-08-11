@@ -56,7 +56,6 @@ describeIfTypes('string caps firmware parity (config_types.h buffers minus NUL)'
     ['WIDGET_PREFIX_SUFFIX', 'CfgGaugeParams', 'suffix'],
     ['WIDGET_PREFIX_SUFFIX', 'CfgLabelParams', 'prefix'],
     ['WIDGET_PREFIX_SUFFIX', 'CfgLabelParams', 'suffix'],
-    ['ICON_PATH', 'CfgButtonParams', 'iconPath'],
     ['IMAGE_PATH', 'CfgImageParams', 'imagePath'],
     ['PROTOCOL', 'CfgSignalConfig', 'protocol'],
     ['BINDING_SIGNAL', 'CfgInputBinding', 'signal'],

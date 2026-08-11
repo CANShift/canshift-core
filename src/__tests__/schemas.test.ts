@@ -1619,12 +1619,12 @@ describe('schema bounds hardening', () => {
       expect(result.success).toBe(false)
     })
 
-    it('rejects an iconPath one over the cap', () => {
+    it('rejects the removed icon fields (no icons on the dash, schema 1.31.0)', () => {
       const result = ButtonWidgetConfigSchema.safeParse({
         type: 'button',
         mode: 'single',
         label: 'btn',
-        iconPath: 'i'.repeat(STRING_CAPS.ICON_PATH + 1),
+        iconPath: '/icons/x.bin',
         actions: [{ category: 'dashboard', type: 'navigate', pageId: 'p' }],
       })
       expect(result.success).toBe(false)
