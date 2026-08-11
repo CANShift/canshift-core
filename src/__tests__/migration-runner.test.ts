@@ -1800,6 +1800,78 @@ describe('migrateConfig — 1.29.0 → 1.30.0 (drop gauge arcFillStyle, spec-str
   })
 })
 
+describe('migrateConfig — 1.30.0 → 1.31.0 (no icons on the dash: strip button icon fields)', () => {
+  const wrap = (widgetConfig: Record<string, unknown>): Record<string, unknown> => ({
+    version: '1.30.0',
+    pages: [
+      {
+        id: 'p1',
+        widgets: [{ id: 'b1', type: 'button', config: widgetConfig }],
+      },
+    ],
+  })
+
+  const configOf = (config: Record<string, unknown>): Record<string, unknown> => {
+    const { config: out } = migrateConfig(config, '1.31.0')
+    const page = (out.pages as Record<string, unknown>[])[0]!
+    const widgets = page.widgets as Record<string, unknown>[]
+    return widgets[0]!.config as Record<string, unknown>
+  }
+
+  it('strips iconName / iconPath / showIcon from button configs', () => {
+    const cfg = configOf(
+      wrap({
+        type: 'button',
+        mode: 'single',
+        label: 'ALS',
+        iconName: 'flame',
+        iconPath: '/icons/als.bin',
+        showIcon: true,
+        actions: [],
+      })
+    )
+    expect('iconName' in cfg).toBe(false)
+    expect('iconPath' in cfg).toBe(false)
+    expect('showIcon' in cfg).toBe(false)
+    expect(cfg.label).toBe('ALS')
+  })
+
+  it('strips iconName from cycle states and leaves other state fields', () => {
+    const cfg = configOf(
+      wrap({
+        type: 'button',
+        mode: 'cycle',
+        label: 'MAP',
+        states: [
+          { label: 'MAP 1', iconName: 'map_icon', action: { category: 'can', type: 'noop' } },
+          { label: 'MAP 2', action: { category: 'can', type: 'noop' } },
+        ],
+        initialActiveIndex: 0,
+      })
+    )
+    const states = cfg.states as Record<string, unknown>[]
+    expect('iconName' in states[0]!).toBe(false)
+    expect(states[0]!.label).toBe('MAP 1')
+    expect(states[1]!.label).toBe('MAP 2')
+  })
+
+  it('leaves non-button widgets untouched', () => {
+    const config = {
+      version: '1.30.0',
+      pages: [
+        {
+          id: 'p1',
+          widgets: [{ id: 'g1', type: 'gauge', config: { type: 'gauge', iconName: 'coolant' } }],
+        },
+      ],
+    }
+    const { config: out } = migrateConfig(config, '1.31.0')
+    const page = (out.pages as Record<string, unknown>[])[0]!
+    const widgets = page.widgets as Record<string, unknown>[]
+    expect((widgets[0]!.config as Record<string, unknown>).iconName).toBe('coolant')
+  })
+})
+
 describe('migrateConfig — error cases', () => {
   it('throws when no migration path exists', () => {
     const config = { version: '0.5.0' }

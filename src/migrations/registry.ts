@@ -56,7 +56,28 @@ const retrackTopBar = (config: Record<string, unknown>): Record<string, unknown>
   return { ...config, topBar: { ...topBar, layout: TRACK_TOP_BAR.map((item) => ({ ...item })) } }
 }
 
+const BUTTON_ICON_KEYS = ['iconName', 'iconPath', 'showIcon'] as const
+
+const withoutKeys = (source: Record<string, unknown>, keys: readonly string[]) =>
+  Object.fromEntries(Object.entries(source).filter(([key]) => !keys.includes(key)))
+
+const stripButtonIcons = (widget: Record<string, unknown>): Record<string, unknown> => {
+  const widgetConfig = asObject(widget.config)
+  if (widgetConfig?.type !== 'button') return widget
+  const cleaned = withoutKeys(widgetConfig, BUTTON_ICON_KEYS)
+  const states = asObjectArray(widgetConfig.states)
+  if (states) {
+    cleaned.states = states.map((state) => withoutKeys(state, ['iconName']))
+  }
+  return { ...widget, config: cleaned }
+}
+
 export const MIGRATIONS: Migration[] = [
+  {
+    fromVersion: '1.30.0',
+    toVersion: '1.31.0',
+    migrate: (config) => mapWidgets(config, '1.31.0', stripButtonIcons),
+  },
   {
     fromVersion: '1.29.0',
     toVersion: '1.30.0',
