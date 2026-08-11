@@ -292,6 +292,7 @@ export {
   TIMER_STATE_BORDER_WIDTH,
   TIMER_BORDER_COLORS,
   TIMER_FONT_BREAKPOINTS,
+  TIMER_PRIMARY_MIN_WIDTH,
   timerFontSize,
   formatTimerMmSs,
   formatTimerSsMmm,
