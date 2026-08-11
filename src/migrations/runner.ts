@@ -1,8 +1,8 @@
-import { cloneAndStripForbiddenKeys } from './helpers.js'
+import { cloneAndStripForbiddenKeys } from './config-traverse.js'
 import { MigrationError } from './errors.js'
-import { MIGRATIONS } from './registry.js'
+import { BUILTIN_MIGRATIONS } from './registry.js'
 import { SEMVER_PATTERN, isSemverGreater } from './semver.js'
-import type { Migration, MigrationRegistry, MigrationResult } from './types.js'
+import type { Migration, MigrationResult } from './types.js'
 
 const assertNoDowngrade = (fromVersion: string, toVersion: string): void => {
   if (!SEMVER_PATTERN.test(fromVersion) || !SEMVER_PATTERN.test(toVersion)) return
@@ -18,7 +18,7 @@ interface RegistryWalk {
 const walkRegistry = (
   fromVersion: string,
   toVersion: string,
-  registry: MigrationRegistry
+  registry: readonly Migration[]
 ): RegistryWalk => {
   const chain: Migration[] = []
   const missing: string[] = []
@@ -43,7 +43,7 @@ const walkRegistry = (
   return { chain, missing }
 }
 
-const assertUniqueFromVersions = (registry: MigrationRegistry): void => {
+const assertUniqueFromVersions = (registry: readonly Migration[]): void => {
   const seen = new Set<string>()
   for (const migration of registry) {
     if (seen.has(migration.fromVersion)) {
@@ -73,7 +73,7 @@ export const assertVersionBump = (
 export const validateMigrationChain = (
   fromVersion: string,
   toVersion: string,
-  registry: MigrationRegistry
+  registry: readonly Migration[]
 ): string[] => {
   assertNoDowngrade(fromVersion, toVersion)
   assertUniqueFromVersions(registry)
@@ -117,9 +117,9 @@ export const migrateConfig = (
 
   assertNoDowngrade(currentVersion, targetVersion)
 
-  assertUniqueFromVersions(MIGRATIONS)
+  assertUniqueFromVersions(BUILTIN_MIGRATIONS)
 
-  const { chain, missing } = walkRegistry(currentVersion, targetVersion, MIGRATIONS)
+  const { chain, missing } = walkRegistry(currentVersion, targetVersion, BUILTIN_MIGRATIONS)
   if (missing.length > 0) {
     throw new MigrationError(
       'incomplete_chain',

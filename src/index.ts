@@ -321,14 +321,14 @@ export {
   MigrationError,
   migrateConfig,
   validateMigrationChain,
-} from './migrations/migration-runner.js'
+} from './migrations/index.js'
 export type {
   Migration,
   MigrationErrorCode,
   MigrationFn,
   MigrationRegistry,
   MigrationResult,
-} from './migrations/migration-runner.js'
+} from './migrations/index.js'
 
 export type { DesignTokens, BrandTokens, BrandNeutralStep, FontTokens } from './design-tokens.js'
 export {

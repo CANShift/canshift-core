@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
-import { migrateConfig } from '../migrations/migration-runner.js'
+import { migrateConfig } from '../migrations/index.js'
 import { isSemverGreater } from '../migrations/semver.js'
 import { stripForbiddenKeys } from '../wire/keymap.js'
 import { isIntegerFormatVersion, parseJsonObject } from '../wire/parse-envelope.js'

@@ -1,5 +1,5 @@
 import { CURRENT_SCHEMA_VERSION, DashboardConfigSchema } from '../index.js'
-import { migrateConfig } from '../migrations/migration-runner.js'
+import { migrateConfig } from '../migrations/index.js'
 
 const fullStyle = {
   primaryColor: '#FF4444',
