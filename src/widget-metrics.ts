@@ -69,7 +69,6 @@ export const widgetStaleTextColor = (isDayMode: boolean): HexColor =>
   isDayMode ? WIDGET_STALE_TEXT_COLORS.day : WIDGET_STALE_TEXT_COLORS.night
 
 export const WIDGET_FONT_CLAMP = { min: 12, max: 72 } as const
-export const VALUE_FRAC_FONT_RATIO = { numerator: 7, denominator: 10 } as const
 export const VALUE_UNIT_FONT_SIZE = 12
 export const VALUE_UNIT_RATIO = { numerator: 1, denominator: 4 } as const
 export const VALUE_UNIT_FONT_MIN = 10
@@ -78,11 +77,6 @@ export const STALE_PLACEHOLDER = '- -'
 export const valueUnitFontSize = (valueFontSize: number): number => {
   const size = truncDiv(valueFontSize, VALUE_UNIT_RATIO.numerator, VALUE_UNIT_RATIO.denominator)
   return size < VALUE_UNIT_FONT_MIN ? VALUE_UNIT_FONT_MIN : size
-}
-
-export const widgetFracFontSize = (intFontSize: number): number => {
-  const frac = applyRatio(intFontSize, VALUE_FRAC_FONT_RATIO)
-  return frac < WIDGET_FONT_CLAMP.min ? WIDGET_FONT_CLAMP.min : frac
 }
 
 export const GAUGE_ARC = {
