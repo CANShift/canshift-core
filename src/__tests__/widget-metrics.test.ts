@@ -79,8 +79,8 @@ describe('theme text colors', () => {
 })
 
 describe('shared value-cluster rules', () => {
-  it('pins gauge_widget.cpp / label_widget.cpp font clamp 12..48', () => {
-    expect(WIDGET_FONT_CLAMP).toEqual({ min: 12, max: 48 })
+  it('pins gauge_widget.cpp / label_widget.cpp font clamp 12..72', () => {
+    expect(WIDGET_FONT_CLAMP).toEqual({ min: 12, max: 72 })
   })
   it('pins int/frac split at 70% and 12px unit font', () => {
     expect(ratioScale(VALUE_FRAC_FONT_RATIO)).toBe(0.7)
@@ -102,17 +102,17 @@ describe('shared value-cluster rules', () => {
     expect(valueUnitFontSize(32)).toBe(10)
     expect(valueUnitFontSize(12)).toBe(10)
   })
-  it('widgetTopRulePx: 2px ink rule from 32px values, 1px track rule below (restyle §4)', () => {
+  it('widgetTopRulePx: 2px ink rule for 72px primary values, 1px track rule below (restyle §4)', () => {
     expect(WIDGET_TOP_RULE).toEqual({
       primaryPx: 2,
       secondaryPx: 1,
-      primaryFontMin: 32,
+      primaryFontMin: 72,
       trackColor: '#222222',
       dangerColor: '#FF4444',
     })
-    expect(widgetTopRulePx(48)).toBe(2)
-    expect(widgetTopRulePx(32)).toBe(2)
-    expect(widgetTopRulePx(31)).toBe(1)
+    expect(widgetTopRulePx(72)).toBe(2)
+    expect(widgetTopRulePx(71)).toBe(1)
+    expect(widgetTopRulePx(34)).toBe(1)
     expect(widgetTopRulePx(12)).toBe(1)
   })
 })
@@ -138,15 +138,13 @@ describe('gauge geometry', () => {
     expect(GAUGE_TRACK_COLORS.gradient).toBe('#2A2A2A')
   })
 
-  it('gaugeValueFontSize matches resolveValueFont breakpoints 48/32/24/20', () => {
-    expect(gaugeValueFontSize(165)).toBe(48)
-    expect(gaugeValueFontSize(200)).toBe(48)
-    expect(gaugeValueFontSize(164)).toBe(32)
-    expect(gaugeValueFontSize(125)).toBe(32)
-    expect(gaugeValueFontSize(124)).toBe(24)
-    expect(gaugeValueFontSize(95)).toBe(24)
-    expect(gaugeValueFontSize(94)).toBe(20)
-    expect(gaugeValueFontSize(0)).toBe(20)
+  it('gaugeValueFontSize matches resolveValueFont tiers 72/34/units-14', () => {
+    expect(gaugeValueFontSize(200)).toBe(72)
+    expect(gaugeValueFontSize(125)).toBe(72)
+    expect(gaugeValueFontSize(124)).toBe(34)
+    expect(gaugeValueFontSize(60)).toBe(34)
+    expect(gaugeValueFontSize(59)).toBe(14)
+    expect(gaugeValueFontSize(0)).toBe(14)
   })
 
   it('gaugeArcStrokeWidth = min(w*0.48,h*0.49)*0.30 with a floor of 5', () => {
@@ -176,13 +174,13 @@ describe('gauge geometry', () => {
 
 describe('labelFontSize (label_widget.cpp pickValueFontSize)', () => {
   it('= min(trunc(h*65/100), trunc(w*52/100))', () => {
-    expect(labelFontSize(100, 100)).toBe(48)
+    expect(labelFontSize(100, 100)).toBe(52)
 
     expect(labelFontSize(60, 50)).toBe(31)
   })
-  it('clamps to 12..48 at the boundaries', () => {
+  it('clamps to 12..72 at the boundaries', () => {
     expect(labelFontSize(10, 10)).toBe(12)
-    expect(labelFontSize(1000, 1000)).toBe(48)
+    expect(labelFontSize(1000, 1000)).toBe(72)
   })
 })
 
@@ -190,9 +188,9 @@ describe('gearFontSize (gear_widget.cpp selectFont)', () => {
   it('= min(trunc(h*85/100), trunc(w*72/100))', () => {
     expect(gearFontSize(40, 40)).toBe(28)
   })
-  it('clamps to 12..48 at the boundaries', () => {
+  it('clamps to 12..72 at the boundaries', () => {
     expect(gearFontSize(10, 10)).toBe(12)
-    expect(gearFontSize(1000, 1000)).toBe(48)
+    expect(gearFontSize(1000, 1000)).toBe(72)
   })
 })
 
@@ -236,12 +234,14 @@ describe('timer widget (timer_widget.cpp)', () => {
     expect(TIMER_BORDER_COLORS.running).toBe(WIDGET_ZONE_COLORS.normal)
     expect(TIMER_BORDER_COLORS.paused).toBe(WIDGET_ZONE_COLORS.warning)
   })
-  it('timerFontSize matches breakpoints 32/24/20', () => {
-    expect(timerFontSize(110)).toBe(32)
-    expect(timerFontSize(109)).toBe(24)
-    expect(timerFontSize(80)).toBe(24)
-    expect(timerFontSize(79)).toBe(20)
-    expect(timerFontSize(0)).toBe(20)
+  it('timerFontSize matches tiers 72/34/units-14 with the 260px primary width gate', () => {
+    expect(timerFontSize(110, 260)).toBe(72)
+    expect(timerFontSize(110, 259)).toBe(34)
+    expect(timerFontSize(110)).toBe(34)
+    expect(timerFontSize(109, 320)).toBe(34)
+    expect(timerFontSize(80)).toBe(34)
+    expect(timerFontSize(79)).toBe(14)
+    expect(timerFontSize(0)).toBe(14)
   })
   it('formatTimerMmSs: MM:SS with blinkable colon', () => {
     expect(formatTimerMmSs(0, true)).toBe('00:00')

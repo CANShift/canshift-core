@@ -66,7 +66,7 @@ export const widgetTextColor = (isDayMode: boolean): HexColor =>
 export const widgetStaleTextColor = (isDayMode: boolean): HexColor =>
   isDayMode ? WIDGET_STALE_TEXT_COLORS.day : WIDGET_STALE_TEXT_COLORS.night
 
-export const WIDGET_FONT_CLAMP = { min: 12, max: 48 } as const
+export const WIDGET_FONT_CLAMP = { min: 12, max: 72 } as const
 export const VALUE_FRAC_FONT_RATIO = { numerator: 7, denominator: 10 } as const
 export const VALUE_UNIT_FONT_SIZE = 12
 export const VALUE_UNIT_RATIO = { numerator: 1, denominator: 4 } as const
@@ -103,7 +103,7 @@ export const GAUGE_TRACK_COLORS = {
 export const WIDGET_TOP_RULE = {
   primaryPx: 2,
   secondaryPx: 1,
-  primaryFontMin: 32,
+  primaryFontMin: 72,
   trackColor: GAUGE_TRACK_COLORS.plain,
   dangerColor: WIDGET_ZONE_COLORS.danger,
 } as const
@@ -114,10 +114,9 @@ export const widgetTopRulePx = (valueFontSize: number): number =>
     : WIDGET_TOP_RULE.secondaryPx
 
 export const GAUGE_VALUE_FONT_BREAKPOINTS = [
-  { minHeight: 165, size: 48 },
-  { minHeight: 125, size: 32 },
-  { minHeight: 95, size: 24 },
-  { minHeight: 0, size: 20 },
+  { minHeight: 125, size: 72 },
+  { minHeight: 60, size: 34 },
+  { minHeight: 0, size: 14 },
 ] as const
 
 export const gaugeValueFontSize = (height: number): number =>
@@ -212,13 +211,20 @@ export const TIMER_BORDER_COLORS = {
 } as const satisfies Record<'running' | 'paused', HexColor>
 
 export const TIMER_FONT_BREAKPOINTS = [
-  { minHeight: 110, size: 32 },
-  { minHeight: 80, size: 24 },
-  { minHeight: 0, size: 20 },
+  { minHeight: 110, size: 72 },
+  { minHeight: 80, size: 34 },
+  { minHeight: 0, size: 14 },
 ] as const
 
-export const timerFontSize = (height: number): number =>
-  sizeForHeight(TIMER_FONT_BREAKPOINTS, height)
+export const TIMER_PRIMARY_MIN_WIDTH = 260
+
+export const timerFontSize = (height: number, width?: number): number => {
+  const size = sizeForHeight(TIMER_FONT_BREAKPOINTS, height)
+  const primary = TIMER_FONT_BREAKPOINTS[0]
+  if (size !== primary.size) return size
+  const fitsPrimary = width !== undefined && width >= TIMER_PRIMARY_MIN_WIDTH
+  return fitsPrimary ? primary.size : TIMER_FONT_BREAKPOINTS[1].size
+}
 
 const pad = (value: number, width: number): string => String(value).padStart(width, '0')
 
