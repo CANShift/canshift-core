@@ -136,10 +136,10 @@ describe('gauge geometry', () => {
 
   it('gaugeValueFontSize matches resolveValueFont tiers 72/34/units-14', () => {
     expect(gaugeValueFontSize(200)).toBe(72)
-    expect(gaugeValueFontSize(125)).toBe(72)
-    expect(gaugeValueFontSize(124)).toBe(34)
-    expect(gaugeValueFontSize(60)).toBe(34)
-    expect(gaugeValueFontSize(59)).toBe(14)
+    expect(gaugeValueFontSize(90)).toBe(72)
+    expect(gaugeValueFontSize(89)).toBe(34)
+    expect(gaugeValueFontSize(40)).toBe(34)
+    expect(gaugeValueFontSize(39)).toBe(14)
     expect(gaugeValueFontSize(0)).toBe(14)
   })
 
