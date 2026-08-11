@@ -73,7 +73,7 @@ export const VALUE_FRAC_FONT_RATIO = { numerator: 7, denominator: 10 } as const
 export const VALUE_UNIT_FONT_SIZE = 12
 export const VALUE_UNIT_RATIO = { numerator: 1, denominator: 4 } as const
 export const VALUE_UNIT_FONT_MIN = 10
-export const STALE_PLACEHOLDER = '--'
+export const STALE_PLACEHOLDER = '- -'
 
 export const valueUnitFontSize = (valueFontSize: number): number => {
   const size = truncDiv(valueFontSize, VALUE_UNIT_RATIO.numerator, VALUE_UNIT_RATIO.denominator)

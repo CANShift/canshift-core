@@ -93,8 +93,8 @@ describe('shared value-cluster rules', () => {
     expect(ratioScale(VALUE_FRAC_FONT_RATIO)).toBe(0.7)
     expect(VALUE_UNIT_FONT_SIZE).toBe(12)
   })
-  it('pins the stale placeholder "--"', () => {
-    expect(STALE_PLACEHOLDER).toBe('--')
+  it('pins the stale placeholder "- -" (dash spec: grey and - -)', () => {
+    expect(STALE_PLACEHOLDER).toBe('- -')
   })
   it('widgetFracFontSize: (int*7/10) floored, clamped to 12 (buildFracLabel)', () => {
     expect(widgetFracFontSize(48)).toBe(33)
