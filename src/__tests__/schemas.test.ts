@@ -1619,6 +1619,17 @@ describe('schema bounds hardening', () => {
       expect(result.success).toBe(false)
     })
 
+    it('accepts the optional semantic kicker', () => {
+      const result = ButtonWidgetConfigSchema.safeParse({
+        type: 'button',
+        mode: 'single',
+        label: 'MAP 1',
+        kicker: 'ECU MAP',
+        actions: [{ category: 'dashboard', type: 'navigate', pageId: 'p' }],
+      })
+      expect(result.success).toBe(true)
+    })
+
     it('rejects the removed icon fields (no icons on the dash, schema 1.31.0)', () => {
       const result = ButtonWidgetConfigSchema.safeParse({
         type: 'button',
