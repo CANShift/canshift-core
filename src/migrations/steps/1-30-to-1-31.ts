@@ -1,4 +1,4 @@
-import { asObject, asObjectArray, mapWidgets } from '../config-traverse.js'
+import { asPlainObject, asObjectArray, mapWidgets } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
 
 const BUTTON_ICON_KEYS = ['iconName', 'iconPath', 'showIcon'] as const
@@ -7,7 +7,7 @@ const withoutKeys = (source: Record<string, unknown>, keys: readonly string[]) =
   Object.fromEntries(Object.entries(source).filter(([key]) => !keys.includes(key)))
 
 const stripButtonIconFields = (widget: Record<string, unknown>): Record<string, unknown> => {
-  const widgetConfig = asObject(widget.config)
+  const widgetConfig = asPlainObject(widget.config)
   if (widgetConfig?.type !== 'button') return widget
   const cleaned = withoutKeys(widgetConfig, BUTTON_ICON_KEYS)
   const states = asObjectArray(widgetConfig.states)

@@ -72,27 +72,14 @@ const validateDefaultPageId = (dashboard: z.infer<typeof DashboardConfigSchema>)
   return []
 }
 
-const validatePageIdUniqueness = (pages: readonly { id: string }[]): string[] => {
+const duplicateIds = (entries: readonly { id: string }[]): string[] => {
   const seen = new Set<string>()
   const dupes = new Set<string>()
-  for (const p of pages) {
-    if (seen.has(p.id)) dupes.add(p.id)
-    else seen.add(p.id)
+  for (const entry of entries) {
+    if (seen.has(entry.id)) dupes.add(entry.id)
+    else seen.add(entry.id)
   }
-  return [...dupes].map((id) => `pages: duplicate page id "${id}"`)
-}
-
-const validateWidgetIdUniqueness = (
-  widgets: readonly { id: string }[],
-  pageIdx: number
-): string[] => {
-  const seen = new Set<string>()
-  const dupes = new Set<string>()
-  for (const w of widgets) {
-    if (seen.has(w.id)) dupes.add(w.id)
-    else seen.add(w.id)
-  }
-  return [...dupes].map((id) => `pages[${String(pageIdx)}].widgets: duplicate widget id "${id}"`)
+  return [...dupes]
 }
 
 const collectSignalIds = (
@@ -177,9 +164,13 @@ export const validateDashboard = (
   const dashboard = parsed.data
 
   errors.push(...validateDefaultPageId(dashboard))
-  errors.push(...validatePageIdUniqueness(dashboard.pages))
+  errors.push(...duplicateIds(dashboard.pages).map((id) => `pages: duplicate page id "${id}"`))
   dashboard.pages.forEach((page, idx) => {
-    errors.push(...validateWidgetIdUniqueness(page.widgets, idx))
+    errors.push(
+      ...duplicateIds(page.widgets).map(
+        (id) => `pages[${String(idx)}].widgets: duplicate widget id "${id}"`
+      )
+    )
   })
 
   const knownSignalIds = collectSignalIds(config, options?.signalCatalog)

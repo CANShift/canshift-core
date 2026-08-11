@@ -13,10 +13,10 @@ import {
   brandNeutralCssVar,
   brandTokensToCssVars,
   fontTokensToCssVars,
-  hexToHslChannels,
   tokensToCssVars,
-} from '../design-tokens.js'
+} from '../design-tokens/index.js'
 import { isHexColor } from '../colors/hex.js'
+import { hexToHslChannels } from '../colors/hsl.js'
 
 describe('DARK_TOKENS', () => {
   it('matches the canonical snapshot', () => {

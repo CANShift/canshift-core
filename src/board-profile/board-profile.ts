@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { camelToSnakeDeep, snakeToCamelDeep } from '../wire/keymap.js'
+
 export const CHIP_FAMILIES = ['esp32', 'esp32s3'] as const
 export const LCD_DRIVERS = ['ili9341', 'st7789', 'ili9488', 'gc9a01'] as const
 export const TOUCH_DRIVERS = ['none', 'xpt2046', 'ft6336', 'gt911', 'cst816s'] as const
@@ -178,146 +180,8 @@ export interface BoardProfile {
   conn: ConnectivityProfile
 }
 
-const lcdFromWire = (w: BoardProfileWire['lcd']): LcdProfile => ({
-  driver: w.driver,
-  pinMosi: w.pin_mosi,
-  pinMiso: w.pin_miso,
-  pinSclk: w.pin_sclk,
-  pinCs: w.pin_cs,
-  pinDc: w.pin_dc,
-  pinRst: w.pin_rst,
-  pinBl: w.pin_bl,
-  freqWriteHz: w.freq_write_hz,
-  panelWidth: w.panel_width,
-  panelHeight: w.panel_height,
-  memoryWidth: w.memory_width,
-  memoryHeight: w.memory_height,
-  defaultRotation: w.default_rotation,
-  rgbOrderBgr: w.rgb_order_bgr,
-  invert: w.invert,
-  busSharedWithTouch: w.bus_shared_with_touch,
-  readable: w.readable,
-  colorDepth: w.color_depth,
-})
+export const boardProfileFromWire = (wire: BoardProfileWire): BoardProfile =>
+  snakeToCamelDeep(wire) as unknown as BoardProfile
 
-const lcdToWire = (l: LcdProfile): BoardProfileWire['lcd'] => ({
-  driver: l.driver,
-  pin_mosi: l.pinMosi,
-  pin_miso: l.pinMiso,
-  pin_sclk: l.pinSclk,
-  pin_cs: l.pinCs,
-  pin_dc: l.pinDc,
-  pin_rst: l.pinRst,
-  pin_bl: l.pinBl,
-  freq_write_hz: l.freqWriteHz,
-  panel_width: l.panelWidth,
-  panel_height: l.panelHeight,
-  memory_width: l.memoryWidth,
-  memory_height: l.memoryHeight,
-  default_rotation: l.defaultRotation,
-  rgb_order_bgr: l.rgbOrderBgr,
-  invert: l.invert,
-  bus_shared_with_touch: l.busSharedWithTouch,
-  readable: l.readable,
-  color_depth: l.colorDepth,
-})
-
-const backlightFromWire = (w: BoardProfileWire['backlight']): BacklightProfile => ({
-  present: w.present,
-  pwmChannel: w.pwm_channel,
-  pwmFreqHz: w.pwm_freq_hz,
-  defaultDuty: w.default_duty,
-  invert: w.invert,
-})
-
-const backlightToWire = (b: BacklightProfile): BoardProfileWire['backlight'] => ({
-  present: b.present,
-  pwm_channel: b.pwmChannel,
-  pwm_freq_hz: b.pwmFreqHz,
-  default_duty: b.defaultDuty,
-  invert: b.invert,
-})
-
-const touchFromWire = (w: BoardProfileWire['touch']): TouchProfile => ({
-  driver: w.driver,
-  pinCs: w.pin_cs,
-  pinIrq: w.pin_irq,
-  freqHz: w.freq_hz,
-  needsCalibration: w.needs_calibration,
-  pinSda: w.pin_sda,
-  pinScl: w.pin_scl,
-})
-
-const touchToWire = (t: TouchProfile): BoardProfileWire['touch'] => ({
-  driver: t.driver,
-  pin_cs: t.pinCs,
-  pin_irq: t.pinIrq,
-  freq_hz: t.freqHz,
-  needs_calibration: t.needsCalibration,
-  pin_sda: t.pinSda,
-  pin_scl: t.pinScl,
-})
-
-const canFromWire = (w: BoardProfileWire['can']): CanProfile => ({
-  controller: w.controller,
-  pinTx: w.pin_tx,
-  pinRx: w.pin_rx,
-  defaultSpeedKbps: w.default_speed_kbps,
-})
-
-const canToWire = (c: CanProfile): BoardProfileWire['can'] => ({
-  controller: c.controller,
-  pin_tx: c.pinTx,
-  pin_rx: c.pinRx,
-  default_speed_kbps: c.defaultSpeedKbps,
-})
-
-const storageFromWire = (w: BoardProfileWire['storage']): StorageProfile => ({
-  spiffsPresent: w.spiffs_present,
-  spiffsSizeKb: w.spiffs_size_kb,
-  sdPresent: w.sd_present,
-  sdPinCs: w.sd_pin_cs,
-})
-
-const storageToWire = (s: StorageProfile): BoardProfileWire['storage'] => ({
-  spiffs_present: s.spiffsPresent,
-  spiffs_size_kb: s.spiffsSizeKb,
-  sd_present: s.sdPresent,
-  sd_pin_cs: s.sdPinCs,
-})
-
-const connFromWire = (w: BoardProfileWire['conn']): ConnectivityProfile => ({
-  wifiSupported: w.wifi_supported,
-  bleSupported: w.ble_supported,
-  psramPresent: w.psram_present,
-})
-
-const connToWire = (c: ConnectivityProfile): BoardProfileWire['conn'] => ({
-  wifi_supported: c.wifiSupported,
-  ble_supported: c.bleSupported,
-  psram_present: c.psramPresent,
-})
-
-export const boardProfileFromWire = (wire: BoardProfileWire): BoardProfile => ({
-  boardId: wire.board_id,
-  boardName: wire.board_name,
-  chipFamily: wire.chip_family,
-  lcd: lcdFromWire(wire.lcd),
-  backlight: backlightFromWire(wire.backlight),
-  touch: touchFromWire(wire.touch),
-  can: canFromWire(wire.can),
-  storage: storageFromWire(wire.storage),
-  conn: connFromWire(wire.conn),
-})
-
-export const boardProfileToWire = (profile: BoardProfile): BoardProfileWire => ({
-  board_id: profile.boardId,
-  board_name: profile.boardName,
-  chip_family: profile.chipFamily,
-  lcd: lcdToWire(profile.lcd),
-  backlight: backlightToWire(profile.backlight),
-  touch: touchToWire(profile.touch),
-  can: canToWire(profile.can),
-  storage: storageToWire(profile.storage),
-  conn: connToWire(profile.conn),
-})
+export const boardProfileToWire = (profile: BoardProfile): BoardProfileWire =>
+  camelToSnakeDeep(profile) as unknown as BoardProfileWire

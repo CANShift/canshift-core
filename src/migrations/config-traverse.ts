@@ -1,12 +1,9 @@
-import { stripForbiddenKeys } from '../wire/keymap.js'
+import { stripForbiddenKeys } from '../wire/plain-object.js'
 import { MigrationError } from './errors.js'
 
-type Config = Record<string, unknown>
+export { asPlainObject } from '../wire/plain-object.js'
 
-export const asObject = (value: unknown): Config | undefined =>
-  typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? (value as Config)
-    : undefined
+type Config = Record<string, unknown>
 
 export const asObjectArray = (value: unknown): Config[] | undefined =>
   Array.isArray(value) ? (value as Config[]) : undefined

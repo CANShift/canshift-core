@@ -1,23 +1,42 @@
-import { mapObjectKeys } from '../wire/keymap.js'
+import {
+  camelToSnakeDeep,
+  camelToSnakeKeys,
+  snakeToCamelDeep,
+  snakeToCamelKeys,
+} from '../wire/keymap.js'
 import { cloneAndStripForbiddenKeys } from '../migrations/config-traverse.js'
 
-describe('mapObjectKeys — prototype-pollution hardening', () => {
-  it('renames mapped keys and passes through the rest', () => {
-    const out = mapObjectKeys({ a_b: 1, keep: 2 }, { a_b: 'aB' })
-    expect(out).toEqual({ aB: 1, keep: 2 })
+describe('snakeToCamelKeys / camelToSnakeKeys', () => {
+  it('renames snake_case keys to camelCase and passes through the rest', () => {
+    expect(snakeToCamelKeys({ a_b: 1, keep: 2 })).toEqual({ aB: 1, keep: 2 })
+  })
+
+  it('renames camelCase keys to snake_case and passes through the rest', () => {
+    expect(camelToSnakeKeys({ aB: 1, keep: 2 })).toEqual({ a_b: 1, keep: 2 })
+  })
+
+  it('round-trips multi-segment keys', () => {
+    const domain = { freqWriteHz: 1, busSharedWithTouch: true, readable: false }
+    expect(snakeToCamelKeys(camelToSnakeKeys(domain))).toEqual(domain)
+  })
+
+  it('maps digit-leading segments the same way in both directions', () => {
+    expect(camelToSnakeKeys({ accent600: '#DD2B0F' })).toEqual({ accent600: '#DD2B0F' })
+    expect(snakeToCamelKeys({ pin_5v: 1 })).toEqual({ pin5v: 1 })
   })
 
   it('drops undefined values', () => {
-    const out = mapObjectKeys({ present: 1, absent: undefined }, {})
-    expect(out).toEqual({ present: 1 })
+    expect(snakeToCamelKeys({ present: 1, absent: undefined })).toEqual({ present: 1 })
   })
+})
 
+describe('key mappers — prototype-pollution hardening', () => {
   it('does not pollute Object.prototype from a __proto__ source key', () => {
     const malicious = JSON.parse('{"safe":1,"__proto__":{"polluted":true}}') as Record<
       string,
       unknown
     >
-    const out = mapObjectKeys(malicious, {})
+    const out = snakeToCamelKeys(malicious)
     expect(out).toEqual({ safe: 1 })
     expect(({} as Record<string, unknown>).polluted).toBeUndefined()
     expect(Object.getPrototypeOf(out)).toBe(Object.prototype)
@@ -28,14 +47,45 @@ describe('mapObjectKeys — prototype-pollution hardening', () => {
       string,
       unknown
     >
-    const out = mapObjectKeys(malicious, {})
-    expect(out).toEqual({ ok: 3 })
+    expect(camelToSnakeKeys(malicious)).toEqual({ ok: 3 })
   })
 
-  it('skips a key remapped onto a forbidden target', () => {
-    const out = mapObjectKeys({ evil: 1, ok: 2 }, { evil: '__proto__' })
-    expect(out).toEqual({ ok: 2 })
+  it('skips forbidden keys nested inside a deep mapping', () => {
+    const malicious = JSON.parse('{"lcd":{"pin_cs":5,"__proto__":{"polluted":true}}}') as Record<
+      string,
+      unknown
+    >
+    const out = snakeToCamelDeep(malicious)
+    expect(out).toEqual({ lcd: { pinCs: 5 } })
     expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+  })
+})
+
+describe('snakeToCamelDeep / camelToSnakeDeep', () => {
+  it('renames keys through nested objects and arrays', () => {
+    const wire = {
+      board_id: 'crowpanel',
+      lcd: { pin_mosi: 13, bus_shared_with_touch: true },
+      pins: [{ pin_tx: 22 }, { pin_rx: 21 }],
+    }
+    expect(snakeToCamelDeep(wire)).toEqual({
+      boardId: 'crowpanel',
+      lcd: { pinMosi: 13, busSharedWithTouch: true },
+      pins: [{ pinTx: 22 }, { pinRx: 21 }],
+    })
+  })
+
+  it('round-trips a nested structure', () => {
+    const domain = {
+      boardId: 'crowpanel',
+      lcd: { pinMosi: 13, freqWriteHz: 40_000_000 },
+      conn: { wifiSupported: true, bleSupported: false },
+    }
+    expect(snakeToCamelDeep(camelToSnakeDeep(domain))).toEqual(domain)
+  })
+
+  it('leaves primitive leaves untouched', () => {
+    expect(snakeToCamelDeep({ a_b: 'keep_me', c_d: null })).toEqual({ aB: 'keep_me', cD: null })
   })
 })
 

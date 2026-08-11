@@ -1,4 +1,4 @@
-import { asObject, asObjectArray, mapWidgets } from '../config-traverse.js'
+import { asPlainObject, asObjectArray, mapWidgets } from '../config-traverse.js'
 import { clipField } from '../legacy-values.js'
 import type { MigrationFn } from '../types.js'
 
@@ -50,7 +50,7 @@ const CLIP_BY_WIDGET_TYPE: Record<string, (cfg: Config) => Config> = {
 
 export const clipToFirmwareCaps: MigrationFn = (config) => {
   const migrated = mapWidgets(config, '1.24.0', (widget) => {
-    const cfg = asObject(widget.config)
+    const cfg = asPlainObject(widget.config)
     if (!cfg) return widget
     const clip = CLIP_BY_WIDGET_TYPE[String(widget.type)]
     if (!clip) return widget

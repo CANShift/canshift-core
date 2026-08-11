@@ -9,55 +9,8 @@ import {
 
 import { HexColorSchema, SemVerSchema } from './common.js'
 import { ScreenProfileIdSchema } from './screen-profile.js'
-import { type ExactOptional, WidgetSchema, type Widget } from './widgets/index.js'
-
-export {
-  ButtonActionSchema,
-  ButtonWidgetConfigSchema,
-  CRUISE_CONTROL_OPS,
-  CruiseControlOpSchema,
-  CycleButtonConfigSchema,
-  CycleButtonStateSchema,
-  GaugeDisplayStyleSchema,
-  GaugeWidgetConfigSchema,
-  GearWidgetConfigSchema,
-  ImageWidgetConfigSchema,
-  MAX_CYCLE_STATES,
-  MIN_CYCLE_STATES,
-  SensorIconNameSchema,
-  SingleActionButtonConfigSchema,
-  TimerWidgetConfigSchema,
-  WarningWidgetConfigSchema,
-  WIDGET_TYPES,
-  WidgetConfigSchema,
-  WidgetSchema,
-  WidgetTypeSchema,
-} from './widgets/index.js'
-
-export type {
-  ButtonAction,
-  ButtonWidgetConfig,
-  CanRawAction,
-  CruiseControlAction,
-  CruiseControlOp,
-  CycleButtonConfig,
-  CycleButtonState,
-  DashboardButtonAction,
-  EcuButtonAction,
-  GaugeDisplayStyle,
-  GaugeWidgetConfig,
-  GearWidgetConfig,
-  ImageWidgetConfig,
-  MapSwitchAction,
-  NavigateAction,
-  SensorIconName,
-  SingleActionButtonConfig,
-  TimerWidgetConfig,
-  WarningWidgetConfig,
-  Widget,
-  WidgetConfig,
-  WidgetType,
-} from './widgets/index.js'
+import type { ExactOptional } from './exact-optional.js'
+import { WidgetSchema, type Widget } from './widgets/index.js'
 
 export const PagePaletteSchema = z
   .object({

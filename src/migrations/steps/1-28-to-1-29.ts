@@ -1,4 +1,4 @@
-import { asObject } from '../config-traverse.js'
+import { asPlainObject } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
 
 const LEGACY_FLAG_TOP_BAR = [
@@ -29,7 +29,7 @@ const isLegacyFlagTopBar = (layout: unknown): boolean =>
   JSON.stringify(layout) === JSON.stringify(LEGACY_FLAG_TOP_BAR)
 
 export const retrackTopBar: MigrationFn = (config) => {
-  const topBar = asObject(config.topBar)
+  const topBar = asPlainObject(config.topBar)
   if (!topBar || !isLegacyFlagTopBar(topBar.layout)) return { ...config, version: '1.29.0' }
   return {
     ...config,

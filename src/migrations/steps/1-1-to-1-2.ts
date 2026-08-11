@@ -1,9 +1,9 @@
-import { asObject, mapWidgets } from '../config-traverse.js'
+import { asPlainObject, mapWidgets } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
 
 export const labelToGauge: MigrationFn = (config) =>
   mapWidgets(config, '1.2.0', (widget) => {
-    const cfg = asObject(widget.config)
+    const cfg = asPlainObject(widget.config)
     if (!cfg) return widget
 
     if (widget.type === 'label') {

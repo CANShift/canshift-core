@@ -27,12 +27,12 @@ import {
 import { SignalDefSchema } from '../schemas/signal.js'
 import { WidgetLayoutSchema, WidgetStyleSchema } from '../schemas/common.js'
 import type { DeviceConfig, InputBinding, InputBindingsConfig } from '../index.js'
+import { TopBarItemSchema } from '../schemas/dashboard.js'
 import {
   ButtonActionSchema,
   ButtonWidgetConfigSchema,
-  TopBarItemSchema,
   WidgetSchema,
-} from '../schemas/dashboard.js'
+} from '../schemas/widgets/index.js'
 import { DeviceConfigWireSchema, type DeviceConfigWire } from '../schemas/device.js'
 import {
   InputBindingSchema,
