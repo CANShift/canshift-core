@@ -74,6 +74,11 @@ const stripButtonIcons = (widget: Record<string, unknown>): Record<string, unkno
 
 export const MIGRATIONS: Migration[] = [
   {
+    fromVersion: '1.31.0',
+    toVersion: '1.32.0',
+    migrate: (config) => mapWidgets(config, '1.32.0', (widget) => widget),
+  },
+  {
     fromVersion: '1.30.0',
     toVersion: '1.31.0',
     migrate: (config) => mapWidgets(config, '1.31.0', stripButtonIcons),
