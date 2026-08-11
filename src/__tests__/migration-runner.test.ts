@@ -1,9 +1,5 @@
-import {
-  BUILTIN_MIGRATIONS,
-  migrateConfig,
-  validateMigrationChain,
-} from '../migrations/migration-runner.js'
-import type { MigrationRegistry } from '../migrations/migration-runner.js'
+import { BUILTIN_MIGRATIONS, migrateConfig, validateMigrationChain } from '../migrations/index.js'
+import type { MigrationRegistry } from '../migrations/index.js'
 import { assertVersionBump } from '../migrations/runner.js'
 import { CURRENT_SCHEMA_VERSION } from '../index.js'
 

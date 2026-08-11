@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { CURRENT_SCHEMA_VERSION } from '../index.js'
-import { migrateConfig } from '../migrations/migration-runner.js'
+import { migrateConfig } from '../migrations/index.js'
 import type { SignalConfig } from '../schemas/signal.js'
 import { validateDashboard } from '../validation/validate-dashboard.js'
 

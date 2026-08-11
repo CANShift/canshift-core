@@ -1,4 +1,4 @@
-import { migrateConfig } from '../migrations/migration-runner.js'
+import { migrateConfig } from '../migrations/index.js'
 
 describe('migrateConfig — input validation', () => {
   it('throws when input is null', () => {

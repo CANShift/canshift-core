@@ -1,497 +1,58 @@
-import {
-  DEFAULT_PALETTE,
-  STANDARD_WIDGET_TYPES,
-  asObject,
-  asObjectArray,
-  brightenHex,
-  clipField,
-  flatMapWidgets,
-  legacyPixelLayoutToSpans,
-  legacyProfileDimensions,
-  mapPages,
-  mapWidgets,
-  resizeWithinCanvas,
-  upgradeLegacySize,
-} from './helpers.js'
 import type { Migration } from './types.js'
+import { versionOnly } from './steps/version-only.js'
+import { stripButtonIcons } from './steps/1-30-to-1-31.js'
+import { dropArcFillStyle } from './steps/1-29-to-1-30.js'
+import { retrackTopBar } from './steps/1-28-to-1-29.js'
+import { syncWidgetTypeWithConfig } from './steps/1-26-to-1-27.js'
+import { pixelLayoutToGridSpans } from './steps/1-24-to-1-25.js'
+import { clipToFirmwareCaps } from './steps/1-23-to-1-24.js'
+import { defaultButtonModeSingle } from './steps/1-22-to-1-23.js'
+import { stripNonButtonLabels } from './steps/1-21-to-1-22.js'
+import { retireBarWidgets } from './steps/1-20-to-1-21.js'
+import { dropHideWhenInvalid } from './steps/1-19-to-1-20.js'
+import { promoteWarningToDanger } from './steps/1-16-to-1-17.js'
+import { renameMaxxecuProtocol } from './steps/1-13-to-1-14.js'
+import { raiseTopBarHeight } from './steps/1-11-to-1-12.js'
+import { growHorizontalBars } from './steps/1-8-to-1-9.js'
+import { buttonColorsAndGaugeIcons } from './steps/1-7-to-1-8.js'
+import { dropPageNamesAndMapFlags } from './steps/1-6-to-1-7.js'
+import { upgradeLegacyWidgetSizes } from './steps/1-5-to-1-6.js'
+import { defaultPagePalettes } from './steps/1-2-to-1-3.js'
+import { labelToGauge } from './steps/1-1-to-1-2.js'
+import { buttonActionsFromTarget } from './steps/1-0-to-1-1.js'
 
-const CAPS_1_24 = {
-  widgetLabel: 31,
-  gaugePrefix: 7,
-  prefixSuffix: 15,
-  path: 63,
-  protocol: 31,
-} as const
-
-const LEGACY_FLAG_TOP_BAR = [
-  { type: 'label', text: 'CAN', position: 'left' },
-  { type: 'statusDot', signal: 'any', position: 'left' },
-  { type: 'modeFlag', signal: 'flag_anti_lag', text: 'ALS', position: 'center' },
-  { type: 'separator', position: 'center' },
-  { type: 'modeFlag', signal: 'flag_launch_ctrl', text: 'LC', position: 'center' },
-  { type: 'separator', position: 'center' },
-  { type: 'modeFlag', signal: 'flag_flat_shift', text: 'FS', position: 'center' },
-  { type: 'separator', position: 'center' },
-  { type: 'modeFlag', signal: 'flag_traction_cut', text: 'TC', position: 'center' },
-  { type: 'signal', signal: 'map_number', format: 'MAP%.0f', position: 'right' },
-  { type: 'separator', position: 'right' },
-  { type: 'bleIcon', position: 'right' },
-  { type: 'themeToggle', position: 'right' },
+export const BUILTIN_MIGRATIONS: readonly Migration[] = [
+  { fromVersion: '1.32.0', toVersion: '1.33.0', migrate: versionOnly('1.33.0') },
+  { fromVersion: '1.31.0', toVersion: '1.32.0', migrate: versionOnly('1.32.0') },
+  { fromVersion: '1.30.0', toVersion: '1.31.0', migrate: stripButtonIcons },
+  { fromVersion: '1.29.0', toVersion: '1.30.0', migrate: dropArcFillStyle },
+  { fromVersion: '1.28.0', toVersion: '1.29.0', migrate: retrackTopBar },
+  { fromVersion: '1.27.0', toVersion: '1.28.0', migrate: versionOnly('1.28.0') },
+  { fromVersion: '1.26.0', toVersion: '1.27.0', migrate: syncWidgetTypeWithConfig },
+  { fromVersion: '1.25.0', toVersion: '1.26.0', migrate: versionOnly('1.26.0') },
+  { fromVersion: '1.24.0', toVersion: '1.25.0', migrate: pixelLayoutToGridSpans },
+  { fromVersion: '1.23.0', toVersion: '1.24.0', migrate: clipToFirmwareCaps },
+  { fromVersion: '1.22.0', toVersion: '1.23.0', migrate: defaultButtonModeSingle },
+  { fromVersion: '1.21.0', toVersion: '1.22.0', migrate: stripNonButtonLabels },
+  { fromVersion: '1.20.0', toVersion: '1.21.0', migrate: retireBarWidgets },
+  { fromVersion: '1.19.0', toVersion: '1.20.0', migrate: dropHideWhenInvalid },
+  { fromVersion: '1.18.0', toVersion: '1.19.0', migrate: versionOnly('1.19.0') },
+  { fromVersion: '1.17.0', toVersion: '1.18.0', migrate: versionOnly('1.18.0') },
+  { fromVersion: '1.16.0', toVersion: '1.17.0', migrate: promoteWarningToDanger },
+  { fromVersion: '1.15.0', toVersion: '1.16.0', migrate: versionOnly('1.16.0') },
+  { fromVersion: '1.14.0', toVersion: '1.15.0', migrate: versionOnly('1.15.0') },
+  { fromVersion: '1.13.0', toVersion: '1.14.0', migrate: renameMaxxecuProtocol },
+  { fromVersion: '1.12.0', toVersion: '1.13.0', migrate: versionOnly('1.13.0') },
+  { fromVersion: '1.11.0', toVersion: '1.12.0', migrate: raiseTopBarHeight },
+  { fromVersion: '1.10.0', toVersion: '1.11.0', migrate: versionOnly('1.11.0') },
+  { fromVersion: '1.9.0', toVersion: '1.10.0', migrate: versionOnly('1.10.0') },
+  { fromVersion: '1.8.0', toVersion: '1.9.0', migrate: growHorizontalBars },
+  { fromVersion: '1.7.0', toVersion: '1.8.0', migrate: buttonColorsAndGaugeIcons },
+  { fromVersion: '1.6.0', toVersion: '1.7.0', migrate: dropPageNamesAndMapFlags },
+  { fromVersion: '1.5.0', toVersion: '1.6.0', migrate: upgradeLegacyWidgetSizes },
+  { fromVersion: '1.4.0', toVersion: '1.5.0', migrate: versionOnly('1.5.0') },
+  { fromVersion: '1.3.0', toVersion: '1.4.0', migrate: versionOnly('1.4.0') },
+  { fromVersion: '1.2.0', toVersion: '1.3.0', migrate: defaultPagePalettes },
+  { fromVersion: '1.1.0', toVersion: '1.2.0', migrate: labelToGauge },
+  { fromVersion: '1.0.0', toVersion: '1.1.0', migrate: buttonActionsFromTarget },
 ]
-
-const TRACK_TOP_BAR = [
-  { type: 'label', text: 'CAN', position: 'left' },
-  { type: 'canRate', position: 'left' },
-  { type: 'label', text: 'MAP', position: 'center' },
-  { type: 'signal', signal: 'map_number', format: '%.0f', position: 'center' },
-  { type: 'trackBadge', position: 'right' },
-]
-
-const isLegacyFlagTopBar = (layout: unknown): boolean =>
-  JSON.stringify(layout) === JSON.stringify(LEGACY_FLAG_TOP_BAR)
-
-const retrackTopBar = (config: Record<string, unknown>): Record<string, unknown> => {
-  const topBar = asObject(config.topBar)
-  if (!topBar || !isLegacyFlagTopBar(topBar.layout)) return config
-  return { ...config, topBar: { ...topBar, layout: TRACK_TOP_BAR.map((item) => ({ ...item })) } }
-}
-
-const BUTTON_ICON_KEYS = ['iconName', 'iconPath', 'showIcon'] as const
-
-const withoutKeys = (source: Record<string, unknown>, keys: readonly string[]) =>
-  Object.fromEntries(Object.entries(source).filter(([key]) => !keys.includes(key)))
-
-const stripButtonIcons = (widget: Record<string, unknown>): Record<string, unknown> => {
-  const widgetConfig = asObject(widget.config)
-  if (widgetConfig?.type !== 'button') return widget
-  const cleaned = withoutKeys(widgetConfig, BUTTON_ICON_KEYS)
-  const states = asObjectArray(widgetConfig.states)
-  if (states) {
-    cleaned.states = states.map((state) => withoutKeys(state, ['iconName']))
-  }
-  return { ...widget, config: cleaned }
-}
-
-export const MIGRATIONS: Migration[] = [
-  {
-    fromVersion: '1.32.0',
-    toVersion: '1.33.0',
-    migrate: (config) => mapWidgets(config, '1.33.0', (widget) => widget),
-  },
-  {
-    fromVersion: '1.31.0',
-    toVersion: '1.32.0',
-    migrate: (config) => mapWidgets(config, '1.32.0', (widget) => widget),
-  },
-  {
-    fromVersion: '1.30.0',
-    toVersion: '1.31.0',
-    migrate: (config) => mapWidgets(config, '1.31.0', stripButtonIcons),
-  },
-  {
-    fromVersion: '1.29.0',
-    toVersion: '1.30.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.30.0', (widget) => {
-        const widgetConfig = asObject(widget.config)
-        if (!widgetConfig || !('arcFillStyle' in widgetConfig)) return widget
-        const rest = Object.fromEntries(
-          Object.entries(widgetConfig).filter(([key]) => key !== 'arcFillStyle')
-        )
-        return { ...widget, config: rest }
-      }),
-  },
-  {
-    fromVersion: '1.28.0',
-    toVersion: '1.29.0',
-    migrate: (config) => ({ ...retrackTopBar(config), version: '1.29.0' }),
-  },
-  {
-    fromVersion: '1.27.0',
-    toVersion: '1.28.0',
-    migrate: (config) => mapWidgets(config, '1.28.0', (widget) => widget),
-  },
-  {
-    fromVersion: '1.26.0',
-    toVersion: '1.27.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.27.0', (widget) => {
-        const configType = asObject(widget.config)?.type
-        return typeof configType === 'string' && configType !== widget.type
-          ? { ...widget, type: configType }
-          : widget
-      }),
-  },
-  {
-    fromVersion: '1.25.0',
-    toVersion: '1.26.0',
-    migrate: (config) => mapWidgets(config, '1.26.0', (widget) => widget),
-  },
-  {
-    fromVersion: '1.24.0',
-    toVersion: '1.25.0',
-    migrate: (config) => {
-      const profile = legacyProfileDimensions(config)
-      const topBar = asObject(config.topBar)
-      const topBarHeight = typeof topBar?.height === 'number' ? topBar.height : 0
-      return mapPages(config, '1.25.0', (page) => {
-        const widgets = asObjectArray(page.widgets)
-        if (!widgets) return page
-        const areaHeight =
-          page.showTopBar !== false ? profile.height - topBarHeight : profile.height
-        return {
-          ...page,
-          widgets: widgets.map((widget) => {
-            const layout = asObject(widget.layout)
-            if (!layout) return widget
-            const spans = legacyPixelLayoutToSpans(layout, profile.width, areaHeight)
-            if (!spans) return widget
-            return { ...widget, layout: spans }
-          }),
-        }
-      })
-    },
-  },
-  {
-    fromVersion: '1.23.0',
-    toVersion: '1.24.0',
-    migrate: (config) => {
-      const migrated = mapWidgets(config, '1.24.0', (widget) => {
-        const cfg = asObject(widget.config)
-        if (!cfg) return widget
-        switch (widget.type) {
-          case 'gauge': {
-            let next = { ...cfg }
-            delete next.showNeedle
-            next = clipField(next, 'prefix', CAPS_1_24.gaugePrefix)
-            next = clipField(next, 'suffix', CAPS_1_24.prefixSuffix)
-            return { ...widget, config: next }
-          }
-          case 'gear': {
-            let next = clipField(cfg, 'prefix', CAPS_1_24.prefixSuffix)
-            next = clipField(next, 'suffix', CAPS_1_24.prefixSuffix)
-            return { ...widget, config: next }
-          }
-          case 'button': {
-            let next = clipField(cfg, 'label', CAPS_1_24.widgetLabel)
-            next = clipField(next, 'iconPath', CAPS_1_24.path)
-            const states = asObjectArray(next.states)
-            if (states) {
-              next = {
-                ...next,
-                states: states.map((state) => clipField(state, 'label', CAPS_1_24.widgetLabel)),
-              }
-            }
-            return { ...widget, config: next }
-          }
-          case 'image': {
-            return { ...widget, config: clipField(cfg, 'imagePath', CAPS_1_24.path) }
-          }
-          default:
-            return widget
-        }
-      })
-      return typeof migrated.protocol === 'string'
-        ? { ...migrated, protocol: migrated.protocol.slice(0, CAPS_1_24.protocol) }
-        : migrated
-    },
-  },
-  {
-    fromVersion: '1.22.0',
-    toVersion: '1.23.0',
-    migrate: (config) =>
-      flatMapWidgets(config, '1.23.0', (widget) => {
-        if (widget.type !== 'button') return [widget]
-        const cfg = asObject(widget.config)
-        if (!cfg) return [widget]
-        if (cfg.mode === 'cycle') return [widget]
-        if (Array.isArray(cfg.actions) && cfg.actions.length === 0) return []
-        if ('mode' in cfg) return [widget]
-        return [{ ...widget, config: { ...cfg, mode: 'single' } }]
-      }),
-  },
-  {
-    fromVersion: '1.21.0',
-    toVersion: '1.22.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.22.0', (widget) => {
-        if (widget.type === 'button') return widget
-        const cfg = asObject(widget.config)
-        if (!cfg) return widget
-        if (!('label' in cfg) && !('labelPosition' in cfg)) return widget
-        const rest = { ...cfg }
-        delete rest.label
-        delete rest.labelPosition
-        return { ...widget, config: rest }
-      }),
-  },
-  {
-    fromVersion: '1.20.0',
-    toVersion: '1.21.0',
-    migrate: (config) =>
-      flatMapWidgets(config, '1.21.0', (widget) => {
-        if (widget.type === 'bar') return []
-        if (widget.type !== 'gauge') return [widget]
-        const cfg = asObject(widget.config)
-        if (!cfg) return [widget]
-        const hadBarStyle = cfg.displayStyle === 'bar'
-        if (!hadBarStyle && !('barOrientation' in cfg)) return [widget]
-        const rest = { ...cfg }
-        delete rest.barOrientation
-        if (hadBarStyle) rest.displayStyle = 'numeric'
-        return [{ ...widget, config: rest }]
-      }),
-  },
-  {
-    fromVersion: '1.19.0',
-    toVersion: '1.20.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.20.0', (widget) => {
-        const cfg = asObject(widget.config)
-        if (!cfg || !('hideWhenInvalid' in cfg)) return widget
-        const rest = { ...cfg }
-        delete rest.hideWhenInvalid
-        return { ...widget, config: rest }
-      }),
-  },
-  {
-    fromVersion: '1.18.0',
-    toVersion: '1.19.0',
-    migrate: (config) => ({ ...config, version: '1.19.0' }),
-  },
-  {
-    fromVersion: '1.17.0',
-    toVersion: '1.18.0',
-    migrate: (config) => ({ ...config, version: '1.18.0' }),
-  },
-  {
-    fromVersion: '1.16.0',
-    toVersion: '1.17.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.17.0', (widget) => {
-        const cfg = asObject(widget.config)
-        if (!cfg) return widget
-        if (!('warningLevel' in cfg)) return widget
-        const { warningLevel: wl, ...rest } = cfg
-        const newCfg =
-          rest.dangerLevel === undefined && typeof wl === 'number'
-            ? { ...rest, dangerLevel: wl }
-            : rest
-        return { ...widget, config: newCfg }
-      }),
-  },
-  {
-    fromVersion: '1.15.0',
-    toVersion: '1.16.0',
-    migrate: (config) => ({ ...config, version: '1.16.0' }),
-  },
-  {
-    fromVersion: '1.14.0',
-    toVersion: '1.15.0',
-    migrate: (config) => ({ ...config, version: '1.15.0' }),
-  },
-  {
-    fromVersion: '1.13.0',
-    toVersion: '1.14.0',
-    migrate: (config) => {
-      if (config.protocol === 'maxxecu_v1.2') {
-        return { ...config, version: '1.14.0', protocol: 'custom_v1.0' }
-      }
-      return { ...config, version: '1.14.0' }
-    },
-  },
-  {
-    fromVersion: '1.12.0',
-    toVersion: '1.13.0',
-    migrate: (config) => ({ ...config, version: '1.13.0' }),
-  },
-  {
-    fromVersion: '1.11.0',
-    toVersion: '1.12.0',
-    migrate: (config) => {
-      const topBar = asObject(config.topBar)
-      if (topBar?.height !== 24) {
-        return { ...config, version: '1.12.0' }
-      }
-      return { ...config, version: '1.12.0', topBar: { ...topBar, height: 30 } }
-    },
-  },
-  {
-    fromVersion: '1.10.0',
-    toVersion: '1.11.0',
-    migrate: (config) => ({ ...config, version: '1.11.0' }),
-  },
-  {
-    fromVersion: '1.9.0',
-    toVersion: '1.10.0',
-    migrate: (config) => ({ ...config, version: '1.10.0' }),
-  },
-  {
-    fromVersion: '1.8.0',
-    toVersion: '1.9.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.9.0', (widget) => {
-        const cfg = asObject(widget.config)
-        const layout = asObject(widget.layout)
-        if (!cfg || !layout) return widget
-        if (cfg.displayStyle !== 'bar') return widget
-        if (cfg.barOrientation !== 'horizontal') return widget
-        if (layout.w !== 320 || layout.h !== 28) return widget
-        return { ...widget, layout: resizeWithinCanvas(layout, 320, 56) }
-      }),
-  },
-  {
-    fromVersion: '1.7.0',
-    toVersion: '1.8.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.8.0', (widget) => {
-        const type = widget.type
-        const cfg = asObject(widget.config)
-        if (!cfg) return widget
-
-        if (type === 'button') {
-          if (cfg.colors !== undefined) return widget
-          const style = asObject(widget.style)
-          const normal = typeof style?.primaryColor === 'string' ? style.primaryColor : '#FF4444'
-          const active = brightenHex(normal)
-          return { ...widget, config: { ...cfg, colors: { normal, active } } }
-        }
-
-        if (type === 'gauge' || type === 'bar') {
-          if (!('iconName' in cfg)) return widget
-          const rest = { ...cfg }
-          delete rest.iconName
-          return { ...widget, config: rest }
-        }
-
-        return widget
-      }),
-  },
-  {
-    fromVersion: '1.6.0',
-    toVersion: '1.7.0',
-    migrate: (config) => {
-      const withPages = mapPages(config, '1.7.0', (page) => {
-        const rest = { ...page }
-        delete rest.name
-        return rest
-      })
-      const topBar = asObject(config.topBar)
-      if (!topBar) return withPages
-      const rest = { ...topBar }
-      delete rest.showMapName
-      delete rest.showMapProfile
-      return { ...withPages, topBar: rest }
-    },
-  },
-  {
-    fromVersion: '1.5.0',
-    toVersion: '1.6.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.6.0', (widget) => {
-        const type = widget.type
-        if (typeof type !== 'string' || !STANDARD_WIDGET_TYPES.has(type)) return widget
-
-        const layout = asObject(widget.layout)
-        if (!layout) return widget
-        const w = layout.w
-        const h = layout.h
-        if (typeof w !== 'number' || typeof h !== 'number') return widget
-
-        const upgraded = upgradeLegacySize(w, h)
-        if (!upgraded) return widget
-
-        return { ...widget, layout: resizeWithinCanvas(layout, upgraded.w, upgraded.h) }
-      }),
-  },
-  {
-    fromVersion: '1.4.0',
-    toVersion: '1.5.0',
-    migrate: (config) => ({ ...config, version: '1.5.0' }),
-  },
-  {
-    fromVersion: '1.3.0',
-    toVersion: '1.4.0',
-    migrate: (config) => ({ ...config, version: '1.4.0' }),
-  },
-  {
-    fromVersion: '1.2.0',
-    toVersion: '1.3.0',
-    migrate: (config) =>
-      mapPages(config, '1.3.0', (page) => {
-        if (page.palette !== undefined) return page
-        return { ...page, palette: { ...DEFAULT_PALETTE } }
-      }),
-  },
-  {
-    fromVersion: '1.1.0',
-    toVersion: '1.2.0',
-    migrate: (config) =>
-      mapWidgets(config, '1.2.0', (widget) => {
-        const cfg = asObject(widget.config)
-        if (!cfg) return widget
-
-        if (widget.type === 'label') {
-          return {
-            ...widget,
-            type: 'gauge',
-            config: {
-              type: 'gauge',
-              displayStyle: 'numeric',
-              minValue: 0,
-              maxValue: 100,
-              warningLevel: 80,
-              dangerLevel: 95,
-              decimalPlaces: (cfg.decimalPlaces as number | undefined) ?? 0,
-              ...(cfg.prefix !== undefined && { prefix: cfg.prefix }),
-              ...(cfg.suffix !== undefined && { suffix: cfg.suffix }),
-              ...(cfg.hideWhenInvalid !== undefined && { hideWhenInvalid: cfg.hideWhenInvalid }),
-              ...(cfg.iconName !== undefined && { iconName: cfg.iconName }),
-            },
-          }
-        }
-
-        if (widget.type === 'gauge' && !cfg.displayStyle) {
-          return {
-            ...widget,
-            config: {
-              ...cfg,
-              type: 'gauge',
-              displayStyle: 'arc',
-              decimalPlaces: (cfg.decimalPlaces as number | undefined) ?? 0,
-            },
-          }
-        }
-
-        return widget
-      }),
-  },
-  {
-    fromVersion: '1.0.0',
-    toVersion: '1.1.0',
-    migrate: (config) =>
-      flatMapWidgets(config, '1.1.0', (widget) => {
-        if (widget.type !== 'button') return [widget]
-        const cfg = asObject(widget.config)
-        if (!cfg) return [widget]
-        if (Array.isArray(cfg.actions)) return cfg.actions.length > 0 ? [widget] : []
-
-        const targetPageId = cfg.targetPageId
-        if (typeof targetPageId !== 'string' || targetPageId.length === 0) return []
-
-        const rest = { ...cfg }
-        delete rest.targetPageId
-        return [
-          {
-            ...widget,
-            config: {
-              ...rest,
-              actions: [{ category: 'dashboard', type: 'navigate', pageId: targetPageId }],
-            },
-          },
-        ]
-      }),
-  },
-]
-
-export const BUILTIN_MIGRATIONS: readonly Migration[] = MIGRATIONS

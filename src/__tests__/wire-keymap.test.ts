@@ -1,5 +1,5 @@
 import { mapObjectKeys } from '../wire/keymap.js'
-import { cloneAndStripForbiddenKeys } from '../migrations/helpers.js'
+import { cloneAndStripForbiddenKeys } from '../migrations/config-traverse.js'
 
 describe('mapObjectKeys — prototype-pollution hardening', () => {
   it('renames mapped keys and passes through the rest', () => {
