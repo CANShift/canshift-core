@@ -10,7 +10,7 @@ export interface TopBarMetricsRatios {
   readonly flagGapPx: number
 }
 
-export const TOP_BAR_METRICS: TopBarMetricsRatios = {
+export const TopBarMetrics: TopBarMetricsRatios = {
   dotRatio: 0.3,
   fontSizeRatio: 0.45,
   separatorRatio: 0.55,
