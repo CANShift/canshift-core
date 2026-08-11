@@ -109,8 +109,8 @@ export const widgetTopRulePx = (valueFontSize: number): number =>
     : WIDGET_TOP_RULE.secondaryPx
 
 export const GAUGE_VALUE_FONT_BREAKPOINTS = [
-  { minHeight: 125, size: 72 },
-  { minHeight: 60, size: 34 },
+  { minHeight: 90, size: 72 },
+  { minHeight: 40, size: 34 },
   { minHeight: 0, size: 14 },
 ] as const
 
