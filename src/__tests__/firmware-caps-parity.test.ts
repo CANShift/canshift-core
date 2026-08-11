@@ -8,9 +8,9 @@ import { SIGNAL_BYTE_LENGTHS } from '../schemas/signal.js'
 const here = dirname(fileURLToPath(import.meta.url))
 const APP_CONFIG = resolve(here, '../../../canshift-firmware/include/app_config.h')
 const CONFIG_TYPES = resolve(here, '../../../canshift-firmware/src/config/config_types.h')
-const CONFIG_FILE_LOADERS = resolve(
+const CONFIG_SIGNALS_LOADER = resolve(
   here,
-  '../../../canshift-firmware/src/config/config_file_loaders.inc'
+  '../../../canshift-firmware/src/config/config_signals_loader.inc'
 )
 
 const extractDefine = (source: string, name: string): number | null => {
@@ -68,11 +68,13 @@ describeIfTypes('string caps firmware parity (config_types.h buffers minus NUL)'
   })
 })
 
-const describeIfLoaders = existsSync(CONFIG_FILE_LOADERS) ? describe : describe.skip
+const describeIfLoaders = existsSync(CONFIG_SIGNALS_LOADER) ? describe : describe.skip
 
 describeIfLoaders('signal byteLength firmware parity', () => {
   it('SIGNAL_BYTE_LENGTHS matches the firmware byteLenValid check', () => {
-    const source = existsSync(CONFIG_FILE_LOADERS) ? readFileSync(CONFIG_FILE_LOADERS, 'utf8') : ''
+    const source = existsSync(CONFIG_SIGNALS_LOADER)
+      ? readFileSync(CONFIG_SIGNALS_LOADER, 'utf8')
+      : ''
     const match = /byteLenValid\s*=([^;]+);/.exec(source)
     expect(match).not.toBeNull()
     const firmwareLengths = [...(match?.[1] ?? '').matchAll(/byteLength\s*==\s*(\d+)/g)]
