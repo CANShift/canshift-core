@@ -9,6 +9,7 @@ export const GaugeDisplayStyleSchema = z.enum(['numeric', 'arc'])
 export const GaugeWidgetConfigSchema = z
   .object({
     type: z.literal('gauge'),
+    big: z.number().int().min(10).max(127).optional(),
     displayStyle: GaugeDisplayStyleSchema,
     minValue: z.number(),
     maxValue: z.number(),

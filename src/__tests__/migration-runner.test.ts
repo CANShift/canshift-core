@@ -1670,7 +1670,7 @@ describe('migrateConfig — 1.24.0 → 1.25.0 (pixel layout → 12-column spans,
       col: 6,
       colSpan: 6,
       row: 6,
-      rowSpan: 4,
+      rowSpan: 3,
       zOrder: 2,
     })
   })

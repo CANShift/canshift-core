@@ -289,6 +289,8 @@ export {
   TIMER_FONT_BREAKPOINTS,
   TIMER_PRIMARY_MIN_WIDTH,
   timerFontSize,
+  BIG_TO_DEVICE_FONT,
+  deviceValueFontPx,
   formatTimerMmSs,
   formatTimerSsMmm,
   SENSOR_DEFAULT_RANGES,
