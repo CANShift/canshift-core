@@ -1,6 +1,6 @@
 import type { HexColor } from './schemas/common.js'
-import type { ColorRamp, ColorRampStop } from './schemas/signal.js'
-import { SENSOR_DEFAULT_RAMPS, colorAtValue } from './sensor-defaults.js'
+import type { ColorRampStop } from './schemas/signal.js'
+import { SENSOR_DEFAULT_RAMPS } from './sensor-defaults.js'
 import type { SensorKind } from './sensor-defaults.js'
 
 const asHex = (value: string): HexColor => value as HexColor
@@ -45,10 +45,12 @@ const fontSizeFromRatios = (
 ): number => clampFont(Math.min(applyRatio(height, ratios.height), applyRatio(width, ratios.width)))
 
 export const WIDGET_ZONE_COLORS = {
-  normal: asHex('#00CC44'),
   warning: asHex('#FF8800'),
   danger: asHex('#FF4444'),
-} as const satisfies Record<'normal' | 'warning' | 'danger', HexColor>
+} as const satisfies Record<'warning' | 'danger', HexColor>
+
+export const WIDGET_ACCENT_COLOR = asHex('#FF4747')
+export const WIDGET_MUTED_COLOR = asHex('#BABABA')
 
 export const WIDGET_TEXT_COLORS = {
   day: asHex('#000000'),
@@ -97,8 +99,7 @@ export const GAUGE_ARC = {
 
 export const GAUGE_TRACK_COLORS = {
   plain: asHex('#222222'),
-  gradient: asHex('#2A2A2A'),
-} as const satisfies Record<'plain' | 'gradient', HexColor>
+} as const satisfies Record<'plain', HexColor>
 
 export const WIDGET_TOP_RULE = {
   primaryPx: 2,
@@ -152,18 +153,6 @@ export const gaugeArcPath = (
   return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${String(r)} ${String(r)} 0 ${String(largeArc)} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`
 }
 
-const GAUGE_GRADIENT_RAMP: ColorRamp = {
-  interpolate: 'linear',
-  stops: [
-    { value: 0, color: WIDGET_ZONE_COLORS.normal },
-    { value: 0.5, color: WIDGET_ZONE_COLORS.warning },
-    { value: 1, color: WIDGET_ZONE_COLORS.danger },
-  ],
-}
-
-export const gaugeGradientColorAt = (pct: number): HexColor =>
-  colorAtValue(GAUGE_GRADIENT_RAMP, clamp01(pct))
-
 export const LABEL_FONT_RATIO = {
   height: { numerator: 65, denominator: 100 },
   width: { numerator: 52, denominator: 100 },
@@ -206,8 +195,8 @@ export const TIMER_LONG_PRESS_MS = 600
 export const TIMER_BLINK_PERIOD_MS = 1000
 export const TIMER_STATE_BORDER_WIDTH = 2
 export const TIMER_BORDER_COLORS = {
-  running: WIDGET_ZONE_COLORS.normal,
-  paused: WIDGET_ZONE_COLORS.warning,
+  running: WIDGET_ACCENT_COLOR,
+  paused: WIDGET_MUTED_COLOR,
 } as const satisfies Record<'running' | 'paused', HexColor>
 
 export const TIMER_FONT_BREAKPOINTS = [

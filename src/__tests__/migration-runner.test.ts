@@ -1764,6 +1764,42 @@ describe('migrateConfig — 1.24.0 → 1.25.0 (pixel layout → 12-column spans,
   })
 })
 
+describe('migrateConfig — 1.29.0 → 1.30.0 (drop gauge arcFillStyle, spec-strict fills)', () => {
+  const wrap = (widgetConfig: Record<string, unknown>): Record<string, unknown> => ({
+    version: '1.29.0',
+    pages: [
+      {
+        id: 'p1',
+        widgets: [{ id: 'g1', type: 'gauge', signal: 'rpm', config: widgetConfig }],
+      },
+    ],
+  })
+
+  const configOf = (config: Record<string, unknown>): Record<string, unknown> => {
+    const { config: out } = migrateConfig(config, '1.30.0')
+    const page = (out.pages as Record<string, unknown>[])[0]!
+    const widgets = page.widgets as Record<string, unknown>[]
+    return widgets[0]!.config as Record<string, unknown>
+  }
+
+  it('bumps the version and reports the step', () => {
+    const { config: out, applied } = migrateConfig({ version: '1.29.0', pages: [] }, '1.30.0')
+    expect(out.version).toBe('1.30.0')
+    expect(applied).toEqual(['1.29.0 → 1.30.0'])
+  })
+
+  it.each(['ink', 'zones', 'gradient'])('strips arcFillStyle "%s"', (style) => {
+    const cfg = configOf(wrap({ type: 'gauge', displayStyle: 'arc', arcFillStyle: style }))
+    expect('arcFillStyle' in cfg).toBe(false)
+    expect(cfg.displayStyle).toBe('arc')
+  })
+
+  it('leaves gauges without arcFillStyle untouched', () => {
+    const cfg = configOf(wrap({ type: 'gauge', displayStyle: 'numeric', minValue: 0 }))
+    expect(cfg).toEqual({ type: 'gauge', displayStyle: 'numeric', minValue: 0 })
+  })
+})
+
 describe('migrateConfig — error cases', () => {
   it('throws when no migration path exists', () => {
     const config = { version: '0.5.0' }

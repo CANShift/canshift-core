@@ -5,10 +5,10 @@ import {
   colorAtValue,
 } from '../sensor-defaults.js'
 import type { SensorKind } from '../sensor-defaults.js'
-import { SENSOR_PALETTE } from '../sensor-palette.js'
 import { HEX_REGEX } from '../colors/hex.js'
 import { MAX_RAMP_STOPS } from '../constants/firmware-caps.js'
 import { HexColorSchema } from '../schemas/common.js'
+import { SensorIconNameSchema } from '../schemas/widgets/sensor-icon.js'
 import type { ColorRamp } from '../schemas/signal.js'
 
 const hex = (value: string): ReturnType<typeof HexColorSchema.parse> => HexColorSchema.parse(value)
@@ -44,10 +44,9 @@ describe('SENSOR_KINDS / SENSOR_KIND_TO_ICON', () => {
     expect(Object.keys(SENSOR_DEFAULT_RAMPS).sort()).toEqual([...SENSOR_KINDS].sort())
   })
 
-  it('maps every kind to an icon backed by the sensor palette', () => {
+  it('maps every kind to a valid sensor icon', () => {
     for (const kind of SENSOR_KINDS) {
-      const icon = SENSOR_KIND_TO_ICON[kind]
-      expect(SENSOR_PALETTE[icon]).toBeDefined()
+      expect(() => SensorIconNameSchema.parse(SENSOR_KIND_TO_ICON[kind])).not.toThrow()
     }
   })
 })

@@ -1,5 +1,7 @@
 import {
   WIDGET_ZONE_COLORS,
+  WIDGET_ACCENT_COLOR,
+  WIDGET_MUTED_COLOR,
   WIDGET_TEXT_COLORS,
   WIDGET_STALE_TEXT_COLORS,
   widgetTextColor,
@@ -23,7 +25,6 @@ import {
   gaugeArcStrokeWidth,
   gaugeValueAngle,
   gaugeArcPath,
-  gaugeGradientColorAt,
   labelFontSize,
   gearFontSize,
   gearGlyph,
@@ -49,17 +50,23 @@ import {
 } from '../widget-metrics.js'
 import { SENSOR_DEFAULT_RAMPS, SENSOR_KINDS } from '../sensor-defaults.js'
 import type { SensorKind } from '../sensor-defaults.js'
-import { HEX_REGEX } from '../colors/hex.js'
 
 describe('WIDGET_ZONE_COLORS', () => {
-  it('pins widget_helpers.h kZoneNormalRgb = 0x00CC44', () => {
-    expect(WIDGET_ZONE_COLORS.normal).toBe('#00CC44')
-  })
-  it('pins widget_helpers.h kZoneWarningRgb = 0xFF8800', () => {
+  it('pins widget_helpers.h kZoneWarningRgb = 0xFF8800 (DO NOT UNPLUG scope)', () => {
     expect(WIDGET_ZONE_COLORS.warning).toBe('#FF8800')
   })
   it('pins widget_helpers.h kZoneDangerRgb = 0xFF4444', () => {
     expect(WIDGET_ZONE_COLORS.danger).toBe('#FF4444')
+  })
+  it('has no normal/green zone — spec-strict fills are ink and danger only', () => {
+    expect('normal' in WIDGET_ZONE_COLORS).toBe(false)
+  })
+})
+
+describe('device accent / muted tokens', () => {
+  it('pins accent #FF4747 (engaged) and muted #BABABA per the dash token table', () => {
+    expect(WIDGET_ACCENT_COLOR).toBe('#FF4747')
+    expect(WIDGET_MUTED_COLOR).toBe('#BABABA')
   })
 })
 
@@ -133,9 +140,8 @@ describe('gauge geometry', () => {
     expect(GAUGE_ARC.containerPadding).toBe(4)
     expect(GAUGE_ARC.yShift).toBe(2)
   })
-  it('pins kColorBgDim 0x222222 / kColorGradientBg 0x2A2A2A', () => {
-    expect(GAUGE_TRACK_COLORS.plain).toBe('#222222')
-    expect(GAUGE_TRACK_COLORS.gradient).toBe('#2A2A2A')
+  it('pins kColorBgDim 0x222222 as the only track color', () => {
+    expect(GAUGE_TRACK_COLORS).toEqual({ plain: '#222222' })
   })
 
   it('gaugeValueFontSize matches resolveValueFont tiers 72/34/units-14', () => {
@@ -160,15 +166,6 @@ describe('gauge geometry', () => {
     expect(gaugeValueAngle(150, 0, 100)).toBe(270)
     expect(gaugeValueAngle(-50, 0, 100)).toBe(0)
     expect(gaugeValueAngle(5, 5, 5)).toBe(0)
-  })
-
-  it('gaugeGradientColorAt interpolates green -> orange -> red (zone palette)', () => {
-    expect(gaugeGradientColorAt(0)).toBe(WIDGET_ZONE_COLORS.normal)
-    expect(gaugeGradientColorAt(0.5)).toBe(WIDGET_ZONE_COLORS.warning)
-    expect(gaugeGradientColorAt(1)).toBe(WIDGET_ZONE_COLORS.danger)
-    expect(gaugeGradientColorAt(-1)).toBe(WIDGET_ZONE_COLORS.normal)
-    expect(gaugeGradientColorAt(2)).toBe(WIDGET_ZONE_COLORS.danger)
-    expect(HEX_REGEX.test(gaugeGradientColorAt(0.25))).toBe(true)
   })
 })
 
@@ -230,9 +227,9 @@ describe('timer widget (timer_widget.cpp)', () => {
     expect(TIMER_BLINK_PERIOD_MS).toBe(1000)
     expect(TIMER_STATE_BORDER_WIDTH).toBe(2)
   })
-  it('pins running=zone normal / paused=zone warning borders', () => {
-    expect(TIMER_BORDER_COLORS.running).toBe(WIDGET_ZONE_COLORS.normal)
-    expect(TIMER_BORDER_COLORS.paused).toBe(WIDGET_ZONE_COLORS.warning)
+  it('pins running=accent (engaged) / paused=muted borders', () => {
+    expect(TIMER_BORDER_COLORS.running).toBe(WIDGET_ACCENT_COLOR)
+    expect(TIMER_BORDER_COLORS.paused).toBe(WIDGET_MUTED_COLOR)
   })
   it('timerFontSize matches tiers 72/34/units-14 with the 260px primary width gate', () => {
     expect(timerFontSize(110, 260)).toBe(72)

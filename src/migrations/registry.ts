@@ -58,6 +58,19 @@ const retrackTopBar = (config: Record<string, unknown>): Record<string, unknown>
 
 export const MIGRATIONS: Migration[] = [
   {
+    fromVersion: '1.29.0',
+    toVersion: '1.30.0',
+    migrate: (config) =>
+      mapWidgets(config, '1.30.0', (widget) => {
+        const widgetConfig = asObject(widget.config)
+        if (!widgetConfig || !('arcFillStyle' in widgetConfig)) return widget
+        const rest = Object.fromEntries(
+          Object.entries(widgetConfig).filter(([key]) => key !== 'arcFillStyle')
+        )
+        return { ...widget, config: rest }
+      }),
+  },
+  {
     fromVersion: '1.28.0',
     toVersion: '1.29.0',
     migrate: (config) => ({ ...retrackTopBar(config), version: '1.29.0' }),
