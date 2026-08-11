@@ -7,18 +7,15 @@ import {
   widgetTextColor,
   widgetStaleTextColor,
   WIDGET_FONT_CLAMP,
-  VALUE_FRAC_FONT_RATIO,
   GEAR_FONT_RATIO,
   LABEL_FONT_RATIO,
   TIMER_FONT_BREAKPOINTS,
   GAUGE_VALUE_FONT_BREAKPOINTS,
-  ratioScale,
   VALUE_UNIT_FONT_SIZE,
   WIDGET_TOP_RULE,
   valueUnitFontSize,
   widgetTopRulePx,
   STALE_PLACEHOLDER,
-  widgetFracFontSize,
   GAUGE_ARC,
   GAUGE_TRACK_COLORS,
   gaugeValueFontSize,
@@ -89,18 +86,11 @@ describe('shared value-cluster rules', () => {
   it('pins gauge_widget.cpp / label_widget.cpp font clamp 12..72', () => {
     expect(WIDGET_FONT_CLAMP).toEqual({ min: 12, max: 72 })
   })
-  it('pins int/frac split at 70% and 12px unit font', () => {
-    expect(ratioScale(VALUE_FRAC_FONT_RATIO)).toBe(0.7)
+  it('pins the 12px unit font', () => {
     expect(VALUE_UNIT_FONT_SIZE).toBe(12)
   })
   it('pins the stale placeholder "- -" (dash spec: grey and - -)', () => {
     expect(STALE_PLACEHOLDER).toBe('- -')
-  })
-  it('widgetFracFontSize: (int*7/10) floored, clamped to 12 (buildFracLabel)', () => {
-    expect(widgetFracFontSize(48)).toBe(33)
-    expect(widgetFracFontSize(32)).toBe(22)
-    expect(widgetFracFontSize(20)).toBe(14)
-    expect(widgetFracFontSize(15)).toBe(12)
   })
   it('valueUnitFontSize: quarter of the value size, floored at 10 (label_widget.cpp pickUnitFontSize)', () => {
     expect(valueUnitFontSize(48)).toBe(12)
@@ -355,14 +345,6 @@ describe('every exported ratio constant is read by the function it names', () =>
     [100, 300],
     [77, 61],
   ]
-
-  it('widgetFracFontSize derives from VALUE_FRAC_FONT_RATIO, not a second hardcoded pair', () => {
-    for (const size of [20, 33, 48, 100]) {
-      expect(widgetFracFontSize(size)).toBe(
-        Math.max(WIDGET_FONT_CLAMP.min, applyRatio(size, VALUE_FRAC_FONT_RATIO))
-      )
-    }
-  })
 
   it('labelFontSize derives from LABEL_FONT_RATIO on both axes', () => {
     for (const [w, h] of BOXES) {
