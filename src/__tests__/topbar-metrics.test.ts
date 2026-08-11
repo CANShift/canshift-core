@@ -1,8 +1,8 @@
-import { TOP_BAR_METRICS } from '../topbar-metrics.js'
+import { TopBarMetrics } from '../topbar-metrics.js'
 
-describe('TOP_BAR_METRICS', () => {
+describe('TopBarMetrics', () => {
   it('pins the canonical proportion table', () => {
-    expect(TOP_BAR_METRICS).toEqual({
+    expect(TopBarMetrics).toEqual({
       dotRatio: 0.3,
       fontSizeRatio: 0.45,
       separatorRatio: 0.55,
@@ -28,7 +28,7 @@ describe('TOP_BAR_METRICS', () => {
 
   it('keeps every ratio in a sane range (0 < r <= 2)', () => {
     for (const key of RATIO_KEYS) {
-      const value = TOP_BAR_METRICS[key]
+      const value = TopBarMetrics[key]
       expect(typeof value).toBe('number')
       expect(value).toBeGreaterThan(0)
       const ceiling = key === 'iconSizeRatio' ? 2 : 1
@@ -38,7 +38,7 @@ describe('TOP_BAR_METRICS', () => {
 
   it('keeps pixel constants as small positive integers', () => {
     for (const key of PIXEL_KEYS) {
-      const value = TOP_BAR_METRICS[key]
+      const value = TopBarMetrics[key]
       expect(Number.isInteger(value)).toBe(true)
       expect(value).toBeGreaterThan(0)
       expect(value).toBeLessThanOrEqual(16)

@@ -254,7 +254,7 @@ export {
   MAX_RAMP_STOPS,
 } from './constants/firmware-caps.js'
 
-export { TOP_BAR_METRICS } from './topbar-metrics.js'
+export { TopBarMetrics } from './topbar-metrics.js'
 export type { TopBarMetricsRatios } from './topbar-metrics.js'
 
 export {
