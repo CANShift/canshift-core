@@ -1,8 +1,8 @@
 export const LAYOUT_GRID = {
   COLUMNS: 12,
   ROWS: 12,
-  GUTTER: 12,
-  FRAME_PADDING: 16,
+  GUTTER: 6,
+  FRAME_PADDING: 8,
 } as const
 
 export interface GridArea {

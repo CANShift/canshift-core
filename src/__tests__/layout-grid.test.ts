@@ -21,8 +21,8 @@ const place = (col: number, colSpan: number, row: number, rowSpan: number): Grid
 describe('LAYOUT_GRID constants', () => {
   it('matches the restyle handoff §4 widget grammar', () => {
     expect(LAYOUT_GRID.COLUMNS).toBe(12)
-    expect(LAYOUT_GRID.GUTTER).toBe(12)
-    expect(LAYOUT_GRID.FRAME_PADDING).toBe(16)
+    expect(LAYOUT_GRID.GUTTER).toBe(6)
+    expect(LAYOUT_GRID.FRAME_PADDING).toBe(8)
   })
 })
 
@@ -38,23 +38,23 @@ describe('resolveGridRect — crowpanel-28 (320 wide, 25 px column pitch)', () =
   it('resolves two half-width spans separated by exactly one gutter', () => {
     const left = resolveGridRect(place(0, 6, 0, 6), CROWPANEL)
     const right = resolveGridRect(place(6, 6, 0, 6), CROWPANEL)
-    expect(left.x).toBe(16)
-    expect(left.w).toBe(138)
-    expect(right.x).toBe(166)
-    expect(right.w).toBe(138)
+    expect(left.x).toBe(8)
+    expect(left.w).toBe(149)
+    expect(right.x).toBe(163)
+    expect(right.w).toBe(149)
     expect(right.x - (left.x + left.w)).toBe(LAYOUT_GRID.GUTTER)
     expect(right.x + right.w).toBe(CROWPANEL.width - LAYOUT_GRID.FRAME_PADDING)
   })
 
   it('resolves a single column to pitch minus gutter', () => {
     const rect = resolveGridRect(place(0, 1, 0, 1), CROWPANEL)
-    expect(rect.w).toBe(13)
+    expect(rect.w).toBe(20)
   })
 
-  it('resolves rows with an exact 17 px pitch on the 224 px area below the top bar', () => {
+  it('resolves rows on the 224 px area below the top bar (17.83 px pitch)', () => {
     const rect = resolveGridRect(place(0, 12, 6, 3), CROWPANEL_BELOW_TOPBAR)
-    expect(rect.y).toBe(16 + 102)
-    expect(rect.h).toBe(3 * 17 - LAYOUT_GRID.GUTTER)
+    expect(rect.y).toBe(8 + 107)
+    expect(rect.h).toBe(48)
   })
 
   it('never renders outside the padded frame for any valid placement', () => {
@@ -106,8 +106,8 @@ describe('nearestTrack', () => {
   })
 
   it('rounds to the closest track', () => {
-    expect(nearestTrack(16 + 12, CROWPANEL.width, LAYOUT_GRID.COLUMNS)).toBe(0)
-    expect(nearestTrack(16 + 13, CROWPANEL.width, LAYOUT_GRID.COLUMNS)).toBe(1)
+    expect(nearestTrack(8 + 6, CROWPANEL.width, LAYOUT_GRID.COLUMNS)).toBe(0)
+    expect(nearestTrack(8 + 20, CROWPANEL.width, LAYOUT_GRID.COLUMNS)).toBe(1)
   })
 
   it('clamps offsets outside the frame', () => {

@@ -83,11 +83,11 @@ describe('theme text colors', () => {
 })
 
 describe('shared value-cluster rules', () => {
-  it('pins gauge_widget.cpp / label_widget.cpp font clamp 12..72', () => {
-    expect(WIDGET_FONT_CLAMP).toEqual({ min: 12, max: 72 })
+  it('pins gauge_widget.cpp / label_widget.cpp font clamp 10..48 (device scale)', () => {
+    expect(WIDGET_FONT_CLAMP).toEqual({ min: 10, max: 48 })
   })
-  it('pins the 12px unit font', () => {
-    expect(VALUE_UNIT_FONT_SIZE).toBe(12)
+  it('pins the 10px unit font', () => {
+    expect(VALUE_UNIT_FONT_SIZE).toBe(10)
   })
   it('pins the stale placeholder "- -" (dash spec: grey and - -)', () => {
     expect(STALE_PLACEHOLDER).toBe('- -')
@@ -99,18 +99,18 @@ describe('shared value-cluster rules', () => {
     expect(valueUnitFontSize(32)).toBe(10)
     expect(valueUnitFontSize(12)).toBe(10)
   })
-  it('widgetTopRulePx: 2px ink rule for 72px primary values, 1px track rule below (restyle §4)', () => {
+  it('widgetTopRulePx: 2px ink rule from big>=64 (device 32), 1px track rule below', () => {
     expect(WIDGET_TOP_RULE).toEqual({
       primaryPx: 2,
       secondaryPx: 1,
-      primaryFontMin: 72,
+      primaryFontMin: 32,
       trackColor: '#222222',
       dangerColor: '#FF4444',
     })
-    expect(widgetTopRulePx(72)).toBe(2)
-    expect(widgetTopRulePx(71)).toBe(1)
-    expect(widgetTopRulePx(34)).toBe(1)
-    expect(widgetTopRulePx(12)).toBe(1)
+    expect(widgetTopRulePx(48)).toBe(2)
+    expect(widgetTopRulePx(32)).toBe(2)
+    expect(widgetTopRulePx(31)).toBe(1)
+    expect(widgetTopRulePx(17)).toBe(1)
   })
 })
 
@@ -134,13 +134,19 @@ describe('gauge geometry', () => {
     expect(GAUGE_TRACK_COLORS).toEqual({ plain: '#222222' })
   })
 
-  it('gaugeValueFontSize matches resolveValueFont tiers 72/34/units-14', () => {
-    expect(gaugeValueFontSize(200)).toBe(72)
-    expect(gaugeValueFontSize(90)).toBe(72)
-    expect(gaugeValueFontSize(89)).toBe(34)
-    expect(gaugeValueFontSize(40)).toBe(34)
-    expect(gaugeValueFontSize(39)).toBe(14)
-    expect(gaugeValueFontSize(0)).toBe(14)
+  it('gaugeValueFontSize: big wins via the canvas map, height fallback 48/17/10', () => {
+    expect(gaugeValueFontSize(200)).toBe(48)
+    expect(gaugeValueFontSize(90)).toBe(48)
+    expect(gaugeValueFontSize(89)).toBe(17)
+    expect(gaugeValueFontSize(40)).toBe(17)
+    expect(gaugeValueFontSize(39)).toBe(10)
+    expect(gaugeValueFontSize(10, 96)).toBe(48)
+    expect(gaugeValueFontSize(10, 88)).toBe(44)
+    expect(gaugeValueFontSize(10, 80)).toBe(40)
+    expect(gaugeValueFontSize(10, 64)).toBe(32)
+    expect(gaugeValueFontSize(10, 48)).toBe(24)
+    expect(gaugeValueFontSize(10, 44)).toBe(22)
+    expect(gaugeValueFontSize(10, 34)).toBe(17)
   })
 
   it('gaugeArcStrokeWidth = min(w*0.48,h*0.49)*0.30 with a floor of 5', () => {
@@ -161,13 +167,13 @@ describe('gauge geometry', () => {
 
 describe('labelFontSize (label_widget.cpp pickValueFontSize)', () => {
   it('= min(trunc(h*65/100), trunc(w*52/100))', () => {
-    expect(labelFontSize(100, 100)).toBe(52)
+    expect(labelFontSize(60, 60)).toBe(31)
 
-    expect(labelFontSize(60, 50)).toBe(31)
+    expect(labelFontSize(40, 50)).toBe(20)
   })
-  it('clamps to 12..72 at the boundaries', () => {
-    expect(labelFontSize(10, 10)).toBe(12)
-    expect(labelFontSize(1000, 1000)).toBe(72)
+  it('clamps to 10..48 at the boundaries', () => {
+    expect(labelFontSize(10, 10)).toBe(10)
+    expect(labelFontSize(1000, 1000)).toBe(48)
   })
 })
 
@@ -175,9 +181,9 @@ describe('gearFontSize (gear_widget.cpp selectFont)', () => {
   it('= min(trunc(h*85/100), trunc(w*72/100))', () => {
     expect(gearFontSize(40, 40)).toBe(28)
   })
-  it('clamps to 12..72 at the boundaries', () => {
-    expect(gearFontSize(10, 10)).toBe(12)
-    expect(gearFontSize(1000, 1000)).toBe(72)
+  it('clamps to 10..48 at the boundaries', () => {
+    expect(gearFontSize(10, 10)).toBe(10)
+    expect(gearFontSize(1000, 1000)).toBe(48)
   })
 })
 
@@ -221,14 +227,14 @@ describe('timer widget (timer_widget.cpp)', () => {
     expect(TIMER_BORDER_COLORS.running).toBe(WIDGET_ACCENT_COLOR)
     expect(TIMER_BORDER_COLORS.paused).toBe(WIDGET_MUTED_COLOR)
   })
-  it('timerFontSize matches tiers 72/34/units-14 with the 260px primary width gate', () => {
-    expect(timerFontSize(110, 260)).toBe(72)
-    expect(timerFontSize(110, 259)).toBe(34)
-    expect(timerFontSize(110)).toBe(34)
-    expect(timerFontSize(109, 320)).toBe(34)
-    expect(timerFontSize(80)).toBe(34)
-    expect(timerFontSize(79)).toBe(14)
-    expect(timerFontSize(0)).toBe(14)
+  it('timerFontSize matches device tiers 40/22/17 with the 150px primary width gate', () => {
+    expect(timerFontSize(55, 150)).toBe(40)
+    expect(timerFontSize(55, 149)).toBe(22)
+    expect(timerFontSize(55)).toBe(22)
+    expect(timerFontSize(54, 320)).toBe(22)
+    expect(timerFontSize(28)).toBe(22)
+    expect(timerFontSize(27)).toBe(17)
+    expect(timerFontSize(0)).toBe(17)
   })
   it('formatTimerMmSs: MM:SS with blinkable colon', () => {
     expect(formatTimerMmSs(0, true)).toBe('00:00')

@@ -68,8 +68,8 @@ export const widgetTextColor = (isDayMode: boolean): HexColor =>
 export const widgetStaleTextColor = (isDayMode: boolean): HexColor =>
   isDayMode ? WIDGET_STALE_TEXT_COLORS.day : WIDGET_STALE_TEXT_COLORS.night
 
-export const WIDGET_FONT_CLAMP = { min: 12, max: 72 } as const
-export const VALUE_UNIT_FONT_SIZE = 12
+export const WIDGET_FONT_CLAMP = { min: 10, max: 48 } as const
+export const VALUE_UNIT_FONT_SIZE = 10
 export const VALUE_UNIT_RATIO = { numerator: 1, denominator: 4 } as const
 export const VALUE_UNIT_FONT_MIN = 10
 export const STALE_PLACEHOLDER = '- -'
@@ -98,7 +98,7 @@ export const GAUGE_TRACK_COLORS = {
 export const WIDGET_TOP_RULE = {
   primaryPx: 2,
   secondaryPx: 1,
-  primaryFontMin: 72,
+  primaryFontMin: 32,
   trackColor: GAUGE_TRACK_COLORS.plain,
   dangerColor: WIDGET_ZONE_COLORS.danger,
 } as const
@@ -109,13 +109,26 @@ export const widgetTopRulePx = (valueFontSize: number): number =>
     : WIDGET_TOP_RULE.secondaryPx
 
 export const GAUGE_VALUE_FONT_BREAKPOINTS = [
-  { minHeight: 90, size: 72 },
-  { minHeight: 40, size: 34 },
-  { minHeight: 0, size: 14 },
+  { minHeight: 90, size: 48 },
+  { minHeight: 40, size: 17 },
+  { minHeight: 0, size: 10 },
 ] as const
 
-export const gaugeValueFontSize = (height: number): number =>
-  sizeForHeight(GAUGE_VALUE_FONT_BREAKPOINTS, height)
+export const BIG_TO_DEVICE_FONT = [
+  { minBig: 96, px: 48 },
+  { minBig: 88, px: 44 },
+  { minBig: 80, px: 40 },
+  { minBig: 64, px: 32 },
+  { minBig: 48, px: 24 },
+  { minBig: 44, px: 22 },
+  { minBig: 0, px: 17 },
+] as const
+
+export const deviceValueFontPx = (big: number): number =>
+  BIG_TO_DEVICE_FONT.find((step) => big >= step.minBig)?.px ?? 17
+
+export const gaugeValueFontSize = (height: number, big?: number): number =>
+  big !== undefined ? deviceValueFontPx(big) : sizeForHeight(GAUGE_VALUE_FONT_BREAKPOINTS, height)
 
 export const gaugeArcStrokeWidth = (width: number, height: number): number => {
   const radius = Math.min(width * GAUGE_ARC.strokeWidthRatioW, height * GAUGE_ARC.strokeWidthRatioH)
@@ -194,12 +207,12 @@ export const TIMER_BORDER_COLORS = {
 } as const satisfies Record<'running' | 'paused', HexColor>
 
 export const TIMER_FONT_BREAKPOINTS = [
-  { minHeight: 110, size: 72 },
-  { minHeight: 80, size: 34 },
-  { minHeight: 0, size: 14 },
+  { minHeight: 55, size: 40 },
+  { minHeight: 28, size: 22 },
+  { minHeight: 0, size: 17 },
 ] as const
 
-export const TIMER_PRIMARY_MIN_WIDTH = 260
+export const TIMER_PRIMARY_MIN_WIDTH = 150
 
 export const timerFontSize = (height: number, width?: number): number => {
   const size = sizeForHeight(TIMER_FONT_BREAKPOINTS, height)
