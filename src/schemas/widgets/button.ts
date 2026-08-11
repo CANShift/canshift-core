@@ -26,6 +26,7 @@ export const CycleButtonStateSchema = z
 const buttonBaseFields = {
   type: z.literal('button'),
   label: z.string().max(STRING_CAPS.WIDGET_LABEL),
+  kicker: z.string().max(STRING_CAPS.WIDGET_LABEL).optional(),
   showLabel: z.boolean().optional(),
   isToggle: z.boolean().optional(),
   colors: z
