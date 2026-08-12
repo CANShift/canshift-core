@@ -31,6 +31,7 @@ export type {
   TopBarConfig,
   TopBarItem,
   TopBarItemPosition,
+  PageStatusRow,
 } from './schemas/dashboard.js'
 export {
   DashboardConfigSchema,
@@ -38,6 +39,7 @@ export {
   DEFAULT_PAGE_PALETTE,
   DEFAULT_TOP_BAR_LAYOUT,
   PAGE_TEMPLATES,
+  PageStatusRowSchema,
   PageTemplateSchema,
 } from './schemas/dashboard.js'
 

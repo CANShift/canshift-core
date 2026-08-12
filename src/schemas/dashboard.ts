@@ -46,24 +46,6 @@ export const ThemePresetSchema = z
 export const PAGE_TEMPLATES = ['custom', 'cruise_control'] as const
 export const PageTemplateSchema = z.enum(PAGE_TEMPLATES)
 
-export const PageConfigSchema = z
-  .object({
-    id: z.string().min(1, 'page id must be a non-empty string'),
-    backgroundImage: z.string().nullable(),
-    backgroundColor: HexColorSchema,
-    palette: PagePaletteSchema.optional(),
-    showTopBar: z.boolean(),
-    visible: z.boolean().optional(),
-    template: PageTemplateSchema.optional(),
-    widgets: z
-      .array(WidgetSchema)
-      .max(
-        FIRMWARE_CAPS.MAX_WIDGETS_PER_PAGE,
-        `widgets cannot exceed ${String(FIRMWARE_CAPS.MAX_WIDGETS_PER_PAGE)} entries (firmware cap)`
-      ),
-  })
-  .strict()
-
 export const TopBarItemPositionSchema = z.enum(['left', 'center', 'right'])
 
 const iconOnlyTopBarItemShape = z.object({ position: TopBarItemPositionSchema })
@@ -87,7 +69,36 @@ export const TopBarItemSchema = z.discriminatedUnion('type', [
   signalBoundTopBarItemShape.extend({ type: z.literal('modeFlag'), text: z.string() }).strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('trackBadge') }).strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('canRate') }).strict(),
+  signalBoundTopBarItemShape
+    .extend({ type: z.literal('signalMax'), text: z.string(), format: z.string().optional() })
+    .strict(),
 ])
+
+export const PageStatusRowSchema = z
+  .object({
+    center: TopBarItemSchema.optional(),
+    right: TopBarItemSchema.optional(),
+  })
+  .strict()
+
+export const PageConfigSchema = z
+  .object({
+    id: z.string().min(1, 'page id must be a non-empty string'),
+    backgroundImage: z.string().nullable(),
+    backgroundColor: HexColorSchema,
+    palette: PagePaletteSchema.optional(),
+    showTopBar: z.boolean(),
+    visible: z.boolean().optional(),
+    template: PageTemplateSchema.optional(),
+    statusRow: PageStatusRowSchema.optional(),
+    widgets: z
+      .array(WidgetSchema)
+      .max(
+        FIRMWARE_CAPS.MAX_WIDGETS_PER_PAGE,
+        `widgets cannot exceed ${String(FIRMWARE_CAPS.MAX_WIDGETS_PER_PAGE)} entries (firmware cap)`
+      ),
+  })
+  .strict()
 
 export const TopBarConfigSchema = z
   .object({
@@ -145,6 +156,7 @@ export type PageConfig = Omit<ExactOptional<z.infer<typeof PageConfigSchema>>, '
 }
 export type TopBarItemPosition = z.infer<typeof TopBarItemPositionSchema>
 export type TopBarItem = z.infer<typeof TopBarItemSchema>
+export type PageStatusRow = z.infer<typeof PageStatusRowSchema>
 export type TopBarConfig = ExactOptional<z.infer<typeof TopBarConfigSchema>>
 export type DashboardConfig = Omit<
   ExactOptional<z.infer<typeof DashboardConfigSchema>>,

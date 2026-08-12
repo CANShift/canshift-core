@@ -22,6 +22,7 @@ import { labelToGauge } from './steps/1-1-to-1-2.js'
 import { buttonActionsFromTarget } from './steps/1-0-to-1-1.js'
 
 export const BUILTIN_MIGRATIONS: readonly Migration[] = [
+  { fromVersion: '1.35.0', toVersion: '1.36.0', migrate: versionOnly('1.36.0') },
   { fromVersion: '1.34.0', toVersion: '1.35.0', migrate: versionOnly('1.35.0') },
   { fromVersion: '1.33.0', toVersion: '1.34.0', migrate: versionOnly('1.34.0') },
   { fromVersion: '1.32.0', toVersion: '1.33.0', migrate: versionOnly('1.33.0') },
