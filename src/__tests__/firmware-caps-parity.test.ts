@@ -14,9 +14,15 @@ const CONFIG_SIGNALS_LOADER = resolve(
 )
 
 const extractDefine = (source: string, name: string): number | null => {
-  const pattern = new RegExp(`#define\\s+${name}\\s+(\\d+)`)
-  const match = pattern.exec(source)
-  return match ? Number.parseInt(match[1] ?? '', 10) : null
+  const patterns = [
+    new RegExp(`#define\\s+${name}\\s+(\\d+)`),
+    new RegExp(`constexpr\\s+\\w+\\s+${name}\\s*=\\s*(\\d+)`),
+  ]
+  for (const pattern of patterns) {
+    const match = pattern.exec(source)
+    if (match) return Number.parseInt(match[1] ?? '', 10)
+  }
+  return null
 }
 
 const describeIfFirmware = existsSync(APP_CONFIG) ? describe : describe.skip
