@@ -1,10 +1,12 @@
 import {
   WIDGET_ZONE_COLORS,
   WIDGET_ACCENT_COLOR,
+  WIDGET_DIM_COLORS,
   WIDGET_MUTED_COLOR,
   WIDGET_TEXT_COLORS,
   WIDGET_STALE_TEXT_COLORS,
   widgetTextColor,
+  widgetDimColor,
   widgetStaleTextColor,
   WIDGET_FONT_CLAMP,
   GEAR_FONT_RATIO,
@@ -65,6 +67,12 @@ describe('device accent / muted tokens', () => {
   it('pins accent #FF4747 (engaged) and muted #BABABA per the dash token table', () => {
     expect(WIDGET_ACCENT_COLOR).toBe('#FF4747')
     expect(WIDGET_MUTED_COLOR).toBe('#BABABA')
+  })
+
+  it('widgetDimColor: the Dim tier from the design system, matching the firmware theme tokens', () => {
+    expect(WIDGET_DIM_COLORS).toEqual({ day: '#5A5A5A', night: '#BABAB8' })
+    expect(widgetDimColor(false)).toBe('#BABAB8')
+    expect(widgetDimColor(true)).toBe('#5A5A5A')
   })
 })
 
