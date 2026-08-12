@@ -5,8 +5,10 @@ export {
   WIDGET_ACCENT_COLOR,
   WIDGET_MUTED_COLOR,
   WIDGET_TEXT_COLORS,
+  WIDGET_DIM_COLORS,
   WIDGET_STALE_TEXT_COLORS,
   widgetTextColor,
+  widgetDimColor,
   widgetStaleTextColor,
 } from './colors.js'
 export {
