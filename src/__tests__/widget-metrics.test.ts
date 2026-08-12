@@ -22,6 +22,7 @@ import {
   gaugeArcStrokeWidth,
   gaugeValueAngle,
   gaugeArcPath,
+  isValueInDanger,
   labelFontSize,
   gearFontSize,
   gearGlyph,
@@ -153,6 +154,16 @@ describe('gauge geometry', () => {
     expect(gaugeArcStrokeWidth(100, 100)).toBeCloseTo(14.4, 5)
 
     expect(gaugeArcStrokeWidth(20, 20)).toBe(5)
+  })
+
+  it('isValueInDanger reads high-side by default and low-side when asked', () => {
+    expect(isValueInDanger(96, 95)).toBe(true)
+    expect(isValueInDanger(95, 95)).toBe(true)
+    expect(isValueInDanger(94, 95)).toBe(false)
+
+    expect(isValueInDanger(1.1, 1.5, true)).toBe(true)
+    expect(isValueInDanger(1.5, 1.5, true)).toBe(true)
+    expect(isValueInDanger(4.1, 1.5, true)).toBe(false)
   })
 
   it('gaugeValueAngle spans 0..270 across the range and clamps', () => {

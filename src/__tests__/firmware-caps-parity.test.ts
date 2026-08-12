@@ -14,7 +14,9 @@ const CONFIG_SIGNALS_LOADER = resolve(
 )
 
 const extractDefine = (source: string, name: string): number | null => {
-  const pattern = new RegExp(`#define\\s+${name}\\s+(\\d+)`)
+  const pattern = new RegExp(
+    `(?:#define\\s+${name}\\s+|constexpr\\s+\\w+\\s+${name}\\s*=\\s*)(\\d+)`
+  )
   const match = pattern.exec(source)
   return match ? Number.parseInt(match[1] ?? '', 10) : null
 }

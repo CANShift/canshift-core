@@ -275,6 +275,7 @@ export {
   gaugeValueFontSize,
   gaugeArcStrokeWidth,
   gaugeValueAngle,
+  isValueInDanger,
   gaugeArcPath,
   LABEL_FONT_RATIO,
   labelFontSize,
