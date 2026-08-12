@@ -14,6 +14,11 @@ export const WIDGET_TEXT_COLORS = {
   night: hex('#FFFFFF'),
 } as const satisfies Record<'day' | 'night', HexColor>
 
+export const WIDGET_DIM_COLORS = {
+  day: hex('#5A5A5A'),
+  night: hex('#BABAB8'),
+} as const satisfies Record<'day' | 'night', HexColor>
+
 export const WIDGET_STALE_TEXT_COLORS = {
   day: hex('#888888'),
   night: hex('#555555'),
@@ -21,6 +26,9 @@ export const WIDGET_STALE_TEXT_COLORS = {
 
 export const widgetTextColor = (isDayMode: boolean): HexColor =>
   isDayMode ? WIDGET_TEXT_COLORS.day : WIDGET_TEXT_COLORS.night
+
+export const widgetDimColor = (isDayMode: boolean): HexColor =>
+  isDayMode ? WIDGET_DIM_COLORS.day : WIDGET_DIM_COLORS.night
 
 export const widgetStaleTextColor = (isDayMode: boolean): HexColor =>
   isDayMode ? WIDGET_STALE_TEXT_COLORS.day : WIDGET_STALE_TEXT_COLORS.night
