@@ -341,6 +341,19 @@ describe('conversion parsing', () => {
     expect(signals[0]?.exprRefs).toEqual([481, 482])
   })
 
+  it('keeps the target id even when the value is named', () => {
+    const { signals } = parseCanXml(
+      simpleXml('<value name="Engine RPM" targetId="37" offset="0" length="2"/>')
+    )
+    expect(signals[0]?.name).toBe('engine_rpm')
+    expect(signals[0]?.targetId).toBe(37)
+  })
+
+  it('leaves targetId unset when the XML gives none', () => {
+    const { signals } = parseCanXml(simpleXml('<value name="q" offset="0" length="2"/>'))
+    expect(signals[0]?.targetId).toBeUndefined()
+  })
+
   it('leaves exprRefs unset for an expression that references nothing', () => {
     const { signals } = parseCanXml(
       simpleXml('<value name="s" offset="0" length="2" conversion="V*V"/>')
