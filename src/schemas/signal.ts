@@ -103,6 +103,7 @@ export const SignalDefSchema = z
       .max(MAX_EXPR_LENGTH, `expr cannot exceed ${String(MAX_EXPR_LENGTH)} chars`)
       .regex(SAFE_EXPR_REGEX, 'expr contains disallowed characters')
       .optional(),
+    targetId: z.number().int().nonnegative().optional(),
     exprRefs: z
       .array(z.number().int().nonnegative())
       .max(MAX_EXPR_REFS, `exprRefs cannot exceed ${String(MAX_EXPR_REFS)} entries`)

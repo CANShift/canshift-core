@@ -100,6 +100,9 @@ const buildCandidate = (
     min,
     max,
     timeoutMs: frame.timeoutMs,
+    ...(va.targetId !== undefined && /^\d+$/.test(va.targetId)
+      ? { targetId: Number.parseInt(va.targetId, 10) }
+      : {}),
     ...(bitMask !== undefined ? { bitMask } : {}),
     ...(conv.kind === 'expr' ? { expr: conv.expr } : {}),
     ...(conv.kind === 'expr' && conv.refs.length > 0 ? { exprRefs: conv.refs } : {}),
