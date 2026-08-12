@@ -28,6 +28,7 @@ export {
   gaugeArcStrokeWidth,
   gaugeValueAngle,
   gaugeArcPath,
+  isValueInDanger,
 } from './gauge.js'
 export {
   LABEL_FONT_RATIO,

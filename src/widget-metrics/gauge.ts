@@ -49,6 +49,12 @@ export const gaugeArcStrokeWidth = (width: number, height: number): number => {
   return stroke < GAUGE_ARC.strokeWidthFloor ? GAUGE_ARC.strokeWidthFloor : stroke
 }
 
+export const isValueInDanger = (
+  value: number,
+  dangerLevel: number,
+  dangerBelow = false
+): boolean => (dangerBelow ? value <= dangerLevel : value >= dangerLevel)
+
 export const gaugeValueAngle = (value: number, min: number, max: number): number => {
   const span = max - min
   const pct = span > 0 ? clamp01((value - min) / span) : 0

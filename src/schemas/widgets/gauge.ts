@@ -14,6 +14,7 @@ export const GaugeWidgetConfigSchema = z
     minValue: z.number(),
     maxValue: z.number(),
     dangerLevel: z.number(),
+    dangerBelow: z.boolean().optional(),
     decimalPlaces: z.number().int().min(DECIMAL_PLACES.MIN).max(DECIMAL_PLACES.MAX),
     prefix: z.string().max(STRING_CAPS.GAUGE_PREFIX).optional(),
     suffix: z.string().max(STRING_CAPS.WIDGET_PREFIX_SUFFIX).optional(),
