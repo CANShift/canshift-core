@@ -735,6 +735,98 @@ describe('multiple frames', () => {
   })
 })
 
+describe('duplicate signal names', () => {
+  const duplicatedTargetId = xml(
+    '',
+    frame('0x520', '<value targetId="254" offset="6" length="2"/>') +
+      frame('0x521', '<value targetId="254" offset="0" length="2"/>')
+  )
+
+  it('leaves the first occurrence untouched so saved bindings keep resolving', () => {
+    const { signals } = parseCanXml(duplicatedTargetId)
+    expect(signals[0]?.name).toBe('channel_254')
+    expect(signals[0]?.canFrameId).toBe('0x520')
+  })
+
+  it('disambiguates later occurrences with their frame id', () => {
+    const { signals } = parseCanXml(duplicatedTargetId)
+    expect(signals[1]?.name).toBe('channel_254_521')
+    expect(signals[1]?.canFrameId).toBe('0x521')
+  })
+
+  it('warns once per rename, naming both frames', () => {
+    const { warnings } = parseCanXml(duplicatedTargetId)
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0]).toBe(
+      'Renamed duplicate signal "channel_254" (frame 0x521) to "channel_254_521" — ' +
+        'frame 0x520 already claims that name'
+    )
+  })
+
+  it('disambiguates repeated literal names the same way', () => {
+    const { signals } = parseCanXml(
+      xml(
+        '',
+        frame('0x300', '<value name="Sensor Voltage" offset="0" length="2"/>') +
+          frame('0x301', '<value name="Sensor Voltage" offset="0" length="2"/>')
+      )
+    )
+    expect(signals.map((s) => s.name)).toEqual(['sensor_voltage', 'sensor_voltage_301'])
+  })
+
+  it('falls back to an ordinal when the frame does not separate them', () => {
+    const { signals } = parseCanXml(
+      simpleXml(
+        '<value targetId="42" offset="0" length="2"/>' +
+          '<value targetId="42" offset="2" length="2"/>' +
+          '<value targetId="42" offset="4" length="2"/>'
+      )
+    )
+    expect(signals.map((s) => s.name)).toEqual(['channel_42', 'channel_42_2', 'channel_42_3'])
+  })
+
+  it('falls back to an ordinal when the frame suffix is already taken', () => {
+    const { signals } = parseCanXml(
+      xml(
+        '',
+        frame('0x520', '<value name="channel_254_521" offset="0" length="2"/>') +
+          frame('0x520', '<value targetId="254" offset="2" length="2"/>') +
+          frame('0x521', '<value targetId="254" offset="0" length="2"/>')
+      )
+    )
+    expect(signals.map((s) => s.name)).toEqual([
+      'channel_254_521',
+      'channel_254',
+      'channel_254_521_2',
+    ])
+  })
+
+  it('keeps disambiguated names inside the firmware name cap', () => {
+    const longName = 'a'.repeat(63)
+    const { signals } = parseCanXml(
+      xml(
+        '',
+        frame('0x520', `<value name="${longName}" offset="0" length="2"/>`) +
+          frame('0x521', `<value name="${longName}" offset="0" length="2"/>`)
+      )
+    )
+    expect(signals).toHaveLength(2)
+    expect(signals[1]?.name).toHaveLength(63)
+    expect(signals[1]?.name.endsWith('_521')).toBe(true)
+  })
+
+  it('stays silent when every name is unique', () => {
+    const { warnings } = parseCanXml(
+      xml(
+        '',
+        frame('0x520', '<value targetId="254" offset="0" length="2"/>') +
+          frame('0x521', '<value targetId="255" offset="0" length="2"/>')
+      )
+    )
+    expect(warnings).toHaveLength(0)
+  })
+})
+
 describe('MaxxECU fixture', () => {
   const fixturePath = path.resolve(
     __dirname,
