@@ -22,7 +22,7 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test": "vitest run",
     "export:sensor-defaults": "npm run build && node --experimental-strip-types scripts/export-sensor-defaults.ts",
     "prepare": "husky",
     "lint:pre-commit": "lint-staged"
@@ -42,18 +42,16 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/jest": "^30.0.0",
     "@types/node": "^26.1.2",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
-    "jest": "^30.3.0",
     "lint-staged": "^17.2.0",
     "prettier": "^3.8.3",
-    "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.65.0"
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

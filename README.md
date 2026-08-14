@@ -33,7 +33,7 @@ It does **not** contain:
 canshift-core/
 ├── package.json
 ├── tsconfig.json
-├── jest.config.ts
+├── vitest.config.ts
 └── src/
     ├── index.ts                          # Public API barrel — only import from here
     ├── constants/
@@ -255,10 +255,10 @@ Local development against an unpublished change: `npm link` from this repo, or a
 npm run build         # tsc → dist/
 npm run lint          # eslint src
 npm run format:check  # prettier --check src/**/*.ts
-npm test              # Jest (ESM via --experimental-vm-modules)
+npm test              # Vitest
 ```
 
-The Jest suite under `src/__tests__/` covers migrations, dashboard validation (full and end-to-end), signal validation, device validation, and the bundled fixture.
+The Vitest suite under `src/__tests__/` covers migrations, dashboard validation (full and end-to-end), signal validation, device validation, and the bundled fixture.
 
 ---
 
