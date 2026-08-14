@@ -40,8 +40,8 @@ export const Esp32InputGpioSchema = z
 export const DeviceConfigWireSchema = z
   .object({
     can_speed_kbps: CanSpeedKbpsSchema,
-    twai_tx_pin: Esp32OutputGpioSchema,
-    twai_rx_pin: Esp32OutputGpioSchema,
+    twai_tx_pin: Esp32OutputGpioSchema.optional(),
+    twai_rx_pin: Esp32OutputGpioSchema.optional(),
   })
   .strict()
 
@@ -50,8 +50,8 @@ export type DeviceConfigWire = z.infer<typeof DeviceConfigWireSchema>
 export const DeviceConfigSchema = z
   .object({
     canSpeedKbps: CanSpeedKbpsSchema,
-    twaiTxPin: Esp32OutputGpioSchema,
-    twaiRxPin: Esp32OutputGpioSchema,
+    twaiTxPin: Esp32OutputGpioSchema.optional(),
+    twaiRxPin: Esp32OutputGpioSchema.optional(),
   })
   .strict()
 
@@ -59,8 +59,6 @@ export type DeviceConfig = z.infer<typeof DeviceConfigSchema>
 
 export const DEFAULT_DEVICE_CONFIG: DeviceConfig = {
   canSpeedKbps: 500,
-  twaiTxPin: 22,
-  twaiRxPin: 21,
 }
 export const deviceConfigFromWire = (wire: DeviceConfigWire): DeviceConfig =>
   snakeToCamelKeys(wire) as DeviceConfig

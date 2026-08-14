@@ -616,11 +616,28 @@ describe('DeviceConfigSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('rejects a missing required field (twaiTxPin)', () => {
-    const invalid: Record<string, unknown> = { ...validDeviceConfig }
-    delete invalid.twaiTxPin
-    const result = DeviceConfigSchema.safeParse(invalid)
+  it('accepts an omitted twaiTxPin — the board profile owns the pin', () => {
+    const withoutPin: Record<string, unknown> = { ...validDeviceConfig }
+    delete withoutPin.twaiTxPin
+    const result = DeviceConfigSchema.safeParse(withoutPin)
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts a config carrying no pins at all', () => {
+    const result = DeviceConfigSchema.safeParse({ canSpeedKbps: 500 })
+    expect(result.success).toBe(true)
+  })
+
+  it('still rejects an out-of-range pin when one is given', () => {
+    const result = DeviceConfigSchema.safeParse({ canSpeedKbps: 500, twaiTxPin: 40 })
     expect(result.success).toBe(false)
+  })
+
+  it('round-trips a pinless config through the wire shape', () => {
+    const wire = deviceConfigToWire({ canSpeedKbps: 500 })
+    expect(wire).toEqual({ can_speed_kbps: 500 })
+    expect(DeviceConfigWireSchema.safeParse(wire).success).toBe(true)
+    expect(deviceConfigFromWire(wire)).toEqual({ canSpeedKbps: 500 })
   })
 
   it('rejects an unsupported CAN speed (e.g. 800 kbps)', () => {
@@ -680,11 +697,16 @@ describe('DeviceConfigWireSchema', () => {
     expect(result.success).toBe(true)
   })
 
-  it('rejects a missing required field (twai_rx_pin)', () => {
+  it('accepts the shape a board-agnostic device.json ships — speed only', () => {
+    const result = DeviceConfigWireSchema.safeParse({ can_speed_kbps: 500 })
+    expect(result.success).toBe(true)
+  })
+
+  it('accepts one pin without the other', () => {
     const invalid: Record<string, unknown> = { ...validWire }
     delete invalid.twai_rx_pin
     const result = DeviceConfigWireSchema.safeParse(invalid)
-    expect(result.success).toBe(false)
+    expect(result.success).toBe(true)
   })
 
   it('rejects an unsupported CAN speed', () => {
