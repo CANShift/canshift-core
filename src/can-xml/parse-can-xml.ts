@@ -2,6 +2,7 @@ import type { SignalDef } from '../schemas/signal.js'
 import { escapeAttribGT } from './xml-lex.js'
 import { scanFrames } from './frame-scan.js'
 import { valueToSignal } from './value-to-signal.js'
+import { dedupeSignalNames } from './dedupe-names.js'
 
 export interface ParseCanXmlResult {
   signals: SignalDef[]
@@ -25,5 +26,6 @@ export const parseCanXml = (xml: string): ParseCanXmlResult => {
     })
   }
 
-  return { signals, warnings }
+  const deduped = dedupeSignalNames(signals)
+  return { signals: deduped.signals, warnings: [...warnings, ...deduped.warnings] }
 }
