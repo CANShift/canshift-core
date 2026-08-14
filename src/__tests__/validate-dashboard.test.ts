@@ -320,8 +320,8 @@ describe('validateDashboard — signal cross-reference', () => {
 })
 
 describe('validateDashboard — signalCatalog option pass-through', () => {
-  it('surfaces signal-catalog errors via validateDashboard', () => {
-    const bogusCatalog: SignalConfig = {
+  it('ignores a legacy colorRamp still sitting on a catalogue signal', () => {
+    const legacyCatalog = {
       version: semver('1.15.0'),
       protocol: 'custom_v1.0',
       canSpeedKbps: 500,
@@ -342,9 +342,9 @@ describe('validateDashboard — signalCatalog option pass-through', () => {
           colorRamp: { stops: [{ value: 0, color: hex('#00FF00') }], interpolate: 'linear' },
         },
       ],
-    }
-    const result = validateDashboard(validConfig(), { signalCatalog: bogusCatalog })
-    expect(result.valid).toBe(false)
-    expect(result.errors.some((e) => e.includes('at least 2 stops'))).toBe(true)
+    } as unknown as SignalConfig
+    const result = validateDashboard(validConfig(), { signalCatalog: legacyCatalog })
+    expect(result.valid).toBe(true)
+    expect(result.errors).toHaveLength(0)
   })
 })

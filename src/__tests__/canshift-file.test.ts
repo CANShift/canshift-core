@@ -148,6 +148,54 @@ describe('parseCanshiftFile prototype-pollution hardening', () => {
   })
 })
 
+describe('a project saved before colorRamp was dropped', () => {
+  const legacySignal = {
+    name: 'coolant',
+    canFrameId: '0x370',
+    startByte: 0,
+    byteLength: 2,
+    bigEndian: false,
+    signed: false,
+    scale: 1,
+    offset: 0,
+    unit: 'C',
+    min: 0,
+    max: 120,
+    timeoutMs: 1000,
+    colorRamp: {
+      stops: [
+        { value: 0, color: '#00FF00' },
+        { value: 110, color: '#FF0000' },
+      ],
+      interpolate: 'linear',
+    },
+  }
+
+  const legacyFile = (): string =>
+    JSON.stringify({
+      format: CANSHIFT_FILE_FORMAT,
+      formatVersion: CANSHIFT_FILE_FORMAT_VERSION,
+      project: { ...projectAt(CURRENT_SCHEMA_VERSION), signals: [legacySignal] },
+    })
+
+  it('still opens', () => {
+    expect(parseCanshiftFile(legacyFile()).kind).toBe('ok')
+  })
+
+  it('comes back without the dropped field', () => {
+    const result = parseCanshiftFile(legacyFile())
+    if (result.kind !== 'ok') throw new Error(`expected ok, got ${result.kind}`)
+    expect(result.project.signals[0]).not.toHaveProperty('colorRamp')
+    expect(result.project.signals[0]?.name).toBe('coolant')
+  })
+
+  it('does not write the field back out on the next save', () => {
+    const result = parseCanshiftFile(legacyFile())
+    if (result.kind !== 'ok') throw new Error(`expected ok, got ${result.kind}`)
+    expect(serializeCanshiftFile(result.project)).not.toContain('colorRamp')
+  })
+})
+
 describe('describeCanshiftFileError', () => {
   it('produces a readable message for every error kind', () => {
     const errors: CanshiftFileError[] = [

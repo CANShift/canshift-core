@@ -2,7 +2,6 @@ import type { z } from 'zod'
 
 import { DashboardConfigSchema } from '../schemas/dashboard.js'
 import type { DashboardConfig } from '../schemas/dashboard.js'
-import { ColorRampSchema } from '../schemas/signal.js'
 import type { SignalConfig } from '../schemas/signal.js'
 
 export interface ValidationResult {
@@ -40,26 +39,6 @@ const formatZodIssue = (issue: z.core.$ZodIssue): string => {
 
 const formatZodIssues = (issues: readonly z.core.$ZodIssue[]): string[] =>
   issues.map(formatZodIssue)
-
-const validateSignalCatalogIssues = (catalog: SignalConfig): string[] => {
-  const errors: string[] = []
-  catalog.signals.forEach((signal, idx) => {
-    const ramp = signal.colorRamp
-    if (!ramp) return
-    const result = ColorRampSchema.safeParse(ramp)
-    if (result.success) return
-    const prefix = `signals[${idx.toString()}] (${signal.name}).colorRamp`
-    for (const issue of result.error.issues) {
-      const subPath = formatPath(issue.path)
-      errors.push(
-        subPath.length === 0
-          ? `${prefix}: ${issue.message}`
-          : `${prefix}.${subPath}: ${issue.message}`
-      )
-    }
-  })
-  return errors
-}
 
 const validateDefaultPageId = (dashboard: z.infer<typeof DashboardConfigSchema>): string[] => {
   const match = dashboard.pages.find((p) => p.id === dashboard.defaultPageId)
@@ -155,9 +134,6 @@ export const validateDashboard = (
 
   if (!parsed.success) {
     errors.push(...formatZodIssues(parsed.error.issues))
-    if (options?.signalCatalog) {
-      errors.push(...validateSignalCatalogIssues(options.signalCatalog))
-    }
     return { valid: false, errors, warnings }
   }
 
@@ -179,10 +155,6 @@ export const validateDashboard = (
     if (dashboard.topBar.layout) {
       warnings.push(...checkTopBarSignalRefs(dashboard.topBar.layout, knownSignalIds))
     }
-  }
-
-  if (options?.signalCatalog) {
-    errors.push(...validateSignalCatalogIssues(options.signalCatalog))
   }
 
   return errors.length === 0
