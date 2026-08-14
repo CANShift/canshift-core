@@ -465,8 +465,8 @@ describe('SignalConfigSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects a colorRamp with fewer than 2 stops', () => {
-    const broken = {
+  it('accepts a signal that still carries the dropped colorRamp field', () => {
+    const legacy = {
       ...validSignals,
       signals: [
         {
@@ -475,46 +475,44 @@ describe('SignalConfigSchema', () => {
         },
       ],
     }
-    const result = SignalConfigSchema.safeParse(broken)
-    expect(result.success).toBe(false)
+    expect(SignalConfigSchema.safeParse(legacy).success).toBe(true)
   })
 
-  it('rejects a colorRamp with more than MAX_RAMP_STOPS=8 stops', () => {
-    const stops = Array.from({ length: 9 }, (_, i) => ({
-      value: i * 100,
-      color: '#FF0000',
-    }))
-    const broken = {
+  it('accepts it even when the ramp breaks the rules the field used to carry', () => {
+    const stops = Array.from({ length: 9 }, (_, i) => ({ value: -i * 100, color: '#FF0000' }))
+    const legacy = {
       ...validSignals,
-      signals: [
-        {
-          ...validSignals.signals[0],
-          colorRamp: { stops, interpolate: 'linear' },
-        },
-      ],
+      signals: [{ ...validSignals.signals[0], colorRamp: { stops, interpolate: 'linear' } }],
     }
-    const result = SignalConfigSchema.safeParse(broken)
-    expect(result.success).toBe(false)
+    expect(SignalConfigSchema.safeParse(legacy).success).toBe(true)
   })
 
-  it('rejects a colorRamp whose stops are not strictly ascending', () => {
-    const broken = {
+  it('drops the field instead of passing it through', () => {
+    const legacy = {
       ...validSignals,
       signals: [
         {
           ...validSignals.signals[0],
           colorRamp: {
             stops: [
-              { value: 100, color: '#00FF00' },
-              { value: 50, color: '#FF0000' },
+              { value: 0, color: '#00FF00' },
+              { value: 100, color: '#FF0000' },
             ],
             interpolate: 'linear',
           },
         },
       ],
     }
-    const result = SignalConfigSchema.safeParse(broken)
-    expect(result.success).toBe(false)
+    const parsed = SignalConfigSchema.parse(legacy)
+    expect(parsed.signals[0]).not.toHaveProperty('colorRamp')
+  })
+
+  it('still rejects an unknown key that is not on the deprecated list', () => {
+    const broken = {
+      ...validSignals,
+      signals: [{ ...validSignals.signals[0], glowRamp: { stops: [] } }],
+    }
+    expect(SignalConfigSchema.safeParse(broken).success).toBe(false)
   })
 })
 

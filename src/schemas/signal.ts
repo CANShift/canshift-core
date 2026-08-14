@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { HexColorSchema, SemVerSchema } from './common.js'
+import { dropDeprecatedSignalKeys } from './deprecated-signal-keys.js'
 import { Obd2PollingSchema } from './obd2.js'
 import { SignalTypeSchema } from './signal-type.js'
 import {
@@ -68,7 +69,7 @@ export const SIGNAL_BYTE_LENGTHS: readonly SignalByteLength[] = SignalByteLength
   (o) => o.value
 )
 
-export const SignalDefSchema = z
+const SignalDefShapeSchema = z
   .object({
     _comment: z.string().optional(),
     _batteryThresholds: z.string().optional(),
@@ -117,7 +118,6 @@ export const SignalDefSchema = z
     highDangerLevel: z.number().optional(),
     timeoutMs: z.number().int().min(0).max(MAX_SIGNAL_TIMEOUT_MS),
     type: SignalTypeSchema.optional(),
-    colorRamp: ColorRampSchema.optional(),
     polling: Obd2PollingSchema.optional(),
   })
   .strict()
@@ -190,6 +190,8 @@ export const SignalDefSchema = z
       })
     }
   })
+
+export const SignalDefSchema = z.preprocess(dropDeprecatedSignalKeys, SignalDefShapeSchema)
 
 export const CanSpeedKbpsSchema = z.union([
   z.literal(125),
