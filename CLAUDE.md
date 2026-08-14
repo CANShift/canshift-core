@@ -5,7 +5,7 @@ Shared TypeScript contracts for the CANShift ecosystem (org: github.com/CANShift
 ## Commands
 
 - `npm run build` — tsc → dist/ (consumers resolve dist only)
-- `npm test` — Jest; `npm run lint`; `npm run format:check`
+- `npm test` — Vitest; `npm run lint`; `npm run format:check`
 
 ## Rules
 

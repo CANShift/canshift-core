@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals'
+import { describe, expect, it } from 'vitest'
 import { evalExpr, evalExprChecked } from '../can-xml/eval-expr.js'
 
 const ctx = (v: number, bytes: number[] = []) => ({ v, bytes })
