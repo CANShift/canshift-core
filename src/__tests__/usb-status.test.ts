@@ -1,6 +1,6 @@
 import { UsbStatusWireSchema, usbStatusFromWire, parseUsbStatus } from '../schemas/usb-status.js'
 
-const validWire = { status: 'ok', version: '2.5.0', protocol: 3, is_day: 1 }
+const validWire = { status: 'ok', version: '2.5.0', protocol: 3, is_day: 1 } as const
 
 describe('UsbStatusWireSchema', () => {
   it('accepts a status frame without board_id (older firmware)', () => {

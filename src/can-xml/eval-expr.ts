@@ -5,7 +5,7 @@ import type { ExprFn, ParseState } from './expr-parse.js'
 
 export interface EvalContext {
   v: number
-  bytes: readonly number[]
+  bytes: ArrayLike<number>
   refs?: ReadonlyMap<number, number>
 }
 

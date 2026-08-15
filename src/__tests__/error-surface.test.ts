@@ -95,19 +95,19 @@ describe('migration failures carry a machine-readable code', () => {
 
 describe('evalExpr', () => {
   it('is evalExprChecked with the lossy zero made explicit', () => {
-    const ctx = { bytes: new Uint8Array([1, 2, 3, 4]) }
+    const ctx = { v: 0, bytes: new Uint8Array([1, 2, 3, 4]) }
     expect(evalExprChecked('B0+B1', ctx)).toBe(3)
     expect(evalExpr('B0+B1', ctx)).toBe(3)
   })
 
   it('returns 0 for an unparseable expression, where the checked form returns null', () => {
-    const ctx = { bytes: new Uint8Array([1]) }
+    const ctx = { v: 0, bytes: new Uint8Array([1]) }
     expect(evalExprChecked('((((', ctx)).toBeNull()
     expect(evalExpr('((((', ctx)).toBe(0)
   })
 
   it('reads past the end of the frame without throwing', () => {
-    const ctx = { bytes: new Uint8Array([1]) }
+    const ctx = { v: 0, bytes: new Uint8Array([1]) }
     expect(evalExprChecked('B7', ctx)).toBe(0)
   })
 })

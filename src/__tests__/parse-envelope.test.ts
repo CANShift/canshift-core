@@ -2,6 +2,7 @@ import {
   describeWireParseFailure,
   parseJsonObject,
   parseUntrustedJsonObject,
+  type WireParseFailure,
 } from '../wire/parse-envelope.js'
 import { parseCanshiftFile } from '../schemas/canshift-file.js'
 import { parseBoardProfile } from '../board-profile/serializer.js'
@@ -95,12 +96,12 @@ describe('formatVersion is validated identically in both envelope parsers', () =
 
 describe('describeWireParseFailure', () => {
   it('produces a non-empty message for every failure kind', () => {
-    const failures = [
+    const failures: WireParseFailure[] = [
       { kind: 'invalid_json', raw: '' },
       { kind: 'not_an_object', payload: 42 },
       { kind: 'forbidden_key', key: '__proto__' },
       { kind: 'wrong_shape', issues: [] },
-    ] as const
+    ]
     for (const failure of failures) {
       expect(describeWireParseFailure(failure).length).toBeGreaterThan(0)
     }
