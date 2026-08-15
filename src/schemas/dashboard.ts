@@ -36,10 +36,17 @@ export const DEFAULT_PAGE_PALETTE: z.infer<typeof PagePaletteSchema> = PagePalet
   success: '#00CC44',
 })
 
-export const ThemePresetSchema = z
+export const ThemeFaceSchema = z
   .object({
     bgColor: HexColorSchema,
     palette: PagePaletteSchema.optional(),
+  })
+  .strict()
+
+export const ThemePresetSchema = z
+  .object({
+    day: ThemeFaceSchema,
+    night: ThemeFaceSchema,
   })
   .strict()
 
@@ -133,8 +140,7 @@ export const DashboardConfigSchema = z
     defaultPageId: z.string().min(1, 'defaultPageId must be a non-empty string'),
     revLimitRpm: z.number().min(REV_LIMIT_RPM.MIN).max(REV_LIMIT_RPM.MAX),
     topBar: TopBarConfigSchema,
-    dayTheme: ThemePresetSchema.optional(),
-    nightTheme: ThemePresetSchema.optional(),
+    theme: ThemePresetSchema.optional(),
     dayNightSignal: z.string().min(1).max(DAY_NIGHT_SIGNAL_MAX_LEN).optional(),
     pages: z
       .array(PageConfigSchema)
@@ -149,6 +155,7 @@ export const DashboardConfigSchema = z
   .strict()
 
 export type PagePalette = z.infer<typeof PagePaletteSchema>
+export type ThemeFace = z.infer<typeof ThemeFaceSchema>
 export type ThemePreset = z.infer<typeof ThemePresetSchema>
 export type PageTemplate = z.infer<typeof PageTemplateSchema>
 export type PageConfig = Omit<ExactOptional<z.infer<typeof PageConfigSchema>>, 'widgets'> & {

@@ -27,6 +27,7 @@ export type {
   PageConfig,
   PagePalette,
   PageTemplate,
+  ThemeFace,
   ThemePreset,
   TopBarConfig,
   TopBarItem,
@@ -320,10 +321,15 @@ export {
 } from './widget-metrics/index.js'
 export type { SensorDangerThreshold } from './widget-metrics/index.js'
 
-export { DAY_PALETTE_DEFAULT, DAY_BG_DEFAULT, DAY_THEME_PRESET } from './day-theme-defaults.js'
+export { DAY_PALETTE_DEFAULT, DAY_BG_DEFAULT, DAY_THEME_FACE } from './day-theme-defaults.js'
 
 export type { ThemePresetEntry } from './theme-presets.js'
-export { THEME_PRESETS, themePresetById } from './theme-presets.js'
+export {
+  DEFAULT_THEME_ID,
+  THEME_PRESETS,
+  defaultThemePreset,
+  themePresetById,
+} from './theme-presets.js'
 
 export {
   describeWireParseFailure,

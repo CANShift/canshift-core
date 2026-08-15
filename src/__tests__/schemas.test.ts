@@ -161,8 +161,8 @@ describe('DashboardConfigSchema', () => {
     }
   })
 
-  describe('DashboardConfigSchema.nightTheme', () => {
-    const validNightTheme = {
+  describe('DashboardConfigSchema.theme', () => {
+    const nightFace = {
       bgColor: '#000000',
       palette: {
         surface: '#1E1E1E',
@@ -175,56 +175,63 @@ describe('DashboardConfigSchema', () => {
         success: '#00CC44',
       },
     }
+    const dayFace = { bgColor: '#DDDDDD' }
 
-    it('accepts a dashboard with no nightTheme (backward compat)', () => {
+    it('accepts a dashboard with no theme (the device falls back)', () => {
       const result = DashboardConfigSchema.safeParse(validDashboard)
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.nightTheme).toBeUndefined()
+        expect(result.data.theme).toBeUndefined()
       }
     })
 
-    it('accepts a dashboard with a full nightTheme', () => {
+    it('accepts an identity carrying both faces', () => {
       const result = DashboardConfigSchema.safeParse({
         ...validDashboard,
-        nightTheme: validNightTheme,
+        theme: { night: nightFace, day: dayFace },
       })
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data.nightTheme?.bgColor).toBe('#000000')
-        expect(result.data.nightTheme?.palette?.primary).toBe('#FF4444')
+        expect(result.data.theme?.night.bgColor).toBe('#000000')
+        expect(result.data.theme?.night.palette?.primary).toBe('#FF4444')
+        expect(result.data.theme?.day.bgColor).toBe('#DDDDDD')
       }
     })
 
-    it('accepts a nightTheme with bgColor only (palette is optional)', () => {
+    it('accepts a face with bgColor only (palette is optional)', () => {
       const result = DashboardConfigSchema.safeParse({
         ...validDashboard,
-        nightTheme: { bgColor: '#101010' },
+        theme: { night: { bgColor: '#101010' }, day: { bgColor: '#EEEEEE' } },
       })
       expect(result.success).toBe(true)
     })
 
-    it('rejects a nightTheme with a malformed bgColor', () => {
+    it('rejects a half theme — a face is not optional', () => {
       const result = DashboardConfigSchema.safeParse({
         ...validDashboard,
-        nightTheme: { bgColor: 'not-a-hex' },
+        theme: { night: nightFace },
       })
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues.some((i) => i.path.includes('nightTheme'))).toBe(true)
+        expect(result.error.issues.some((i) => i.path.includes('day'))).toBe(true)
       }
     })
 
-    it('accepts both dayTheme and nightTheme on the same dashboard', () => {
+    it('rejects a face with a malformed bgColor', () => {
       const result = DashboardConfigSchema.safeParse({
         ...validDashboard,
-        dayTheme: { bgColor: '#DDDDDD' },
-        nightTheme: validNightTheme,
+        theme: { night: { bgColor: 'not-a-hex' }, day: dayFace },
       })
-      expect(result.success).toBe(true)
-      if (result.success) {
-        expect(result.data.dayTheme?.bgColor).toBe('#DDDDDD')
-        expect(result.data.nightTheme?.bgColor).toBe('#000000')
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error.issues.some((i) => i.path.includes('theme'))).toBe(true)
+      }
+    })
+
+    it('rejects the retired dayTheme and nightTheme keys', () => {
+      for (const retired of ['dayTheme', 'nightTheme']) {
+        const result = DashboardConfigSchema.safeParse({ ...validDashboard, [retired]: dayFace })
+        expect(result.success, retired).toBe(false)
       }
     })
   })
