@@ -1,1 +1,1 @@
-export const CURRENT_SCHEMA_VERSION = '1.36.0' as const
+export const CURRENT_SCHEMA_VERSION = '1.37.0' as const
