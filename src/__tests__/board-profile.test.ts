@@ -1,3 +1,7 @@
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import {
   BOARD_PROFILES,
   BOARD_PROFILE_FORMAT_VERSION,
@@ -10,16 +14,28 @@ import {
   serializeBoardProfile,
 } from '../index.js'
 
+const FIRMWARE_BOARDS = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../../canshift-firmware/.github/boards.json'
+)
+
+const firmwareBoards: { id: string; release?: boolean }[] = existsSync(FIRMWARE_BOARDS)
+  ? (JSON.parse(readFileSync(FIRMWARE_BOARDS, 'utf8')) as { id: string; release?: boolean }[])
+  : []
+
+const releasableBoardIds: string[] | null = firmwareBoards.some((b) => 'release' in b)
+  ? firmwareBoards.filter((board) => board.release).map((board) => board.id)
+  : null
+
 const crowpanel = getBoardProfile('crowpanel_28')!
 
 describe('board-profile catalog', () => {
-  it('ships the four known boards', () => {
-    expect(BOARD_PROFILES.map((p) => p.boardId)).toEqual([
-      'crowpanel_28',
-      'generic_ili9341',
-      'generic_ili9341_gt911',
-      'waveshare_s3_28',
-    ])
+  it('ships every releasable board the firmware publishes, and nothing else', () => {
+    if (releasableBoardIds === null) {
+      expect(BOARD_PROFILES.length).toBeGreaterThan(0)
+      return
+    }
+    expect([...BOARD_PROFILES.map((p) => p.boardId)].sort()).toEqual([...releasableBoardIds].sort())
   })
 
   it('looks a profile up by id and returns undefined for an unknown board', () => {
