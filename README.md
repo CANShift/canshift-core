@@ -2,6 +2,9 @@
 
 `canshift-core` — pure TypeScript contract layer for the CANShift ecosystem.
 
+📖 **[Documentation](docs/README.md)** — the config contract and the wire
+protocol versioning rule.
+
 ---
 
 ## Purpose
