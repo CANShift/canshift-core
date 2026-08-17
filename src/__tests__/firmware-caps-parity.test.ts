@@ -26,10 +26,16 @@ const describeIfFirmware = existsSync(APP_CONFIG) ? describe : describe.skip
 describeIfFirmware('firmware-caps parity', () => {
   const source = existsSync(APP_CONFIG) ? readFileSync(APP_CONFIG, 'utf8') : ''
 
-  it('MAX_PAGES matches firmware CONFIG_MAX_PAGES', () => {
-    const firmware = extractDefine(source, 'CONFIG_MAX_PAGES')
+  const cases: [keyof typeof FIRMWARE_CAPS, string][] = [
+    ['MAX_PAGES', 'CONFIG_MAX_PAGES'],
+    ['MAX_WIDGETS_PER_PAGE', 'CONFIG_MAX_WIDGETS_PER_PAGE'],
+    ['MAX_SIGNALS', 'CONFIG_MAX_SIGNALS'],
+  ]
+
+  it.each(cases)('%s matches firmware %s', (cap, define) => {
+    const firmware = extractDefine(source, define)
     expect(firmware).not.toBeNull()
-    expect(FIRMWARE_CAPS.MAX_PAGES).toBe(firmware)
+    expect(FIRMWARE_CAPS[cap]).toBe(firmware)
   })
 })
 
