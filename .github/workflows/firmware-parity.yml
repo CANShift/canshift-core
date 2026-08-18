@@ -36,6 +36,7 @@ jobs:
             canshift-firmware/include/app_config.h \
             canshift-firmware/src/config/config_types.h \
             canshift-firmware/src/config/config_file_loaders.inc \
+            canshift-firmware/src/ui/control_vocabulary.cpp \
             canshift-firmware/rust/layout-grid/src/lib.rs; do
             if [ ! -f "$f" ]; then
               echo "::error::firmware parity source missing: $f"
