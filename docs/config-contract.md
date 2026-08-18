@@ -356,3 +356,50 @@ the same cells against different pixel dimensions.
 `targetProfile` records which panel a dashboard was authored against.
 `SCREEN_PROFILES` currently registers one — `crowpanel-28`, 320×240 — so the
 field is omitted from most configs and `resolveScreenProfile` defaults to it.
+
+## Display tiers
+
+A **tier** is a design space: the canvas a page is authored against, the grid it is
+placed on, how many widgets it may carry, and the font ladder it renders with.
+
+| Tier     | Design space | Grid    | Widgets/page | Top value face |
+| -------- | ------------ | ------- | ------------ | -------------- |
+| `base`   | 320 x 240    | 12 x 12 | 12           | 84 px          |
+| `medium` | 480 x 320    | 16 x 14 | 18           | 120 px         |
+| `large`  | 800 x 480    | 24 x 20 | 28           | 168 px         |
+
+`base` is the canvas everything is authored against today; its numbers are the
+existing `CANVAS`, `LAYOUT_GRID` and `FIRMWARE_CAPS.MAX_WIDGETS_PER_PAGE`
+constants rather than a second copy, so the tier table cannot drift from them.
+
+The larger tiers grow **both** axes of the problem: more cells _and_ a taller font
+ladder. A 7-inch panel showing the same seven widgets at 2.5x is a 2.8-inch dash
+viewed from very close; a 7-inch panel showing 2.5x-smaller widgets is unreadable
+at speed. So a tier gets a bigger grid and bigger type, and a page decides how much
+of the extra room it spends on each.
+
+### Resolving a panel to a tier
+
+`tierForPanel(width, height)` returns the largest tier that **fits inside** the
+panel, never one larger:
+
+```ts
+tierForPanel(320, 240) // base
+tierForPanel(479, 319) // base   — a medium tier would not fit
+tierForPanel(800, 480) // large
+tierForPanel(128, 64) // base   — the floor, nothing smaller exists
+```
+
+A panel between two tiers gets the smaller one and scales up, which is today's
+behaviour on every board.
+
+### What this does not yet do
+
+Nothing consumes the table. Per-tier **page variants** — a page carrying a richer
+widget set for a larger tier — are the next slice, and they are a `DashboardConfig`
+shape change with a migration. Until then a page is authored once, at `base`, and
+scaled.
+
+The firmware currently derives its font ladder from a hardcoded table in
+`font_manager.cpp`, not from these tiers; wiring the two together is gated on
+moving the large faces to SPIFFS (CANShift/canshift-firmware#215, #259).
