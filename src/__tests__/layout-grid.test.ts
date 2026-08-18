@@ -6,6 +6,7 @@ import {
   placementsOverlap,
   resolveGridRect,
 } from '../layout-grid.js'
+import { DISPLAY_TIERS } from '../display-tiers.js'
 import type { GridPlacement } from '../layout-grid.js'
 
 const CROWPANEL = { width: 320, height: 240 }
@@ -163,5 +164,43 @@ describe('isSpanOverflowing', () => {
   it('flags negative origins', () => {
     expect(isSpanOverflowing(place(-1, 2, 0, 1))).toBe(true)
     expect(isSpanOverflowing(place(0, 1, -1, 2))).toBe(true)
+  })
+})
+
+describe('a larger display tier', () => {
+  it('clamps to the tier it is given, not to the base grid', () => {
+    const wide = clampGridPlacement(
+      { col: 20, colSpan: 6, row: 16, rowSpan: 4 },
+      DISPLAY_TIERS.large
+    )
+    expect(wide).toEqual({ col: 18, colSpan: 6, row: 16, rowSpan: 4 })
+    const base = clampGridPlacement({ col: 20, colSpan: 6, row: 16, rowSpan: 4 })
+    expect(base).toEqual({ col: 6, colSpan: 6, row: 8, rowSpan: 4 })
+  })
+
+  it('divides the area into the tier it is given, so a track is narrower on a denser grid', () => {
+    const area = { width: 800, height: 480 }
+    const one = resolveGridRect({ col: 0, colSpan: 1, row: 0, rowSpan: 1 }, area)
+    const dense = resolveGridRect(
+      { col: 0, colSpan: 1, row: 0, rowSpan: 1 },
+      area,
+      DISPLAY_TIERS.large
+    )
+    expect(dense.w).toBeLessThan(one.w)
+  })
+
+  it('only calls a span overflowing past the tier it belongs to', () => {
+    const placement = { col: 12, colSpan: 4, row: 0, rowSpan: 2 }
+    expect(isSpanOverflowing(placement)).toBe(true)
+    expect(isSpanOverflowing(placement, DISPLAY_TIERS.large)).toBe(false)
+  })
+
+  it('leaves every existing call unchanged, because the default is the base grid', () => {
+    const placement = { col: 2, colSpan: 3, row: 4, rowSpan: 2 }
+    const area = { width: 320, height: 240 }
+    expect(clampGridPlacement(placement, DISPLAY_TIERS.base)).toEqual(clampGridPlacement(placement))
+    expect(resolveGridRect(placement, area, DISPLAY_TIERS.base)).toEqual(
+      resolveGridRect(placement, area)
+    )
   })
 })

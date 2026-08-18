@@ -438,7 +438,9 @@ export {
   displayTier,
   tierForPanel,
 } from './display-tiers.js'
+export type { GridTracks } from './layout-grid.js'
 export {
+  BASE_GRID_TRACKS,
   LAYOUT_GRID,
   clampGridPlacement,
   isSpanOverflowing,
