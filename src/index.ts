@@ -387,6 +387,15 @@ export {
 export { CURRENT_SCHEMA_VERSION } from './schema-version.js'
 
 export type { GridArea, GridPlacement, GridRect } from './layout-grid.js'
+export type { DisplayTier, DisplayTierId } from './display-tiers.js'
+export {
+  BASE_DISPLAY_TIER,
+  DISPLAY_TIERS,
+  DISPLAY_TIER_IDS,
+  DISPLAY_TIER_LIST,
+  displayTier,
+  tierForPanel,
+} from './display-tiers.js'
 export {
   LAYOUT_GRID,
   clampGridPlacement,
