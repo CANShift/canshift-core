@@ -255,6 +255,75 @@ The default `signals.json` shipped with the firmware carries no polling blocks.
 [`signals_obd2_mode01.json.example`](https://github.com/CANShift/canshift-firmware/blob/main/docs/examples/signals_obd2_mode01.json.example)
 is a starter catalogue for the standard J1979 PIDs.
 
+## What actually arms an alert
+
+Three fields in two files look like the same knob. They are not, and only one of
+them reaches the alert engine.
+
+| Field                                                 | File                                     | Effect                                                                       |
+| ----------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
+| `warningLevel` / `dangerLevel` and their `high*` pair | `signals.json` → `SignalDef`             | **Arms the alert engine** — the warning band and the full-screen takeover.   |
+| `dangerLevel` (+ `dangerBelow`)                       | `dashboard.json` → gauge or label config | **Paints one widget.** Never reaches the alert engine.                       |
+| `alertThreshold`                                      | `dashboard.json` → gauge config          | **Nothing.** No firmware code reads it — see CANShift/canshift-firmware#266. |
+
+The one that matters is the catalogue's, and it is the one no editor exposes today
+(#121). The one the tuner surfaces is the widget's, which only chooses a colour.
+
+### Which signals the firmware watches
+
+Seven, and only seven. Everything else can colour a widget but cannot take the
+screen:
+
+| Signal           | Direction | Fallback when the catalogue is silent |
+| ---------------- | --------- | ------------------------------------- |
+| `coolant_temp_c` | high      | 100 / 110 °C                          |
+| `oil_temp_c`     | high      | 120 / 135 °C                          |
+| `oil_press_bar`  | **low**   | 1.5 / 1.0 bar                         |
+| `battery_volts`  | both      | 12.0 / 11.5 V low, 15.0 / 16.0 V high |
+| `egt_c`          | high      | 950 / 1000 °C                         |
+| `gearbox_temp_c` | high      | 120 / 140 °C                          |
+| `diff_temp_c`    | high      | 120 / 140 °C                          |
+
+The last three arm **only if the catalogue declares them**. Undeclared means no
+alert, no health tracking, no takeover. The first four always arm, because a car
+without coolant or oil pressure monitoring is not a car we should let run silently.
+
+Rev limit is separate again: it comes from `dashboard.json`'s `revLimitRpm`, not
+from a signal.
+
+### Direction is inferred, not declared
+
+There is no direction field. A low-side alarm is expressed by putting
+`warningLevel` **above** `dangerLevel` — oil pressure warns at 1.5 bar and alarms
+at 1.0. A high-side alarm has them the other way round. The validator rejects the
+non-monotonic combinations, which is what makes the inference safe.
+
+`battery_volts` uses both pairs at once: the low pair for a failing alternator, the
+`high*` pair for a failing regulator.
+
+### A dash threshold is not the ECU's threshold
+
+The ECU owns protection: it cuts, retards and limits, and publishes the `0x374`
+flags the cut band reports. That is a statement of fact, after the fact.
+
+A dash threshold exists to fire **before** the ECU acts. Its entire value is the
+margin — water at 106 while the ECU pulls timing at 110 gives the driver time to
+lift. Set them equal and the dash adds nothing but noise.
+
+So these are **driver warnings sited below the ECU's action point**, not a second
+copy of the ECU's configuration. An editor should say so, because the instinct is
+to type the same number twice.
+
+### What a missing sensor does
+
+Two invariants worth relying on:
+
+- A sensor that **was** present and drops out raises the level to WARNING, never
+  CRITICAL. A dropout cannot take the screen.
+- A signal that has **never** been valid is silent. The shipped catalogue can
+  declare gearbox, diff and exhaust temperature while a car without those sensors
+  sees nothing at all.
+
 ## device.json and input_bindings.json
 
 `device.json` is small on purpose — `canSpeedKbps`, plus `twaiTxPin` and
