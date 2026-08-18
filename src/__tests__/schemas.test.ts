@@ -31,6 +31,9 @@ import { TopBarItemSchema } from '../schemas/dashboard.js'
 import {
   ButtonActionSchema,
   ButtonWidgetConfigSchema,
+  TIMER_CONTROL_OPS,
+  TIMER_SOURCES,
+  TimerWidgetConfigSchema,
   WidgetSchema,
 } from '../schemas/widgets/index.js'
 import { DeviceConfigWireSchema, type DeviceConfigWire } from '../schemas/device.js'
@@ -917,6 +920,65 @@ describe('parseDeviceConfig — untrusted wire input', () => {
     expect(result.kind).toBe('forbidden_key')
     if (result.kind === 'forbidden_key') expect(result.key).toBe('__proto__')
     expect(({} as Record<string, unknown>).polluted).toBeUndefined()
+  })
+})
+
+describe('ButtonActionSchema — timer_control variant', () => {
+  it('accepts every declared op', () => {
+    for (const op of TIMER_CONTROL_OPS) {
+      const result = ButtonActionSchema.safeParse({
+        category: 'device',
+        type: 'timer_control',
+        op,
+      })
+      expect(result.success).toBe(true)
+    }
+  })
+
+  it('rejects an unknown op', () => {
+    const result = ButtonActionSchema.safeParse({
+      category: 'device',
+      type: 'timer_control',
+      op: 'rewind',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects the ecu category — the timer is local to the dash', () => {
+    const result = ButtonActionSchema.safeParse({
+      category: 'ecu',
+      type: 'timer_control',
+      op: 'reset',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('rejects a stray field', () => {
+    const result = ButtonActionSchema.safeParse({
+      category: 'device',
+      type: 'timer_control',
+      op: 'reset',
+      frameId: 1808,
+    })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('TimerWidgetConfigSchema — source', () => {
+  it('accepts every declared source', () => {
+    for (const source of TIMER_SOURCES) {
+      expect(TimerWidgetConfigSchema.safeParse({ type: 'timer', source }).success).toBe(true)
+    }
+  })
+
+  it('stays valid without a source, so an existing timer keeps working', () => {
+    expect(TimerWidgetConfigSchema.safeParse({ type: 'timer' }).success).toBe(true)
+  })
+
+  it('rejects an unknown source', () => {
+    expect(TimerWidgetConfigSchema.safeParse({ type: 'timer', source: 'sector' }).success).toBe(
+      false
+    )
   })
 })
 
