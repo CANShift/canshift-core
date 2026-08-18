@@ -5,9 +5,17 @@ import {
   WIDGET_MUTED_COLOR,
   WIDGET_TEXT_COLORS,
   WIDGET_STALE_TEXT_COLORS,
+  WIDGET_GROUND_COLORS,
+  WIDGET_TRACK_COLORS,
+  WIDGET_LOCK_LINE_COLORS,
+  WIDGET_LOCK_INK_COLORS,
   widgetTextColor,
   widgetDimColor,
   widgetStaleTextColor,
+  widgetGroundColor,
+  widgetTrackColor,
+  widgetLockLineColor,
+  widgetLockInkColor,
   WIDGET_FONT_CLAMP,
   GEAR_FONT_RATIO,
   LABEL_FONT_RATIO,
@@ -48,6 +56,7 @@ import {
   SENSOR_DANGER_COLOR,
   sensorDefaultDangerThreshold,
 } from '../widget-metrics/index.js'
+import { DEFAULT_PAGE_PALETTE } from '../schemas/dashboard.js'
 import { SENSOR_DEFAULT_RAMPS, SENSOR_KINDS } from '../sensor-defaults.js'
 import type { SensorKind } from '../sensor-defaults.js'
 
@@ -400,5 +409,26 @@ describe('every exported ratio constant is read by the function it names', () =>
     const lastTimer = TIMER_FONT_BREAKPOINTS[TIMER_FONT_BREAKPOINTS.length - 1]
     expect(gaugeValueFontSize(-1)).toBe(lastGauge?.size)
     expect(timerFontSize(-1)).toBe(lastTimer?.size)
+  })
+})
+
+describe('the nine dash tokens', () => {
+  it('carries a day and a night value for each of the four that were night-only', () => {
+    expect(WIDGET_GROUND_COLORS).toEqual({ day: '#DDDDDD', night: '#121212' })
+    expect(WIDGET_TRACK_COLORS).toEqual({ day: '#C4C4C4', night: '#222222' })
+    expect(WIDGET_LOCK_LINE_COLORS).toEqual({ day: '#B4B4B4', night: '#333333' })
+    expect(WIDGET_LOCK_INK_COLORS).toEqual({ day: '#8A8A8A', night: '#6B6B6B' })
+  })
+
+  it('picks the face the mode asks for', () => {
+    expect(widgetGroundColor(true)).toBe('#DDDDDD')
+    expect(widgetGroundColor(false)).toBe('#121212')
+    expect(widgetLockInkColor(true)).toBe('#8A8A8A')
+    expect(widgetLockLineColor(false)).toBe('#333333')
+    expect(widgetTrackColor(true)).toBe('#C4C4C4')
+  })
+
+  it('gives a new page the Dim the design system specifies', () => {
+    expect(DEFAULT_PAGE_PALETTE.textDim).toBe(WIDGET_DIM_COLORS.night)
   })
 })

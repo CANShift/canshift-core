@@ -7,9 +7,17 @@ export {
   WIDGET_TEXT_COLORS,
   WIDGET_DIM_COLORS,
   WIDGET_STALE_TEXT_COLORS,
+  WIDGET_GROUND_COLORS,
+  WIDGET_TRACK_COLORS,
+  WIDGET_LOCK_LINE_COLORS,
+  WIDGET_LOCK_INK_COLORS,
   widgetTextColor,
   widgetDimColor,
   widgetStaleTextColor,
+  widgetGroundColor,
+  widgetTrackColor,
+  widgetLockLineColor,
+  widgetLockInkColor,
 } from './colors.js'
 export {
   VALUE_UNIT_FONT_SIZE,
