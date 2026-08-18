@@ -24,6 +24,16 @@ export interface GridRect {
   h: number
 }
 
+export interface GridTracks {
+  columns: number
+  rows: number
+}
+
+export const BASE_GRID_TRACKS: GridTracks = {
+  columns: LAYOUT_GRID.COLUMNS,
+  rows: LAYOUT_GRID.ROWS,
+}
+
 const clampInt = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max)
 
@@ -44,10 +54,14 @@ const resolveAxis = (track: number, span: number, size: number, tracks: number):
   return { origin: LAYOUT_GRID.FRAME_PADDING + start, length: Math.max(end - start, 1) }
 }
 
-export const resolveGridRect = (placement: GridPlacement, area: GridArea): GridRect => {
-  const clamped = clampGridPlacement(placement)
-  const cols = resolveAxis(clamped.col, clamped.colSpan, area.width, LAYOUT_GRID.COLUMNS)
-  const rows = resolveAxis(clamped.row, clamped.rowSpan, area.height, LAYOUT_GRID.ROWS)
+export const resolveGridRect = (
+  placement: GridPlacement,
+  area: GridArea,
+  tracks: GridTracks = BASE_GRID_TRACKS
+): GridRect => {
+  const clamped = clampGridPlacement(placement, tracks)
+  const cols = resolveAxis(clamped.col, clamped.colSpan, area.width, tracks.columns)
+  const rows = resolveAxis(clamped.row, clamped.rowSpan, area.height, tracks.rows)
   return { x: cols.origin, y: rows.origin, w: cols.length, h: rows.length }
 }
 
@@ -60,11 +74,14 @@ export const nearestTrack = (offset: number, size: number, tracks: number): numb
   return clampInt(raw, 0, tracks)
 }
 
-export const clampGridPlacement = (placement: GridPlacement): GridPlacement => {
-  const colSpan = clampInt(Math.round(placement.colSpan), 1, LAYOUT_GRID.COLUMNS)
-  const rowSpan = clampInt(Math.round(placement.rowSpan), 1, LAYOUT_GRID.ROWS)
-  const col = clampInt(Math.round(placement.col), 0, LAYOUT_GRID.COLUMNS - colSpan)
-  const row = clampInt(Math.round(placement.row), 0, LAYOUT_GRID.ROWS - rowSpan)
+export const clampGridPlacement = (
+  placement: GridPlacement,
+  tracks: GridTracks = BASE_GRID_TRACKS
+): GridPlacement => {
+  const colSpan = clampInt(Math.round(placement.colSpan), 1, tracks.columns)
+  const rowSpan = clampInt(Math.round(placement.rowSpan), 1, tracks.rows)
+  const col = clampInt(Math.round(placement.col), 0, tracks.columns - colSpan)
+  const row = clampInt(Math.round(placement.row), 0, tracks.rows - rowSpan)
   return { col, colSpan, row, rowSpan }
 }
 
@@ -74,8 +91,11 @@ export const placementsOverlap = (a: GridPlacement, b: GridPlacement): boolean =
   a.row < b.row + b.rowSpan &&
   b.row < a.row + a.rowSpan
 
-export const isSpanOverflowing = (placement: GridPlacement): boolean =>
+export const isSpanOverflowing = (
+  placement: GridPlacement,
+  tracks: GridTracks = BASE_GRID_TRACKS
+): boolean =>
   placement.col < 0 ||
   placement.row < 0 ||
-  placement.col + placement.colSpan > LAYOUT_GRID.COLUMNS ||
-  placement.row + placement.rowSpan > LAYOUT_GRID.ROWS
+  placement.col + placement.colSpan > tracks.columns ||
+  placement.row + placement.rowSpan > tracks.rows
