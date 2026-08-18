@@ -50,6 +50,9 @@ export type {
   CanRawAction,
   CruiseControlAction,
   CruiseControlOp,
+  TimerControlAction,
+  TimerSource,
+  TimerControlOp,
   CycleButtonConfig,
   CycleButtonState,
   DashboardButtonAction,
@@ -71,6 +74,10 @@ export type {
 } from './schemas/widgets/index.js'
 export {
   CRUISE_CONTROL_OPS,
+  TIMER_CONTROL_OPS,
+  TIMER_SOURCES,
+  TimerSourceSchema,
+  TimerControlOpSchema,
   MAX_CYCLE_STATES,
   MIN_CYCLE_STATES,
   SensorIconNameSchema,

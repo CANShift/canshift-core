@@ -6,12 +6,20 @@ export type { GaugeDisplayStyle } from './gauge.js'
 
 export { WarningWidgetConfigSchema } from './warning.js'
 
-export { ButtonActionSchema, CRUISE_CONTROL_OPS, CruiseControlOpSchema } from './button-action.js'
+export {
+  ButtonActionSchema,
+  CRUISE_CONTROL_OPS,
+  CruiseControlOpSchema,
+  TIMER_CONTROL_OPS,
+  TimerControlOpSchema,
+} from './button-action.js'
 export type {
   ButtonAction,
   CanRawAction,
   CruiseControlAction,
   CruiseControlOp,
+  TimerControlAction,
+  TimerControlOp,
   DashboardButtonAction,
   EcuButtonAction,
   MapSwitchAction,
@@ -27,7 +35,8 @@ export {
   SingleActionButtonConfigSchema,
 } from './button.js'
 
-export { TimerWidgetConfigSchema } from './timer.js'
+export { TimerWidgetConfigSchema, TIMER_SOURCES, TimerSourceSchema } from './timer.js'
+export type { TimerSource } from './timer.js'
 export { GearWidgetConfigSchema } from './gear.js'
 export { ImageWidgetConfigSchema } from './image.js'
 export { SHIFT_LIGHT_SEGMENT_COUNT, ShiftLightWidgetConfigSchema } from './shift-light.js'

@@ -70,12 +70,26 @@ const CruiseControlActionSchema = z
   })
   .strict()
 
+export const TIMER_CONTROL_OPS = ['start', 'pause', 'resume', 'toggle', 'reset', 'lap'] as const
+
+export const TimerControlOpSchema = z.enum(TIMER_CONTROL_OPS)
+
+const TimerControlActionSchema = z
+  .object({
+    id: ActionIdSchema,
+    category: z.literal('device'),
+    type: z.literal('timer_control'),
+    op: TimerControlOpSchema,
+  })
+  .strict()
+
 export const ButtonActionSchema = z
   .discriminatedUnion('type', [
     NavigateActionSchema,
     MapSwitchActionSchema,
     CanRawActionSchema,
     CruiseControlActionSchema,
+    TimerControlActionSchema,
   ])
   .superRefine((a, ctx) => {
     if (a.type === 'can_raw' && !a.extended && a.frameId > CAN_11BIT_MAX) {
@@ -92,6 +106,9 @@ export type MapSwitchAction = z.infer<typeof MapSwitchActionSchema>
 export type CanRawAction = z.infer<typeof CanRawActionSchema>
 export type CruiseControlAction = z.infer<typeof CruiseControlActionSchema>
 export type CruiseControlOp = z.infer<typeof CruiseControlOpSchema>
+export type TimerControlAction = z.infer<typeof TimerControlActionSchema>
+export type TimerControlOp = z.infer<typeof TimerControlOpSchema>
+export type DeviceButtonAction = TimerControlAction
 export type DashboardButtonAction = NavigateAction
 export type EcuButtonAction = MapSwitchAction | CanRawAction | CruiseControlAction
 export type ButtonAction = z.infer<typeof ButtonActionSchema>
