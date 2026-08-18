@@ -8,6 +8,7 @@ import {
 } from '../constants/firmware-caps.js'
 
 import { HexColorSchema, SemVerSchema } from './common.js'
+import { UNIT_SYSTEMS } from '../units/index.js'
 import { ScreenProfileIdSchema } from './screen-profile.js'
 import type { ExactOptional } from './exact-optional.js'
 import { WidgetSchema, type Widget } from './widgets/index.js'
@@ -131,6 +132,8 @@ export const DEFAULT_TOP_BAR_LAYOUT = [
 
 export const DAY_NIGHT_SIGNAL_MAX_LEN = 31
 
+export const UnitSystemSchema = z.enum(UNIT_SYSTEMS)
+
 export const DashboardConfigSchema = z
   .object({
     _comment: z.string().optional(),
@@ -151,6 +154,7 @@ export const DashboardConfigSchema = z
       ),
     ecuProfileKey: z.string().optional(),
     targetProfile: ScreenProfileIdSchema.optional(),
+    units: UnitSystemSchema.optional(),
   })
   .strict()
 
