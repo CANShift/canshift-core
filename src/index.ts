@@ -34,7 +34,20 @@ export type {
   TopBarItemPosition,
   PageStatusRow,
 } from './schemas/dashboard.js'
+export type { UnitPair, UnitSystem } from './units/index.js'
 export {
+  UNIT_SYSTEMS,
+  UNIT_PAIRS,
+  DEFAULT_UNIT_SYSTEM,
+  unitPairFor,
+  hasUnitPair,
+  displayUnit,
+  displayValue,
+  canonicalValue,
+} from './units/index.js'
+
+export {
+  UnitSystemSchema,
   DashboardConfigSchema,
   DAY_NIGHT_SIGNAL_MAX_LEN,
   DEFAULT_PAGE_PALETTE,
