@@ -31,7 +31,7 @@ export const DEFAULT_PAGE_PALETTE: z.infer<typeof PagePaletteSchema> = PagePalet
   primary: '#FF4444',
   accent: '#FF8800',
   text: '#FFFFFF',
-  textDim: '#888888',
+  textDim: '#BABAB8',
   warning: '#FF8800',
   danger: '#FF4444',
   success: '#00CC44',

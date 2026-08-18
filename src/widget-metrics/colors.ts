@@ -19,6 +19,26 @@ export const WIDGET_DIM_COLORS = {
   night: hex('#BABAB8'),
 } as const satisfies Record<'day' | 'night', HexColor>
 
+export const WIDGET_GROUND_COLORS = {
+  day: hex('#DDDDDD'),
+  night: hex('#121212'),
+} as const satisfies Record<'day' | 'night', HexColor>
+
+export const WIDGET_TRACK_COLORS = {
+  day: hex('#C4C4C4'),
+  night: hex('#222222'),
+} as const satisfies Record<'day' | 'night', HexColor>
+
+export const WIDGET_LOCK_LINE_COLORS = {
+  day: hex('#B4B4B4'),
+  night: hex('#333333'),
+} as const satisfies Record<'day' | 'night', HexColor>
+
+export const WIDGET_LOCK_INK_COLORS = {
+  day: hex('#8A8A8A'),
+  night: hex('#6B6B6B'),
+} as const satisfies Record<'day' | 'night', HexColor>
+
 export const WIDGET_STALE_TEXT_COLORS = {
   day: hex('#888888'),
   night: hex('#555555'),
@@ -32,3 +52,15 @@ export const widgetDimColor = (isDayMode: boolean): HexColor =>
 
 export const widgetStaleTextColor = (isDayMode: boolean): HexColor =>
   isDayMode ? WIDGET_STALE_TEXT_COLORS.day : WIDGET_STALE_TEXT_COLORS.night
+
+export const widgetGroundColor = (isDayMode: boolean): HexColor =>
+  isDayMode ? WIDGET_GROUND_COLORS.day : WIDGET_GROUND_COLORS.night
+
+export const widgetTrackColor = (isDayMode: boolean): HexColor =>
+  isDayMode ? WIDGET_TRACK_COLORS.day : WIDGET_TRACK_COLORS.night
+
+export const widgetLockLineColor = (isDayMode: boolean): HexColor =>
+  isDayMode ? WIDGET_LOCK_LINE_COLORS.day : WIDGET_LOCK_LINE_COLORS.night
+
+export const widgetLockInkColor = (isDayMode: boolean): HexColor =>
+  isDayMode ? WIDGET_LOCK_INK_COLORS.day : WIDGET_LOCK_INK_COLORS.night
