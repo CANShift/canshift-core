@@ -11,9 +11,26 @@ Shared TypeScript contracts for the CANShift ecosystem (org: github.com/CANShift
 
 - Pure TypeScript, Zod is the only runtime dependency. No Node/browser/RN APIs.
 - Every `DashboardConfig` shape change: bump `CURRENT_SCHEMA_VERSION` + paired migration in `src/migrations/registry.ts` + test, same PR.
-- Firmware mirror: `config_types.h` in CANShift/canshift-firmware must match; that repo pins the schema version in `core-schema-version.txt` — remind the PR author to update both.
 - Publishing: tag `vX.Y.Z` → the publish workflow ships to npm with provenance. npm version is independent from `CURRENT_SCHEMA_VERSION`.
-- Consumers (tuner, mobile) install from npm — after a publish they bump their dependency.
+- Before claiming a `CURRENT_SCHEMA_VERSION`, check that no closed or abandoned PR already reserved it. Versions have been claimed twice by work that never landed.
+
+## A core change is never done in core
+
+This package is a contract, not a library. Every change has consumers that go stale the moment it lands, so **a core PR ships with its firmware and tuner PRs open beside it** — not with a follow-up issue. A PR that changes core alone is half a change.
+
+| What changed here                  | canshift-firmware owes                                                 | canshift-tuner owes                       |
+| ---------------------------------- | ---------------------------------------------------------------------- | ----------------------------------------- |
+| Any `DashboardConfig` shape change | `core-schema-version.txt` and the bundled `data/config/dashboard.json` | —                                         |
+| A field the firmware reads         | the mirror in `src/config/config_types.h`                              | —                                         |
+| A field the dash renders           | the render path, or it is a control that lies                          | the editor surface and the canvas preview |
+| A field removed                    | the pin; the mirror too if it was ever there                           | delete the control in the same breath     |
+| A published npm version            | —                                                                      | bump the `@canshift/core` dependency      |
+
+canshift-mobile follows the same rule when it consumes the field. It is deferred, so say so explicitly rather than leaving the gap unstated.
+
+**The merge order is forced by CI, not by preference.** The `firmware-parity` job checks out canshift-firmware's _default branch_ and asserts its bundled config is pinned at `CURRENT_SCHEMA_VERSION`. A core PR that bumps the version therefore **cannot go green until the firmware pin is already on firmware `main`**. The order is: firmware pin → this PR → tag `vX.Y.Z` → tuner bumps its dependency. Writing it the other way round deadlocks, and `firmware-parity` failing on a version bump is that mistake, not a broken job.
+
+State the consumer PRs and their order in the description of every core PR. If a consumer is genuinely out of scope, name it and say why — an unstated gap reads as an oversight.
 
 ## Code shape
 
