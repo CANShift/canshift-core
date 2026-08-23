@@ -1,4 +1,4 @@
-import { stripForbiddenKeys } from '../wire/plain-object.js'
+import { asPlainObject, stripForbiddenKeys } from '../wire/plain-object.js'
 import { MigrationError } from './errors.js'
 
 export { asPlainObject } from '../wire/plain-object.js'
@@ -23,6 +23,19 @@ export const mapWidgets = (
     const widgets = asObjectArray(page.widgets)
     if (!widgets) return page
     return { ...page, widgets: widgets.map(fn) }
+  })
+
+export const dropWidgetConfigKeys = (
+  config: Config,
+  version: string,
+  keys: readonly string[]
+): Config =>
+  mapWidgets(config, version, (widget) => {
+    const widgetConfig = asPlainObject(widget.config)
+    if (!widgetConfig) return widget
+    if (!keys.some((key) => key in widgetConfig)) return widget
+    const kept = Object.entries(widgetConfig).filter(([key]) => !keys.includes(key))
+    return { ...widget, config: Object.fromEntries(kept) }
   })
 
 export const flatMapWidgets = (

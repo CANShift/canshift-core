@@ -1,5 +1,6 @@
 import type { Migration } from './types.js'
 import { versionOnly } from './steps/version-only.js'
+import { dropAlertThreshold } from './steps/1-39-to-1-40.js'
 import { pairThemeFaces } from './steps/1-36-to-1-37.js'
 import { stripButtonIcons } from './steps/1-30-to-1-31.js'
 import { dropArcFillStyle } from './steps/1-29-to-1-30.js'
@@ -23,6 +24,7 @@ import { labelToGauge } from './steps/1-1-to-1-2.js'
 import { buttonActionsFromTarget } from './steps/1-0-to-1-1.js'
 
 export const BUILTIN_MIGRATIONS: readonly Migration[] = [
+  { fromVersion: '1.39.0', toVersion: '1.40.0', migrate: dropAlertThreshold },
   { fromVersion: '1.38.0', toVersion: '1.39.0', migrate: versionOnly('1.39.0') },
   { fromVersion: '1.37.0', toVersion: '1.38.0', migrate: versionOnly('1.38.0') },
   { fromVersion: '1.36.0', toVersion: '1.37.0', migrate: pairThemeFaces },

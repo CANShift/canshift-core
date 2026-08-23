@@ -257,17 +257,25 @@ is a starter catalogue for the standard J1979 PIDs.
 
 ## What actually arms an alert
 
-Three fields in two files look like the same knob. They are not, and only one of
+Two fields in two files look like the same knob. They are not, and only one of
 them reaches the alert engine.
 
-| Field                                                 | File                                     | Effect                                                                       |
-| ----------------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| `warningLevel` / `dangerLevel` and their `high*` pair | `signals.json` → `SignalDef`             | **Arms the alert engine** — the warning band and the full-screen takeover.   |
-| `dangerLevel` (+ `dangerBelow`)                       | `dashboard.json` → gauge or label config | **Paints one widget.** Never reaches the alert engine.                       |
-| `alertThreshold`                                      | `dashboard.json` → gauge config          | **Nothing.** No firmware code reads it — see CANShift/canshift-firmware#266. |
+| Field                                                 | File                                     | Effect                                                                     |
+| ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------- |
+| `warningLevel` / `dangerLevel` and their `high*` pair | `signals.json` → `SignalDef`             | **Arms the alert engine** — the warning band and the full-screen takeover. |
+| `dangerLevel` (+ `dangerBelow`)                       | `dashboard.json` → gauge or label config | **Paints one widget.** Never reaches the alert engine.                     |
 
 The one that matters is the catalogue's, and it is the one no editor exposes today
 (#121). The one the tuner surfaces is the widget's, which only chooses a colour.
+
+There used to be a third. `alertThreshold` sat on every gauge config, validated,
+survived every migration and was burned to the dash — and no firmware code ever
+read it, so a user who set it got silence
+([firmware#266](https://github.com/CANShift/canshift-firmware/issues/266)). It is
+gone as of schema 1.40.0: the `1.39.0 → 1.40.0` migration strips it, and the strict
+gauge schema now rejects it. A per-widget threshold could not have become the
+takeover anyway — that is one object on the config, with an acknowledge target, and
+it is tracked on #127.
 
 ### Which signals the firmware watches
 

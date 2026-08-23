@@ -2,6 +2,7 @@ import { BUILTIN_MIGRATIONS, migrateConfig, validateMigrationChain } from '../mi
 import type { MigrationRegistry } from '../migrations/index.js'
 import { assertVersionBump } from '../migrations/runner.js'
 import { CURRENT_SCHEMA_VERSION } from '../index.js'
+import { GaugeWidgetConfigSchema } from '../schemas/widgets/gauge.js'
 
 const makeButtonWidget = (overrides: Record<string, unknown> = {}): Record<string, unknown> => ({
   id: 'btn1',
@@ -2044,6 +2045,120 @@ describe('migration walk — malformed registry guards (#1647)', () => {
       { fromVersion: '2.0.0', toVersion: '1.0.0', migrate: identity },
     ]
     expect(() => validateMigrationChain('1.0.0', '3.0.0', registry)).toThrow(/exceeded .* steps/)
+  })
+})
+
+describe('migrateConfig — 1.39.0 → 1.40.0 (drop the gauge alertThreshold that armed nothing)', () => {
+  const wrap = (widgetConfig: Record<string, unknown>): Record<string, unknown> => ({
+    version: '1.39.0',
+    pages: [
+      {
+        id: 'p1',
+        widgets: [{ id: 'g1', type: 'gauge', signal: 'coolant_temp_c', config: widgetConfig }],
+      },
+    ],
+  })
+
+  const configOf = (config: Record<string, unknown>): Record<string, unknown> => {
+    const { config: out } = migrateConfig(config, '1.40.0')
+    const page = (out.pages as Record<string, unknown>[])[0]!
+    const widgets = page.widgets as Record<string, unknown>[]
+    return widgets[0]!.config as Record<string, unknown>
+  }
+
+  it('bumps the version and reports the step', () => {
+    const { config: out, applied } = migrateConfig({ version: '1.39.0', pages: [] }, '1.40.0')
+    expect(out.version).toBe('1.40.0')
+    expect(applied).toEqual(['1.39.0 → 1.40.0'])
+  })
+
+  it('strips alertThreshold and keeps every sibling field', () => {
+    const cfg = configOf(
+      wrap({
+        type: 'gauge',
+        displayStyle: 'arc',
+        minValue: 0,
+        maxValue: 140,
+        dangerLevel: 105,
+        alertThreshold: 98,
+      })
+    )
+    expect('alertThreshold' in cfg).toBe(false)
+    expect(cfg).toEqual({
+      type: 'gauge',
+      displayStyle: 'arc',
+      minValue: 0,
+      maxValue: 140,
+      dangerLevel: 105,
+    })
+  })
+
+  it('leaves dangerLevel alone — the widget colour threshold is not the one being dropped', () => {
+    const cfg = configOf(
+      wrap({ type: 'gauge', displayStyle: 'numeric', dangerLevel: 1.0, dangerBelow: true })
+    )
+    expect(cfg.dangerLevel).toBe(1.0)
+    expect(cfg.dangerBelow).toBe(true)
+  })
+
+  it('leaves a gauge without alertThreshold untouched', () => {
+    const cfg = configOf(wrap({ type: 'gauge', displayStyle: 'numeric', minValue: 0 }))
+    expect(cfg).toEqual({ type: 'gauge', displayStyle: 'numeric', minValue: 0 })
+  })
+
+  it('strips it from every gauge on every page, not just the first', () => {
+    const config = {
+      version: '1.39.0',
+      pages: [
+        {
+          id: 'p1',
+          widgets: [
+            { id: 'g1', type: 'gauge', config: { type: 'gauge', alertThreshold: 1 } },
+            { id: 'g2', type: 'gauge', config: { type: 'gauge', alertThreshold: 2 } },
+          ],
+        },
+        {
+          id: 'p2',
+          widgets: [{ id: 'g3', type: 'gauge', config: { type: 'gauge', alertThreshold: 3 } }],
+        },
+      ],
+    }
+    const { config: out } = migrateConfig(config, '1.40.0')
+    const every = (out.pages as Record<string, unknown>[]).flatMap(
+      (page) => page.widgets as Record<string, unknown>[]
+    )
+    expect(every).toHaveLength(3)
+    for (const widget of every) {
+      expect('alertThreshold' in (widget.config as Record<string, unknown>)).toBe(false)
+    }
+  })
+
+  it('a migrated config validates against the strict gauge schema', () => {
+    const cfg = configOf(
+      wrap({
+        type: 'gauge',
+        displayStyle: 'arc',
+        minValue: 0,
+        maxValue: 8000,
+        dangerLevel: 7200,
+        decimalPlaces: 0,
+        alertThreshold: 7000,
+      })
+    )
+    expect(GaugeWidgetConfigSchema.safeParse(cfg).success).toBe(true)
+  })
+
+  it('the strict gauge schema now rejects alertThreshold outright', () => {
+    const withField = {
+      type: 'gauge',
+      displayStyle: 'arc',
+      minValue: 0,
+      maxValue: 8000,
+      dangerLevel: 7200,
+      decimalPlaces: 0,
+      alertThreshold: 7000,
+    }
+    expect(GaugeWidgetConfigSchema.safeParse(withField).success).toBe(false)
   })
 })
 
