@@ -20,7 +20,6 @@ export const GaugeWidgetConfigSchema = z
     suffix: z.string().max(STRING_CAPS.WIDGET_PREFIX_SUFFIX).optional(),
     showBar: z.boolean().optional(),
     revFlash: z.boolean().optional(),
-    alertThreshold: z.number().optional(),
     iconName: SensorIconNameSchema.optional(),
   })
   .strict()
