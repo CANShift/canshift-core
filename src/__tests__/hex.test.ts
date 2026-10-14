@@ -30,11 +30,8 @@ describe('isHexColor', () => {
   it('narrows the type so `as HexColor` is not required', () => {
     const candidate: unknown = '#FF4444'
     if (typeof candidate === 'string' && isHexColor(candidate)) {
-      const accepts = (_: HexColor): void => {
-        void _
-      }
-      accepts(candidate)
-      expect(candidate.startsWith('#')).toBe(true)
+      const accepts = (color: HexColor): HexColor => color
+      expect(accepts(candidate).startsWith('#')).toBe(true)
     } else {
       throw new Error('expected `#FF4444` to be a valid hex color')
     }
