@@ -5,6 +5,7 @@ import { WidgetLayoutSchema, WidgetStyleSchema } from '../common.js'
 import type { ExactOptional } from '../exact-optional.js'
 
 import {
+  ButtonWidgetConfigSchema,
   CycleButtonConfigSchema,
   CycleButtonStateSchema,
   SingleActionButtonConfigSchema,
@@ -16,11 +17,10 @@ import { ShiftLightWidgetConfigSchema } from './shift-light.js'
 import { TimerWidgetConfigSchema } from './timer.js'
 import { WarningWidgetConfigSchema } from './warning.js'
 
-export const WidgetConfigSchema = z.union([
+export const WidgetConfigSchema = z.discriminatedUnion('type', [
   GaugeWidgetConfigSchema,
   WarningWidgetConfigSchema,
-  SingleActionButtonConfigSchema,
-  CycleButtonConfigSchema,
+  ButtonWidgetConfigSchema,
   TimerWidgetConfigSchema,
   GearWidgetConfigSchema,
   ImageWidgetConfigSchema,
