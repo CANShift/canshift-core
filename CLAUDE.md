@@ -49,5 +49,5 @@ Non-negotiable. Reviewed on every PR, ahead of feature count.
 ## Workflow
 
 - Branch `type/short-description`; Conventional Commits, subject only.
-- PR via `gh pr create`; main is protected: required checks `lint`, `test`, `build`; **rebase and merge only** (`gh pr merge --rebase`).
+- PR via `gh pr create`; main is protected: required checks `lint`, `test`, `build`, `firmware-parity`, all in `ci.yml` behind the `ci-success` gate; **rebase and merge only** (`gh pr merge --rebase`).
 - Firmware parity/fixture test suites skip when no sibling firmware checkout exists.
