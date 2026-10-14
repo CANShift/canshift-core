@@ -1,4 +1,4 @@
-import { asPlainObject, stripForbiddenKeys } from '../wire/plain-object.js'
+import { asPlainObject, cloneJsonWithoutForbiddenKeys } from '../wire/plain-object.js'
 import { MigrationError } from './errors.js'
 
 export { asPlainObject } from '../wire/plain-object.js'
@@ -53,7 +53,7 @@ export const cloneAndStripForbiddenKeys = (
   value: Record<string, unknown>
 ): Record<string, unknown> => {
   try {
-    return JSON.parse(JSON.stringify(value), stripForbiddenKeys) as Record<string, unknown>
+    return cloneJsonWithoutForbiddenKeys(value)
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err)
     throw new MigrationError(
