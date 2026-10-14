@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    isolate: false,
     include: ['src/__tests__/**/*.test.ts'],
     coverage: {
       include: ['src/**/*.ts'],
