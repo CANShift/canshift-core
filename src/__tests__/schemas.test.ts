@@ -1877,6 +1877,19 @@ describe('schema bounds hardening', () => {
       }
     })
 
+    it('names the accepted types when config.type is unknown', () => {
+      const result = WidgetSchema.safeParse(widgetWith('gauge', { ...gaugeConfig, type: 'dial' }))
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error.issues.map((i) => [i.path.join('.'), i.message])).toEqual([
+          [
+            'config.type',
+            "Invalid discriminator value. Expected 'gauge' | 'warning' | 'button' | 'timer' | 'gear' | 'image' | 'shift_light'",
+          ],
+        ])
+      }
+    })
+
     it('flipping only the top-level type on a valid widget makes it invalid', () => {
       expect(WidgetSchema.safeParse(widgetWith('image', imageConfig)).success).toBe(true)
       expect(WidgetSchema.safeParse(widgetWith('gauge', imageConfig)).success).toBe(false)

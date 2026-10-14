@@ -118,11 +118,9 @@ describe('validateDashboard — button.actions cap (issue #700)', () => {
       })
     )
     expect(result.valid).toBe(false)
-    expect(
-      result.errors.some(
-        (e) => e.includes('actions') && e.includes(String(FIRMWARE_CAPS.MAX_BUTTON_ACTIONS))
-      )
-    ).toBe(true)
+    expect(result.errors).toEqual([
+      `pages[0].widgets[0].config.actions: actions cannot exceed ${String(FIRMWARE_CAPS.MAX_BUTTON_ACTIONS)} entries (firmware cap)`,
+    ])
   })
 })
 
