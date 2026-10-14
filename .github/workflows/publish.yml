@@ -11,6 +11,9 @@ concurrency:
   group: publish-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  NPM_VERSION: '11.21.0'
+
 jobs:
   publish:
     name: npm publish
@@ -71,6 +74,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      - name: npm with trusted publishing support
+        run: npm install --global "npm@${NPM_VERSION}"
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
