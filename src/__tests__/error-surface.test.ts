@@ -1,7 +1,7 @@
 import { findForbiddenKey } from '../wire/plain-object.js'
 import { parseDeviceConfig } from '../schemas/device.js'
 import { parseInputBindings } from '../schemas/input-bindings.js'
-import { migrateConfig, validateMigrationChain } from '../migrations/runner.js'
+import { migrateConfig } from '../migrations/runner.js'
 import { MigrationError } from '../migrations/errors.js'
 import { parseCanshiftFile, describeCanshiftFileError } from '../schemas/canshift-file.js'
 import { evalExpr, evalExprChecked } from '../can-xml/eval-expr.js'
@@ -67,15 +67,12 @@ describe('migration failures carry a machine-readable code', () => {
     }
   })
 
-  it('a duplicate fromVersion is code "registry_corrupt"', () => {
-    const registry = [
-      { fromVersion: '1.0.0', toVersion: '1.1.0', migrate: (c: Record<string, unknown>) => c },
-      { fromVersion: '1.0.0', toVersion: '1.2.0', migrate: (c: Record<string, unknown>) => c },
-    ]
+  it('a config older than the floor is code "below_floor"', () => {
+    expect(() => migrateConfig({ version: '1.10.0' }, '1.41.0')).toThrow(MigrationError)
     try {
-      validateMigrationChain('1.0.0', '1.2.0', registry)
+      migrateConfig({ version: '1.10.0' }, '1.41.0')
     } catch (err) {
-      expect((err as MigrationError).code).toBe('registry_corrupt')
+      expect((err as MigrationError).code).toBe('below_floor')
     }
   })
 

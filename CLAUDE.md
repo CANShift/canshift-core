@@ -10,7 +10,7 @@ Shared TypeScript contracts for the CANShift ecosystem (org: github.com/CANShift
 ## Rules
 
 - Pure TypeScript, Zod is the only runtime dependency. No Node/browser/RN APIs.
-- Every `DashboardConfig` shape change: bump `CURRENT_SCHEMA_VERSION` + paired migration in `src/migrations/registry.ts` + test, same PR.
+- Every `DashboardConfig` shape change bumps `CURRENT_SCHEMA_VERSION`. A removal, rename or rewrite also gets a step in `src/migrations/registry.ts` + test, same PR; an additive optional field needs no step. Configs older than `MIGRATION_FLOOR_VERSION` (1.24.0) are refused, not migrated.
 - Publishing: tag `vX.Y.Z` → the publish workflow ships to npm with provenance. npm version is independent from `CURRENT_SCHEMA_VERSION`.
 - Before claiming a `CURRENT_SCHEMA_VERSION`, check that no closed or abandoned PR already reserved it. Versions have been claimed twice by work that never landed.
 

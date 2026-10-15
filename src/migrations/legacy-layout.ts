@@ -1,26 +1,12 @@
-import { CANVAS } from '../constants/firmware-caps.js'
 import { LAYOUT_GRID } from '../layout-grid.js'
 import { SCREEN_PROFILES, resolveScreenProfile } from '../schemas/screen-profile.js'
 
 type Config = Record<string, unknown>
 
-export const STANDARD_WIDGET_TYPES = new Set(['button', 'warning', 'gear', 'timer', 'image'])
-
-export const resizeWithinCanvas = (layout: Config, w: number, h: number): Config => {
-  const x =
-    typeof layout.x === 'number' ? Math.max(0, Math.min(layout.x, CANVAS.WIDTH - w)) : layout.x
-  const y =
-    typeof layout.y === 'number' ? Math.max(0, Math.min(layout.y, CANVAS.HEIGHT - h)) : layout.y
-  return { ...layout, x, y, w, h }
-}
-
-export const upgradeLegacySize = (w: number, h: number): { w: number; h: number } | null =>
-  w === 80 && (h === 28 || h === 56 || h === 112) ? { w: 160, h: 56 } : null
-
 const clampInt = (value: number, min: number, max: number): number =>
   Math.min(Math.max(value, min), max)
 
-export const legacyAxisToSpan = (
+const legacyAxisToSpan = (
   start: number,
   length: number,
   size: number,

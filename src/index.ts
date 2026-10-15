@@ -412,15 +412,14 @@ export type { WireEnvelopeFailure, WireParseFailure } from './wire/parse-envelop
 
 export {
   BUILTIN_MIGRATIONS,
+  MIGRATION_FLOOR_VERSION,
   MigrationError,
   migrateConfig,
-  validateMigrationChain,
 } from './migrations/index.js'
 export type {
   Migration,
   MigrationErrorCode,
   MigrationFn,
-  MigrationRegistry,
   MigrationResult,
 } from './migrations/index.js'
 

@@ -6,8 +6,6 @@ export interface Migration {
   migrate: MigrationFn
 }
 
-export type MigrationRegistry = Migration[]
-
 export interface MigrationResult {
   config: Record<string, unknown>
   applied: string[]

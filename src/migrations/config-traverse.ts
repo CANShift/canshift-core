@@ -38,17 +38,6 @@ export const dropWidgetConfigKeys = (
     return { ...widget, config: Object.fromEntries(kept) }
   })
 
-export const flatMapWidgets = (
-  config: Config,
-  version: string,
-  fn: (widget: Config) => Config[]
-): Config =>
-  mapPages(config, version, (page) => {
-    const widgets = asObjectArray(page.widgets)
-    if (!widgets) return page
-    return { ...page, widgets: widgets.flatMap(fn) }
-  })
-
 export const cloneAndStripForbiddenKeys = (
   value: Record<string, unknown>
 ): Record<string, unknown> => {
