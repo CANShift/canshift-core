@@ -1,6 +1,6 @@
 {
   "name": "@canshift/core",
-  "version": "10.1.0",
+  "version": "10.1.1",
   "description": "CANShift shared configuration domain types, schemas, and validation",
   "type": "module",
   "main": "dist/index.js",
