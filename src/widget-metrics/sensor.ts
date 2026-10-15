@@ -2,6 +2,7 @@ import { hex } from '../colors/hex.js'
 import type { ColorRampStop } from '../schemas/signal.js'
 import { SENSOR_DEFAULT_RAMPS } from '../sensor-defaults.js'
 import type { SensorKind } from '../sensor-defaults.js'
+import { isWarningTripped } from './warning.js'
 
 export const SENSOR_DEFAULT_RANGES = {
   coolant_temp: { min: 0, max: 120 },
@@ -23,6 +24,11 @@ export const SENSOR_DANGER_COLOR = hex('#CC3333')
 export interface SensorDangerThreshold {
   threshold: number
   invertLogic: boolean
+}
+
+export interface SensorDangerBand {
+  below: number | null
+  above: number | null
 }
 
 const isDanger = (stop: ColorRampStop): boolean => stop.color === SENSOR_DANGER_COLOR
@@ -57,4 +63,19 @@ export const sensorDefaultDangerThreshold = (kind: SensorKind): SensorDangerThre
   const boundary = leading[leading.length - 1]
   if (boundary) return { threshold: boundary.value, invertLogic: true }
   return { threshold: SENSOR_DEFAULT_RANGES[kind].max, invertLogic: false }
+}
+
+export const sensorDefaultDangerBand = (kind: SensorKind): SensorDangerBand => {
+  const stops = SENSOR_DEFAULT_RAMPS[kind].stops
+  const leading = leadingDangerStops(stops)
+  const below = leading[leading.length - 1]?.value ?? null
+  const above = trailingDangerStops(stops)[0]?.value ?? null
+  if (below === null && above === null) return { below, above: SENSOR_DEFAULT_RANGES[kind].max }
+  return { below, above }
+}
+
+export const isOutsideDangerBand = (value: number, band: SensorDangerBand): boolean => {
+  const tripsBelow = band.below !== null && isWarningTripped(value, band.below, true)
+  const tripsAbove = band.above !== null && isWarningTripped(value, band.above, false)
+  return tripsBelow || tripsAbove
 }

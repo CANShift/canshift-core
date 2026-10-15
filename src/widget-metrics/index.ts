@@ -75,11 +75,13 @@ export {
   formatTimerMmSs,
   formatTimerSsMmm,
 } from './timer.js'
-export type { SensorDangerThreshold } from './sensor.js'
+export type { SensorDangerBand, SensorDangerThreshold } from './sensor.js'
 export {
   SENSOR_DEFAULT_RANGES,
   sensorDefaultRange,
   SENSOR_DANGER_COLOR,
   sensorDefaultDangerThreshold,
+  sensorDefaultDangerBand,
+  isOutsideDangerBand,
 } from './sensor.js'
 export { SECONDARY_BAR, SHIFT_LIGHT, shiftLightLitSegments } from './shift-light.js'

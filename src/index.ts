@@ -381,6 +381,8 @@ export {
   sensorDefaultRange,
   SENSOR_DANGER_COLOR,
   sensorDefaultDangerThreshold,
+  sensorDefaultDangerBand,
+  isOutsideDangerBand,
   SECONDARY_BAR,
   SHIFT_LIGHT,
   shiftLightLitSegments,
@@ -388,6 +390,7 @@ export {
 export type {
   GaugeSeverity,
   GaugeThresholds,
+  SensorDangerBand,
   SensorDangerThreshold,
   SignalWarnLevels,
 } from './widget-metrics/index.js'
