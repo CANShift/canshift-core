@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { STRING_CAPS } from '../../constants/firmware-caps.js'
 import { WidgetLayoutSchema, WidgetStyleSchema } from '../common.js'
 import type { ExactOptional } from '../exact-optional.js'
+import { warnSitsBeforeDanger } from '../../widget-metrics/gauge-severity.js'
 
 import {
   ButtonWidgetConfigSchema,
@@ -47,15 +48,12 @@ const addConfigIssue = (ctx: z.RefinementCtx, field: string, message: string): v
   ctx.addIssue({ code: 'custom' as const, message, path: ['config', field] })
 }
 
-const warnSitsBeforeDanger = (cfg: GaugeConfig, warnLevel: number): boolean =>
-  cfg.dangerBelow === true ? warnLevel > cfg.dangerLevel : warnLevel < cfg.dangerLevel
-
 const refineGaugeWarnLevel = (cfg: GaugeConfig, ctx: z.RefinementCtx): void => {
   if (cfg.warnLevel === undefined) return
   if (cfg.warnLevel < cfg.minValue || cfg.warnLevel > cfg.maxValue) {
     addConfigIssue(ctx, 'warnLevel', 'gauge: warnLevel must be in [minValue, maxValue]')
   }
-  if (!warnSitsBeforeDanger(cfg, cfg.warnLevel)) {
+  if (!warnSitsBeforeDanger(cfg.warnLevel, cfg.dangerLevel, cfg.dangerBelow)) {
     addConfigIssue(ctx, 'warnLevel', 'gauge: warnLevel must be reached before dangerLevel')
   }
 }
