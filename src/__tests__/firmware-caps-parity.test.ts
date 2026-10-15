@@ -15,7 +15,7 @@ const CONFIG_SIGNALS_LOADER = resolve(
 
 const extractDefine = (source: string, name: string): number | null => {
   const pattern = new RegExp(
-    `(?:#define\\s+(?:${name})\\s+|constexpr\\s+\\w+\\s+(?:${name})\\s*=\\s*)(\\d+)`
+    `(?:#define\\s+${name}\\s+|constexpr\\s+\\w+\\s+${name}\\s*=\\s*)(\\d+)`
   )
   const match = pattern.exec(source)
   return match ? Number.parseInt(match[1] ?? '', 10) : null
@@ -27,9 +27,9 @@ describeIfFirmware('firmware-caps parity', () => {
   const source = existsSync(APP_CONFIG) ? readFileSync(APP_CONFIG, 'utf8') : ''
 
   const cases: [keyof typeof FIRMWARE_CAPS, string][] = [
-    ['MAX_PAGES', 'kConfigMaxPages|CONFIG_MAX_PAGES'],
-    ['MAX_WIDGETS_PER_PAGE', 'kConfigMaxWidgetsPerPage|CONFIG_MAX_WIDGETS_PER_PAGE'],
-    ['MAX_SIGNALS', 'kConfigMaxSignals|CONFIG_MAX_SIGNALS'],
+    ['MAX_PAGES', 'kConfigMaxPages'],
+    ['MAX_WIDGETS_PER_PAGE', 'kConfigMaxWidgetsPerPage'],
+    ['MAX_SIGNALS', 'kConfigMaxSignals'],
   ]
 
   it.each(cases)('%s matches firmware %s', (cap, define) => {
