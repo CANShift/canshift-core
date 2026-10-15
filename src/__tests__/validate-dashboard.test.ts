@@ -311,6 +311,22 @@ describe('validateDashboard — signal cross-reference', () => {
     expect(result.warnings).toEqual([])
   })
 
+  it('warns on a criticalAlert signal that is not in the catalog', () => {
+    const criticalAlert = {
+      signal: 'egt_c',
+      firesAt: 980,
+      direction: 'above',
+      acknowledgeOn: 'dash',
+    }
+    const result = validateDashboard(validConfig({ criticalAlert }), {
+      signalCatalog: signalCatalog(['rpm']),
+    })
+    expect(result.valid).toBe(true)
+    expect(result.warnings).toEqual([
+      'criticalAlert references signal "egt_c" which is not defined in config.signals',
+    ])
+  })
+
   it('produces no warnings when every signal is in the catalog', () => {
     const result = validateDashboard(validConfig(), {
       signalCatalog: signalCatalog(['rpm']),

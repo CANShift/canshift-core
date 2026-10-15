@@ -55,6 +55,7 @@ together.
   "targetProfile": "crowpanel-28",
   "ecuProfileKey": "string",
   "dayNightSignal": "string",
+  "criticalAlert": CriticalAlert,
   "topBar": {
     "height": 24,
     "bgColor": "#RRGGBB",
@@ -70,7 +71,7 @@ together.
 ```
 
 Optional: `description`, `targetProfile`, `ecuProfileKey`, `dayNightSignal`,
-`theme`, `topBar.layout`. Everything else is required. The schema is `.strict()`
+`criticalAlert`, `theme`, `topBar.layout`. Everything else is required. The schema is `.strict()`
 throughout — an unknown key is a validation error, not a silently ignored field.
 
 ### Caps
@@ -185,6 +186,20 @@ config shape. Two rules are enforced beyond the shape: `widget.type` must equal
 `widget.config.type`, and `gauge`, `warning`, `gear` and `shift_light` must
 carry a non-empty `signal`.
 
+**The kicker and the warn tier live on the widget.** A gauge and a gear may set
+`config.kicker`, the label drawn above the value; without one the firmware
+derives it from the signal, as it always has. A button already carried its own
+`kicker`. Widgets that draw no kicker (`timer`, `warning`, `shift_light`,
+`image`) do not accept one, so the field can never be a control that lies.
+
+A gauge colours itself in three tiers: normal, amber from `warnLevel`, red from
+`dangerLevel`. `dangerBelow` sets the direction of both — `true` means the
+reading is in trouble when it **falls**, which is how an oil-pressure gauge is
+written. `warnLevel` is optional and must be reached before `dangerLevel` in
+that direction. When it is absent the firmware falls back to the signal's
+catalogue warn level, so a dashboard written before schema 1.41.0 renders
+exactly as before.
+
 **Layout is a grid, not pixels.** Widgets are placed on a 12×12 grid
 ([`layout-grid.ts`](../src/layout-grid.ts)) with `col`, `colSpan`, `row`,
 `rowSpan`, and `col + colSpan` and `row + rowSpan` must stay within it. The
@@ -257,13 +272,14 @@ is a starter catalogue for the standard J1979 PIDs.
 
 ## What actually arms an alert
 
-Two fields in two files look like the same knob. They are not, and only one of
-them reaches the alert engine.
+Three fields in two files look like the same knob. They are not, and only two
+of them reach the alert engine.
 
-| Field                                                 | File                                     | Effect                                                                     |
-| ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------- |
-| `warningLevel` / `dangerLevel` and their `high*` pair | `signals.json` → `SignalDef`             | **Arms the alert engine** — the warning band and the full-screen takeover. |
-| `dangerLevel` (+ `dangerBelow`)                       | `dashboard.json` → gauge or label config | **Paints one widget.** Never reaches the alert engine.                     |
+| Field                                                 | File                            | Effect                                                                     |
+| ----------------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------- |
+| `warningLevel` / `dangerLevel` and their `high*` pair | `signals.json` → `SignalDef`    | **Arms the alert engine** — the warning band and the full-screen takeover. |
+| `criticalAlert`                                       | `dashboard.json` → root         | **Arms one more takeover**, on a signal the owner chooses.                 |
+| `warnLevel` / `dangerLevel` (+ `dangerBelow`)         | `dashboard.json` → gauge config | **Paints one widget.** Never reaches the alert engine.                     |
 
 The one that matters is the catalogue's, and it is the one no editor exposes today
 (#121). The one the tuner surfaces is the widget's, which only chooses a colour.
@@ -274,13 +290,37 @@ read it, so a user who set it got silence
 ([firmware#266](https://github.com/CANShift/canshift-firmware/issues/266)). It is
 gone as of schema 1.40.0: the `1.39.0 → 1.40.0` migration strips it, and the strict
 gauge schema now rejects it. A per-widget threshold could not have become the
-takeover anyway — that is one object on the config, with an acknowledge target, and
-it is tracked on #127.
+takeover anyway — that is `criticalAlert`, one object on the config.
+
+### The critical alert
+
+```json
+{
+  "signal": "oil_press_bar",
+  "firesAt": 1.0,
+  "direction": "below",
+  "acknowledgeOn": "dash"
+}
+```
+
+One signal, one threshold, one acknowledge target. When the reading crosses
+`firesAt` in `direction`, the dash takes the full screen in red (DASH §10) and
+holds it until acknowledged. It is **added to** the built-in sources below, never
+a replacement for them: the built-in set is engine protection every car gets, and
+`criticalAlert` is the one thing a particular build cares about on top — an EGT
+limit for a specific turbo, a dry-sump scavenge pressure.
+
+`acknowledgeOn` accepts `dash` only. Acknowledging from the phone needs a round
+trip over the binary TELE frame that does not exist yet; the enum widens when it
+does, which is cheap, rather than shipping values that would silently behave as
+`dash`.
+
+Absent, nothing changes: the dash watches the built-in set and nothing else.
 
 ### Which signals the firmware watches
 
-Seven, and only seven. Everything else can colour a widget but cannot take the
-screen:
+Seven built in, plus the one `criticalAlert` names. Everything else can colour a
+widget but cannot take the screen:
 
 | Signal           | Direction | Fallback when the catalogue is silent |
 | ---------------- | --------- | ------------------------------------- |

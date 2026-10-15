@@ -57,6 +57,24 @@ describe('serializeCanshiftFile / parseCanshiftFile round-trip', () => {
     }
   })
 
+  it('carries the critical alert through the file unchanged', () => {
+    const criticalAlert = {
+      signal: 'oil_press_bar',
+      firesAt: 1,
+      direction: 'below',
+      acknowledgeOn: 'dash',
+    }
+    const project = {
+      ...projectAt(CURRENT_SCHEMA_VERSION),
+      dashboard: { ...dashboardAt(CURRENT_SCHEMA_VERSION), criticalAlert },
+    } as unknown as Project
+    const result = parseCanshiftFile(serializeCanshiftFile(project))
+    expect(result.kind).toBe('ok')
+    if (result.kind === 'ok') {
+      expect(result.project.dashboard.criticalAlert).toEqual(criticalAlert)
+    }
+  })
+
   it('wraps the project in the canshift envelope', () => {
     const envelope = JSON.parse(serializeCanshiftFile(currentProject)) as Record<string, unknown>
     expect(envelope.format).toBe(CANSHIFT_FILE_FORMAT)

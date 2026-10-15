@@ -2162,6 +2162,29 @@ describe('migrateConfig — 1.39.0 → 1.40.0 (drop the gauge alertThreshold tha
   })
 })
 
+describe('migrateConfig — 1.40.0 → 1.41.0 (per-widget kicker and warn tier, the critical alert)', () => {
+  it('bumps the version and leaves every field as it was — the new fields are optional', () => {
+    const config = {
+      version: '1.40.0',
+      pages: [
+        {
+          id: 'p1',
+          widgets: [
+            {
+              id: 'g1',
+              type: 'gauge',
+              config: { type: 'gauge', dangerLevel: 1.0, dangerBelow: true },
+            },
+          ],
+        },
+      ],
+    }
+    const { config: out, applied } = migrateConfig(config, '1.41.0')
+    expect(applied).toEqual(['1.40.0 → 1.41.0'])
+    expect(out).toEqual({ ...config, version: '1.41.0' })
+  })
+})
+
 describe('assertVersionBump (#1647)', () => {
   it('throws when a migration forgets to bump version', () => {
     expect(() => {
