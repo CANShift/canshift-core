@@ -1,4 +1,4 @@
-import type { z } from 'zod'
+import type * as z from 'zod'
 
 import { DashboardConfigSchema } from '../schemas/dashboard.js'
 import type { DashboardConfig } from '../schemas/dashboard.js'

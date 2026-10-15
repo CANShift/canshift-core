@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { stripForbiddenKeys } from '../wire/plain-object.js'
 import { isIntegerFormatVersion, parseJsonObject } from '../wire/parse-envelope.js'

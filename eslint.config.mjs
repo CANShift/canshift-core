@@ -82,6 +82,14 @@ export default tseslint.config(
       'no-comments/no-comments': 'error',
       'func-style': ['error', 'expression'],
       'max-depth': ['error', 3],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "ImportDeclaration[source.value='zod'] > ImportSpecifier[imported.name='z']",
+          message:
+            "Use `import * as z from 'zod'`: a named `z` is undefined when a consumer loads core through jiti with interopDefault (Tailwind config).",
+        },
+      ],
     },
   },
   {

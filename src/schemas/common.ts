@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { HEX_REGEX } from '../colors/hex.js'
 import { FONT_SIZE_MAX, FONT_SIZE_MIN } from '../constants/firmware-caps.js'

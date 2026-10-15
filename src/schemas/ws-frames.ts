@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 const FiniteNumberSchema = z.number().refine(Number.isFinite, {
   message: 'must be a finite number',

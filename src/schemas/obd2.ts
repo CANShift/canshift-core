@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 export const OBD2_MIN_INTERVAL_MS = 100
 

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 export const ScreenProfileIdSchema = z.enum(['crowpanel-28'])
 
