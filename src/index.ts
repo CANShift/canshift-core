@@ -78,6 +78,19 @@ export {
   PageTemplateSchema,
 } from './schemas/dashboard.js'
 
+export {
+  ACKNOWLEDGE_TARGETS,
+  AcknowledgeTargetSchema,
+  CRITICAL_ALERT_DIRECTIONS,
+  CriticalAlertDirectionSchema,
+  CriticalAlertSchema,
+} from './schemas/critical-alert.js'
+export type {
+  AcknowledgeTarget,
+  CriticalAlert,
+  CriticalAlertDirection,
+} from './schemas/critical-alert.js'
+
 export type {
   ButtonAction,
   ButtonWidgetConfig,

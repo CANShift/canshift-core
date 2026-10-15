@@ -123,6 +123,16 @@ const checkTopBarSignalRefs = (
   return warnings
 }
 
+const checkCriticalAlertSignalRef = (
+  criticalAlert: z.infer<typeof DashboardConfigSchema>['criticalAlert'],
+  known: Set<string>
+): string[] => {
+  if (criticalAlert === undefined || known.has(criticalAlert.signal)) return []
+  return [
+    `criticalAlert references signal "${criticalAlert.signal}" which is not defined in config.signals`,
+  ]
+}
+
 export const validateDashboard = (
   config: unknown,
   options?: ValidateDashboardOptions
@@ -152,6 +162,7 @@ export const validateDashboard = (
   const knownSignalIds = collectSignalIds(config, options?.signalCatalog)
   if (knownSignalIds !== null) {
     warnings.push(...checkWidgetSignalRefs(dashboard.pages, knownSignalIds))
+    warnings.push(...checkCriticalAlertSignalRef(dashboard.criticalAlert, knownSignalIds))
     if (dashboard.topBar.layout) {
       warnings.push(...checkTopBarSignalRefs(dashboard.topBar.layout, knownSignalIds))
     }

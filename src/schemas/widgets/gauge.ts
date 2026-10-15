@@ -10,9 +10,11 @@ export const GaugeWidgetConfigSchema = z
   .object({
     type: z.literal('gauge'),
     big: z.number().int().min(10).max(127).optional(),
+    kicker: z.string().max(STRING_CAPS.WIDGET_LABEL).optional(),
     displayStyle: GaugeDisplayStyleSchema,
     minValue: z.number(),
     maxValue: z.number(),
+    warnLevel: z.number().optional(),
     dangerLevel: z.number(),
     dangerBelow: z.boolean().optional(),
     decimalPlaces: z.number().int().min(DECIMAL_PLACES.MIN).max(DECIMAL_PLACES.MAX),

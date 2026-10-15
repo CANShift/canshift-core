@@ -40,6 +40,45 @@ export const WidgetTypeSchema = z.enum(WIDGET_TYPES)
 
 const SIGNAL_CONSUMING_WIDGET_TYPES = new Set(['gauge', 'warning', 'gear', 'shift_light'])
 
+type GaugeConfig = z.infer<typeof GaugeWidgetConfigSchema>
+type CycleConfig = z.infer<typeof CycleButtonConfigSchema>
+
+const addConfigIssue = (ctx: z.RefinementCtx, field: string, message: string): void => {
+  ctx.addIssue({ code: 'custom' as const, message, path: ['config', field] })
+}
+
+const warnSitsBeforeDanger = (cfg: GaugeConfig, warnLevel: number): boolean =>
+  cfg.dangerBelow === true ? warnLevel > cfg.dangerLevel : warnLevel < cfg.dangerLevel
+
+const refineGaugeWarnLevel = (cfg: GaugeConfig, ctx: z.RefinementCtx): void => {
+  if (cfg.warnLevel === undefined) return
+  if (cfg.warnLevel < cfg.minValue || cfg.warnLevel > cfg.maxValue) {
+    addConfigIssue(ctx, 'warnLevel', 'gauge: warnLevel must be in [minValue, maxValue]')
+  }
+  if (!warnSitsBeforeDanger(cfg, cfg.warnLevel)) {
+    addConfigIssue(ctx, 'warnLevel', 'gauge: warnLevel must be reached before dangerLevel')
+  }
+}
+
+const refineGauge = (cfg: GaugeConfig, ctx: z.RefinementCtx): void => {
+  if (cfg.minValue >= cfg.maxValue) {
+    addConfigIssue(ctx, 'maxValue', 'gauge: minValue must be less than maxValue')
+  }
+  if (cfg.dangerLevel < cfg.minValue || cfg.dangerLevel > cfg.maxValue) {
+    addConfigIssue(ctx, 'dangerLevel', 'gauge: dangerLevel must be in [minValue, maxValue]')
+  }
+  refineGaugeWarnLevel(cfg, ctx)
+}
+
+const refineCycleButton = (cfg: CycleConfig, ctx: z.RefinementCtx): void => {
+  if (cfg.initialActiveIndex < cfg.states.length) return
+  addConfigIssue(
+    ctx,
+    'initialActiveIndex',
+    `initialActiveIndex (${String(cfg.initialActiveIndex)}) must be less than states.length (${String(cfg.states.length)})`
+  )
+}
+
 export const WidgetSchema = z
   .object({
     id: z.string().min(1, 'widget id must be a non-empty string'),
@@ -52,11 +91,11 @@ export const WidgetSchema = z
   .strict()
   .superRefine((w, ctx) => {
     if (w.type !== w.config.type) {
-      ctx.addIssue({
-        code: 'custom' as const,
-        message: `widget type '${w.type}' does not match config type '${w.config.type}'`,
-        path: ['config', 'type'],
-      })
+      addConfigIssue(
+        ctx,
+        'type',
+        `widget type '${w.type}' does not match config type '${w.config.type}'`
+      )
     }
     if (SIGNAL_CONSUMING_WIDGET_TYPES.has(w.type) && w.signal.length === 0) {
       ctx.addIssue({
@@ -65,32 +104,8 @@ export const WidgetSchema = z
         path: ['signal'],
       })
     }
-    const cfg = w.config
-    if (cfg.type === 'gauge') {
-      if (cfg.minValue >= cfg.maxValue) {
-        ctx.addIssue({
-          code: 'custom' as const,
-          message: 'gauge: minValue must be less than maxValue',
-          path: ['config', 'maxValue'],
-        })
-      }
-      if (cfg.dangerLevel < cfg.minValue || cfg.dangerLevel > cfg.maxValue) {
-        ctx.addIssue({
-          code: 'custom' as const,
-          message: 'gauge: dangerLevel must be in [minValue, maxValue]',
-          path: ['config', 'dangerLevel'],
-        })
-      }
-    }
-    if (cfg.type === 'button' && cfg.mode === 'cycle') {
-      if (cfg.initialActiveIndex >= cfg.states.length) {
-        ctx.addIssue({
-          code: 'custom' as const,
-          message: `initialActiveIndex (${String(cfg.initialActiveIndex)}) must be less than states.length (${String(cfg.states.length)})`,
-          path: ['config', 'initialActiveIndex'],
-        })
-      }
-    }
+    if (w.config.type === 'gauge') refineGauge(w.config, ctx)
+    if (w.config.type === 'button' && w.config.mode === 'cycle') refineCycleButton(w.config, ctx)
   })
 
 export type WidgetType = z.infer<typeof WidgetTypeSchema>
