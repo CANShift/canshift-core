@@ -41,6 +41,13 @@ export {
   isValueInDanger,
 } from './gauge.js'
 export {
+  GAUGE_SEVERITIES,
+  gaugeSeverity,
+  gaugeWarnLevel,
+  warnSitsBeforeDanger,
+} from './gauge-severity.js'
+export type { GaugeSeverity, GaugeThresholds, SignalWarnLevels } from './gauge-severity.js'
+export {
   LABEL_FONT_RATIO,
   labelFontSize,
   GEAR_FONT_RATIO,

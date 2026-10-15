@@ -343,6 +343,10 @@ export {
   gaugeArcStrokeWidth,
   gaugeValueAngle,
   isValueInDanger,
+  GAUGE_SEVERITIES,
+  gaugeSeverity,
+  gaugeWarnLevel,
+  warnSitsBeforeDanger,
   gaugeArcPath,
   LABEL_FONT_RATIO,
   labelFontSize,
@@ -381,7 +385,12 @@ export {
   SHIFT_LIGHT,
   shiftLightLitSegments,
 } from './widget-metrics/index.js'
-export type { SensorDangerThreshold } from './widget-metrics/index.js'
+export type {
+  GaugeSeverity,
+  GaugeThresholds,
+  SensorDangerThreshold,
+  SignalWarnLevels,
+} from './widget-metrics/index.js'
 
 export { DAY_PALETTE_DEFAULT, DAY_BG_DEFAULT, DAY_THEME_FACE } from './day-theme-defaults.js'
 
