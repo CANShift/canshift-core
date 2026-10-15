@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 const LAP_MAX_MS = 60 * 60 * 1000

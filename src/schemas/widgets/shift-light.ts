@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 export const SHIFT_LIGHT_SEGMENT_COUNT = 12
 

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { DashboardConfigSchema } from './dashboard.js'
 import { SignalDefSchema } from './signal.js'

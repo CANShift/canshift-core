@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 export const TIMER_SOURCES = ['elapsed', 'lap', 'best', 'last', 'lapCount', 'delta'] as const
 

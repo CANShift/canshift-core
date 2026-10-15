@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 export const USB_STATUS_MAX_STRING_LEN = 64

@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { HexColorSchema, SemVerSchema } from './common.js'
 import { dropDeprecatedSignalKeys } from './deprecated-signal-keys.js'

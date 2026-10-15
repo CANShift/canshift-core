@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { ButtonActionSchema } from './widgets/button-action.js'
 import { Esp32InputGpioSchema } from './device.js'

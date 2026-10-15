@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { FIRMWARE_CAPS, STRING_CAPS } from '../../constants/firmware-caps.js'
 import { HexColorSchema } from '../common.js'

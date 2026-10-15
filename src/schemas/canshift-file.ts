@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 
 import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
 import { migrateConfig } from '../migrations/index.js'

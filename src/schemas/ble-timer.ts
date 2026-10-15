@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import * as z from 'zod'
 import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 export const TIMER_LAP_BUFFER_CAPACITY = 32
