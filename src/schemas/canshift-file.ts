@@ -130,8 +130,8 @@ const MIGRATION_FAILURE_COPY: Record<MigrationErrorCode, string> = {
   invalid_input:
     'The project’s dashboard is missing a usable schema version, so it cannot be upgraded.',
   not_serializable: 'The project contains values that cannot be saved, so it cannot be upgraded.',
-  incomplete_chain:
-    'This project cannot be upgraded to the current schema — the upgrade path is missing a step. Please report this.',
+  below_floor:
+    'This project was saved by a CANShift release too old to upgrade. Open and save it in an older CANShift first, or rebuild it.',
   registry_corrupt:
     'The upgrade could not run because of a defect in CANShift. Please report this.',
 }

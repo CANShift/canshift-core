@@ -1,5 +1,5 @@
 export type MigrationErrorCode =
-  'downgrade' | 'incomplete_chain' | 'registry_corrupt' | 'invalid_input' | 'not_serializable'
+  'downgrade' | 'below_floor' | 'registry_corrupt' | 'invalid_input' | 'not_serializable'
 
 export class MigrationError extends Error {
   readonly code: MigrationErrorCode

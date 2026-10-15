@@ -93,9 +93,9 @@ describe('parseCanshiftFile migration', () => {
     }
   })
 
-  it('reports migration failure for an unreachable ancient version', () => {
-    const result = parseCanshiftFile(fileWith(projectAt('0.0.1')))
-    expect(result.kind).toBe('migration_failed')
+  it('refuses a project older than the migration floor with a typed code', () => {
+    const result = parseCanshiftFile(fileWith(projectAt('1.23.0')))
+    expect(result).toMatchObject({ kind: 'migration_failed', code: 'below_floor' })
   })
 })
 
@@ -222,7 +222,7 @@ describe('describeCanshiftFileError', () => {
       { kind: 'not_a_canshift_file', payload: {} },
       { kind: 'unsupported_format_version', fileVersion: 2, supported: 1 },
       { kind: 'schema_too_new', fileSchemaVersion: '1.99.0', supported: CURRENT_SCHEMA_VERSION },
-      { kind: 'migration_failed', code: 'incomplete_chain', reason: 'chain incomplete' },
+      { kind: 'migration_failed', code: 'below_floor', reason: 'older than the floor' },
       { kind: 'migration_failed', code: 'downgrade', reason: 'downgrade not supported' },
       { kind: 'wrong_shape', issues: [] },
     ]

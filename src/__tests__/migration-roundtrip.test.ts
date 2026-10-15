@@ -21,234 +21,9 @@ const fullPalette = {
   success: '#00CC44',
 }
 
-const legacyDashboard100: Record<string, unknown> = {
-  version: '1.0.0',
-  name: 'Legacy Dash',
-  defaultPageId: 'p1',
-  revLimitRpm: 7000,
-  topBar: {
-    height: 24,
-    bgColor: '#0D0D0D',
-    textColor: '#AAAAAA',
-    showMapName: true,
-    showMapProfile: false,
-  },
-  pages: [
-    {
-      id: 'p1',
-      name: 'Main',
-      backgroundImage: null,
-      backgroundColor: '#000000',
-      showTopBar: true,
-      widgets: [
-        {
-          id: 'btn_nav',
-          type: 'button',
-          signal: '',
-          layout: { x: 0, y: 0, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: { type: 'button', label: 'Engine', targetPageId: 'p2' },
-        },
-        {
-          id: 'btn_dead',
-          type: 'button',
-          signal: '',
-          layout: { x: 160, y: 0, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: { type: 'button', label: 'Aux' },
-        },
-        {
-          id: 'lbl_rpm',
-          type: 'label',
-          signal: 'rpm',
-          layout: { x: 0, y: 56, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: { decimalPlaces: 0, suffix: ' rpm' },
-        },
-        {
-          id: 'gear1',
-          type: 'gear',
-          signal: 'gear',
-          layout: { x: 160, y: 56, w: 80, h: 112, zOrder: 1 },
-          style: fullStyle,
-          config: { type: 'gear', decimalPlaces: 0 },
-        },
-        {
-          id: 'coolant_arc',
-          type: 'gauge',
-          signal: 'coolant',
-          layout: { x: 0, y: 112, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: {
-            type: 'gauge',
-            minValue: 0,
-            maxValue: 120,
-            warningLevel: 100,
-            dangerLevel: 110,
-            decimalPlaces: 0,
-          },
-        },
-        {
-          id: 'tps_bar',
-          type: 'gauge',
-          signal: 'tps',
-          layout: { x: 0, y: 196, w: 320, h: 28, zOrder: 0 },
-          style: fullStyle,
-          config: {
-            type: 'gauge',
-            displayStyle: 'bar',
-            barOrientation: 'horizontal',
-            minValue: 0,
-            maxValue: 100,
-            warningLevel: 70,
-            dangerLevel: 90,
-            decimalPlaces: 0,
-          },
-        },
-      ],
-    },
-    {
-      id: 'p2',
-      name: 'Aux',
-      backgroundImage: null,
-      backgroundColor: '#111111',
-      showTopBar: false,
-      widgets: [
-        {
-          id: 'warn_oil',
-          type: 'warning',
-          signal: 'oil_pressure',
-          layout: { x: 240, y: 0, w: 80, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: { type: 'warning', threshold: 1 },
-        },
-      ],
-    },
-  ],
-}
-
-const midDashboard1160: Record<string, unknown> = {
-  version: '1.16.0',
-  name: 'Mid Dash',
-  defaultPageId: 'p1',
-  revLimitRpm: 7200,
-  topBar: { height: 30, bgColor: '#0D0D0D', textColor: '#AAAAAA' },
-  pages: [
-    {
-      id: 'p1',
-      backgroundImage: null,
-      backgroundColor: '#000000',
-      palette: fullPalette,
-      showTopBar: true,
-      widgets: [
-        {
-          id: 'btn_dead',
-          type: 'button',
-          signal: '',
-          layout: { x: 0, y: 0, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: {
-            type: 'button',
-            label: 'Dead',
-            colors: { normal: '#FF4444', active: '#FF7777' },
-            actions: [],
-          },
-        },
-        {
-          id: 'btn_map',
-          type: 'button',
-          signal: '',
-          layout: { x: 160, y: 0, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: {
-            type: 'button',
-            label: 'Map 2',
-            colors: { normal: '#FF4444', active: '#FF7777' },
-            actions: [{ category: 'ecu', type: 'map_switch', mapIndex: 1 }],
-          },
-        },
-        {
-          id: 'boost_bar',
-          type: 'bar',
-          signal: 'boost',
-          layout: { x: 0, y: 56, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: { type: 'bar', minValue: 0, maxValue: 2, decimalPlaces: 1 },
-        },
-        {
-          id: 'rpm_arc',
-          type: 'gauge',
-          signal: 'rpm',
-          layout: { x: 0, y: 112, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: {
-            type: 'gauge',
-            displayStyle: 'arc',
-            minValue: 0,
-            maxValue: 8000,
-            warningLevel: 6500,
-            dangerLevel: 7000,
-            decimalPlaces: 0,
-            hideWhenInvalid: true,
-            label: 'RPM',
-            labelPosition: 'bottom',
-          },
-        },
-      ],
-    },
-  ],
-}
-
-const lateDashboard1110: Record<string, unknown> = {
-  version: '1.11.0',
-  name: 'Late Dash',
-  defaultPageId: 'p1',
-  revLimitRpm: 8000,
-  topBar: { height: 24, bgColor: '#0D0D0D', textColor: '#AAAAAA' },
-  pages: [
-    {
-      id: 'p1',
-      backgroundImage: null,
-      backgroundColor: '#000000',
-      palette: fullPalette,
-      showTopBar: true,
-      widgets: [
-        {
-          id: 'btn_nav',
-          type: 'button',
-          signal: '',
-          layout: { x: 0, y: 0, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: {
-            type: 'button',
-            label: 'Home',
-            colors: { normal: '#FF4444', active: '#FF7777' },
-            actions: [{ category: 'dashboard', type: 'navigate', pageId: 'p1' }],
-          },
-        },
-        {
-          id: 'coolant_arc',
-          type: 'gauge',
-          signal: 'coolant',
-          layout: { x: 160, y: 0, w: 160, h: 56, zOrder: 0 },
-          style: fullStyle,
-          config: {
-            type: 'gauge',
-            displayStyle: 'arc',
-            minValue: 0,
-            maxValue: 120,
-            dangerLevel: 110,
-            decimalPlaces: 0,
-          },
-        },
-      ],
-    },
-  ],
-}
-
-const preCapsDashboard1230: Record<string, unknown> = {
-  version: '1.23.0',
-  name: 'Pre-caps Dash',
+const floorDashboard1240: Record<string, unknown> = {
+  version: '1.24.0',
+  name: 'Floor Dash',
   defaultPageId: 'p1',
   revLimitRpm: 7500,
   topBar: { height: 30, bgColor: '#0D0D0D', textColor: '#AAAAAA' },
@@ -273,9 +48,8 @@ const preCapsDashboard1230: Record<string, unknown> = {
             maxValue: 2,
             dangerLevel: 1.8,
             decimalPlaces: 1,
-            showNeedle: true,
-            prefix: 'BOOST PRESSURE ',
-            suffix: ' bar (manifold, absolute)',
+            prefix: 'BOOST ',
+            suffix: ' bar',
           },
         },
         {
@@ -287,8 +61,8 @@ const preCapsDashboard1230: Record<string, unknown> = {
           config: {
             type: 'gear',
             decimalPlaces: 0,
-            prefix: 'currently in gear ',
-            suffix: ' of six forward gears',
+            prefix: 'G',
+            suffix: '',
           },
         },
         {
@@ -300,8 +74,8 @@ const preCapsDashboard1230: Record<string, unknown> = {
           config: {
             type: 'button',
             mode: 'single',
-            label: 'An exceedingly verbose button label well past thirty-one chars',
-            iconPath: `/icons/${'x'.repeat(80)}.png`,
+            label: 'Map',
+            iconPath: '/icons/map.png',
             colors: { normal: '#FF4444', active: '#FF7777' },
             actions: [{ category: 'dashboard', type: 'navigate', pageId: 'p1' }],
           },
@@ -312,7 +86,7 @@ const preCapsDashboard1230: Record<string, unknown> = {
           signal: '',
           layout: { x: 160, y: 112, w: 160, h: 56, zOrder: 0 },
           style: fullStyle,
-          config: { type: 'image', imagePath: `/images/${'y'.repeat(80)}.png` },
+          config: { type: 'image', imagePath: '/images/logo.png' },
         },
       ],
     },
@@ -335,70 +109,33 @@ const widgetIds = (migrated: Record<string, unknown>, pageIndex: number): string
   return pages[pageIndex]!.widgets.map((w) => w.id)
 }
 
-describe('migration round-trip — old fixtures validate against the current schema (#1709)', () => {
-  it('migrates a representative 1.0.0 config into a valid current config', () => {
-    const migrated = migrateToCurrent(legacyDashboard100)
+describe('migration round-trip — a floor fixture validates against the current schema (#1709)', () => {
+  it('migrates a representative 1.24.0 config into a valid current config', () => {
+    const migrated = migrateToCurrent(floorDashboard1240)
     expect(migrated.version).toBe(CURRENT_SCHEMA_VERSION)
     expectValid(migrated)
   })
 
-  it('drops the action-less 1.0.0 button instead of emitting actions: []', () => {
-    const migrated = migrateToCurrent(legacyDashboard100)
-    expect(widgetIds(migrated, 0)).toEqual([
-      'btn_nav',
-      'lbl_rpm',
-      'gear1',
-      'coolant_arc',
-      'tps_bar',
-    ])
-  })
-
-  it('migrates a representative 1.16.0 config into a valid current config', () => {
-    const migrated = migrateToCurrent(midDashboard1160)
-    expect(migrated.version).toBe(CURRENT_SCHEMA_VERSION)
-    expectValid(migrated)
-  })
-
-  it('drops the empty-actions 1.16.0 button and the deprecated bar widget', () => {
-    const migrated = migrateToCurrent(midDashboard1160)
-    expect(widgetIds(migrated, 0)).toEqual(['btn_map', 'rpm_arc'])
-  })
-
-  it('migrates a representative 1.11.0 config into a valid current config', () => {
-    const migrated = migrateToCurrent(lateDashboard1110)
-    expect(migrated.version).toBe(CURRENT_SCHEMA_VERSION)
-    expectValid(migrated)
-  })
-
-  it('migrates a representative 1.23.0 config into a valid current config', () => {
-    const migrated = migrateToCurrent(preCapsDashboard1230)
-    expect(migrated.version).toBe(CURRENT_SCHEMA_VERSION)
-    expectValid(migrated)
-  })
-
-  it('1.23.0 → 1.24.0 drops showNeedle and truncates strings to firmware caps', () => {
-    const migrated = migrateToCurrent(preCapsDashboard1230)
-    const pages = migrated.pages as { widgets: { config: Record<string, unknown> }[] }[]
-    const [gauge, gear, button, image] = pages[0]!.widgets.map((w) => w.config)
-
-    expect(gauge).not.toHaveProperty('showNeedle')
-    expect(gauge!.prefix).toBe('BOOST P')
-    expect(gauge!.suffix).toBe(' bar (manifold,')
-
-    expect(gear!.prefix).toBe('currently in ge')
-    expect(gear!.suffix).toBe(' of six forward')
-
-    expect(button!.label).toBe('An exceedingly verbose button l')
-    expect('iconPath' in button!).toBe(false)
-
-    expect((image!.imagePath as string).length).toBe(63)
+  it('converts its pixel layout to grid spans and strips the button icon', () => {
+    const migrated = migrateToCurrent(floorDashboard1240)
+    expect(widgetIds(migrated, 0)).toEqual(['boost_arc', 'gear1', 'btn_long', 'img_long'])
+    const pages = migrated.pages as { widgets: Record<string, unknown>[] }[]
+    const [gauge, , button] = pages[0]!.widgets
+    expect(gauge!.layout).toEqual({ col: 0, colSpan: 6, row: 0, rowSpan: 3, zOrder: 0 })
+    expect('iconPath' in (button!.config as Record<string, unknown>)).toBe(false)
   })
 
   it('a config already at the current version passes validation unchanged', () => {
-    const migrated = migrateToCurrent(lateDashboard1110)
+    const migrated = migrateToCurrent(floorDashboard1240)
     const again = migrateToCurrent(migrated)
     expect(again).toEqual(migrated)
     expectValid(again)
+  })
+
+  it('refuses a config one release below the floor', () => {
+    expect(() => migrateToCurrent({ ...floorDashboard1240, version: '1.23.0' })).toThrow(
+      /older than 1\.24\.0/
+    )
   })
 })
 

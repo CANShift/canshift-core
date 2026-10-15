@@ -437,15 +437,20 @@ CanParser::loadSignalDefinitions() → configures the parser
 
 ## Migrations
 
-A `DashboardConfig` shape change needs three things in the same PR: the bumped
-`CURRENT_SCHEMA_VERSION`, a migration entry in
-[`src/migrations/registry.ts`](../src/migrations/registry.ts), and a test. The
-firmware's `config_types.h` follows to match the new fields.
+Every `DashboardConfig` shape change bumps `CURRENT_SCHEMA_VERSION`. A change that
+removes, renames or rewrites a field also needs a step in
+[`src/migrations/registry.ts`](../src/migrations/registry.ts) and a test; an
+optional field that old files simply lack needs no step at all. The firmware's
+`config_types.h` follows to match the new fields.
 
-`migrateConfig` walks the chain from whatever version a file declares up to
-`CURRENT_SCHEMA_VERSION`; `validateMigrationChain` proves the chain has no gap.
-Migrations that only bump the number use the `versionOnly` helper — the entry
-still has to exist, so the chain never breaks.
+`migrateConfig` runs every registered step between the version a file declares
+and the target, oldest first, then stamps the target version. A version-only
+release therefore costs nothing in the registry.
+
+**The floor is 1.24.0** (`MIGRATION_FLOOR_VERSION`). A file older than that is
+refused with a `below_floor` `MigrationError` instead of being upgraded through
+twenty-odd steps nobody runs any more. Open it in a CANShift release from before
+core 10.0.0 and save it to bring it over the floor.
 
 **The firmware does not migrate.** It compares the file's **major** version
 against its own compiled `CONFIG_SCHEMA_VERSION`. On a mismatch it logs and
