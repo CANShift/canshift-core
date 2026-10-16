@@ -98,6 +98,7 @@ All exports live behind the `src/index.ts` barrel — consumers must not reach i
 - Track telemetry (#843): `TrackTelemetry`
 - Screen settings (S-H-1): `ScreenSettings`
 - BLE STATUS (#887): `BleStatusWire`, `BleStatus`, `BleStatusResult`
+- BLE ALERT: `ActiveAlert`, `AlertLimit`, `AlertSource`, `BuiltInAlertSource`
 - Releases (#571): `ReleaseAsset`, `ReleaseInfo`, `LatestReleaseResult`
 - Design tokens (#526): `DesignTokens`
 - Hardware profiles (#831): `HardwareProfileId`, `HardwareProfile`
@@ -113,6 +114,7 @@ All exports live behind the `src/index.ts` barrel — consumers must not reach i
 - Input bindings: `InputBindingsConfigSchema`, `InputBindingsConfigWireSchema`, `inputBindingsFromWire`, `inputBindingsToWire`, `MAX_INPUT_BINDINGS`, `INPUT_BINDING_ID_MAX_LEN`
 - Schemas (boundary parsing): `DashboardConfigSchema`, `SignalConfigSchema`, `DeviceConfigSchema`, `DeviceConfigWireSchema`, `Esp32OutputGpioSchema`, `Esp32InputGpioSchema`, `TrackTelemetrySchema`, `ScreenSettingsSchema`
 - BLE STATUS helpers: `BLE_STATUS_MAX_STRING_LEN`, `SCREEN_SETTINGS_BOUNDS`, `parseBleStatus`
+- BLE ALERT frame ([spec](docs/ble-alert-frame.md)): `encodeAlertFrame`, `decodeAlertFrame`, `ALERT_FRAME_VERSION`, `MAX_ALERT_ACTIVE_SECONDS`, `ALERT_SOURCES`, `BUILT_IN_ALERT_SIGNALS`, `alertSourceId`, `alertSourceFromId`, `ALERT_ACK_COMMAND`, `alertAckCommand`
 - Sensors: `SENSOR_DEFAULT_RAMPS`, `SENSOR_PALETTE`, `resolveDefaultRamp`, `resolveSensorKind`, `colorAtValue`, `sensorOkColor`, `sensorWarningColor`
 - Design tokens: `COLOR_KEY_TO_CSS_VAR`, `DARK_TOKENS`, `tokensToCssVars`, `DAY_PALETTE_DEFAULT`, `DAY_BG_DEFAULT`, `DAY_THEME_PRESET`
 - Hardware / ECU: `HARDWARE_PROFILES`, `isPinAvailableForBoard`, `ECU_PROFILES`, `DEFAULT_PROFILE_ID`, `MAXXECU_SIGNAL_UNITS`

@@ -13,6 +13,7 @@ alike.
 | ------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | [Config contract](config-contract.md)                   | The JSON files on the device, their schema versions, and the validation rules |
 | [Wire protocol versioning](wire-protocol-versioning.md) | The major/minor handshake between firmware and tuner over Web Serial          |
+| [BLE alert frame](ble-alert-frame.md)                   | The binary frame the dash broadcasts so the phone mirrors its critical alert  |
 
 Docs for the other repos: [firmware](https://github.com/CANShift/canshift-firmware/tree/main/docs) ·
 [tuner](https://github.com/CANShift/canshift-tuner/tree/main/docs) ·

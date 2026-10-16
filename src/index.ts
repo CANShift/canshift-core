@@ -216,6 +216,24 @@ export type { StartFinishLine } from './track/start-finish-line.js'
 export { DEFAULT_HALF_WIDTH_M, startFinishLineFromPosition } from './track/start-finish-line.js'
 
 export type { TelemetryFieldKey, TelemetryFrame } from './wire/telemetry-frame.js'
+
+export type { AlertSource, BuiltInAlertSource } from './wire/alert-sources.js'
+export {
+  ALERT_SOURCES,
+  BUILT_IN_ALERT_SIGNALS,
+  ALERT_ACK_COMMAND,
+  alertSourceId,
+  alertSourceFromId,
+  alertAckCommand,
+} from './wire/alert-sources.js'
+
+export type { ActiveAlert, AlertLimit } from './wire/alert-frame.js'
+export {
+  ALERT_FRAME_VERSION,
+  MAX_ALERT_ACTIVE_SECONDS,
+  encodeAlertFrame,
+  decodeAlertFrame,
+} from './wire/alert-frame.js'
 export {
   TELEMETRY_FIELDS,
   TELEMETRY_FRAME_VERSION,

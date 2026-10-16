@@ -1,3 +1,5 @@
+import { toFixedPoint } from './fixed-point.js'
+
 export const TELEMETRY_FIELDS = [
   'r',
   'tps',
@@ -29,11 +31,6 @@ const VALUE_BYTES = 4
 
 const FIELD_MASK = (1 << TELEMETRY_FIELDS.length) - 1
 
-const scaleToInt = (value: number): number => {
-  const magnitude = Math.round(Math.abs(value) * TELEMETRY_SCALE)
-  return value < 0 ? -magnitude : magnitude
-}
-
 const countBits = (mask: number): number => {
   let count = 0
   for (let bit = mask; bit !== 0; bit >>>= 1) count += bit & 1
@@ -49,7 +46,7 @@ export const encodeTelemetryFrame = (frame: TelemetryFrame): Uint8Array => {
     const value = frame[key]
     if (value === undefined || !Number.isFinite(value)) continue
     mask |= 1 << index
-    values.push(scaleToInt(value))
+    values.push(toFixedPoint(value, TELEMETRY_SCALE))
   }
 
   const bytes = new Uint8Array(HEADER_BYTES + values.length * VALUE_BYTES)
