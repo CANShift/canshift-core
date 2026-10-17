@@ -63,8 +63,9 @@ The protocol number (`USB_PROTOCOL_VERSION`) is informational today — the hand
 
 ## Request id
 
-A command may carry `"seq"`, an unsigned 32-bit integer (`UsbSeqSchema`). The
-firmware appends the same `"seq"` to every `{"status":…}` reply the command
+A command may carry `"seq"`, an unsigned 32-bit integer (`UsbSeqSchema`), as
+the key right after `cmd` (`{"cmd":16,"seq":7}`), which is the only place the
+firmware looks for it. The firmware appends the same `"seq"` to every `{"status":…}` reply the command
 sends, except a reply longer than 256 bytes such as GET_CONFIG. A host matches
 the reply on it and drops one that answers an older command. A reply without
 `seq` comes from a firmware that predates the echo, and the host falls back to
