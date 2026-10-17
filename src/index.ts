@@ -92,6 +92,9 @@ export type {
 } from './schemas/critical-alert.js'
 
 export { PageButtonsSchema } from './schemas/page-buttons.js'
+
+export { DASH_SIGNALS, WHEEL_BUTTON_SIGNALS, isDashSignal } from './constants/dash-signals.js'
+export type { DashSignal, WheelButtonSignal } from './constants/dash-signals.js'
 export type { PageButtonRole, PageButtons } from './schemas/page-buttons.js'
 
 export type {

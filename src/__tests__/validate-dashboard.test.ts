@@ -328,14 +328,29 @@ describe('validateDashboard — signal cross-reference', () => {
   })
 
   it('warns on each page button signal that is not in the catalog', () => {
-    const pageButtons = { next: 'wheel_next', previous: 'rpm' }
+    const pageButtons = { next: 'wheel_button_1', previous: 'rpm' }
     const result = validateDashboard(validConfig({ pageButtons }), {
       signalCatalog: signalCatalog(['rpm']),
     })
     expect(result.valid).toBe(true)
     expect(result.warnings).toEqual([
-      'pageButtons.next references signal "wheel_next" which is not defined in config.signals',
+      'pageButtons.next references signal "wheel_button_1" which is not defined in config.signals',
     ])
+  })
+
+  it('warns on a page button the dash cannot read, even without a catalog', () => {
+    const result = validateDashboard(validConfig({ pageButtons: { next: 'scan_signal_1' } }))
+    expect(result.valid).toBe(true)
+    expect(result.warnings).toEqual([
+      'pageButtons.next signal "scan_signal_1" is not one the dash reads — the button does nothing',
+    ])
+  })
+
+  it('accepts the wheel button slots as page buttons', () => {
+    const result = validateDashboard(
+      validConfig({ pageButtons: { next: 'wheel_button_1', previous: 'wheel_button_2' } })
+    )
+    expect(result.warnings).toEqual([])
   })
 
   it('produces no warnings when every signal is in the catalog', () => {
