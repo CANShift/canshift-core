@@ -55,7 +55,7 @@ together.
   "targetProfile": "crowpanel-28",
   "ecuProfileKey": "string",
   "dayNightSignal": "string",
-  "criticalAlert": CriticalAlert,
+  "criticalAlerts": [CriticalAlert],
   "pageButtons": { "next": "string", "previous": "string" },
   "topBar": {
     "height": 24,
@@ -72,7 +72,7 @@ together.
 ```
 
 Optional: `description`, `targetProfile`, `ecuProfileKey`, `dayNightSignal`,
-`criticalAlert`, `pageButtons` (and each of its keys), `theme`, `topBar.layout`. Everything else is required. The schema is `.strict()`
+`criticalAlerts`, `pageButtons` (and each of its keys), `theme`, `topBar.layout`. Everything else is required. The schema is `.strict()`
 throughout — an unknown key is a validation error, not a silently ignored field.
 
 ### Caps
@@ -85,6 +85,7 @@ throughout — an unknown key is a validation error, not a silently ignored fiel
 | Signals per catalogue |      48 | `FIRMWARE_CAPS.MAX_SIGNALS`          |
 | Actions per button    |       4 | `FIRMWARE_CAPS.MAX_BUTTON_ACTIONS`   |
 | Colour ramp stops     |       8 | `FIRMWARE_CAPS.MAX_RAMP_STOPS`       |
+| Critical alerts       |       4 | `FIRMWARE_CAPS.MAX_CRITICAL_ALERTS`  |
 | Top bar height        |   16–60 | `TOPBAR_HEIGHT`                      |
 | Rev limit             | 1–20000 | `REV_LIMIT_RPM`                      |
 | Font size             |    8–48 | `FONT_SIZE_MIN` / `FONT_SIZE_MAX`    |
@@ -291,7 +292,7 @@ of them reach the alert engine.
 | Field                                                 | File                            | Effect                                                                     |
 | ----------------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------- |
 | `warningLevel` / `dangerLevel` and their `high*` pair | `signals.json` → `SignalDef`    | **Arms the alert engine** — the warning band and the full-screen takeover. |
-| `criticalAlert`                                       | `dashboard.json` → root         | **Arms one more takeover**, on a signal the owner chooses.                 |
+| `criticalAlerts`                                      | `dashboard.json` → root         | **Arms more takeovers**, each on a signal the owner chooses.               |
 | `warnLevel` / `dangerLevel` (+ `dangerBelow`)         | `dashboard.json` → gauge config | **Paints one widget.** Never reaches the alert engine.                     |
 
 The one that matters is the catalogue's, and it is the one no editor exposes today
@@ -303,25 +304,31 @@ read it, so a user who set it got silence
 ([firmware#266](https://github.com/CANShift/canshift-firmware/issues/266)). It is
 gone as of schema 1.40.0: the `1.39.0 → 1.40.0` migration strips it, and the strict
 gauge schema now rejects it. A per-widget threshold could not have become the
-takeover anyway — that is `criticalAlert`, one object on the config.
+takeover anyway — that is `criticalAlerts`, a short list on the config.
 
-### The critical alert
+### The critical alerts
 
 ```json
-{
-  "signal": "oil_press_bar",
-  "firesAt": 1.0,
-  "direction": "below",
-  "acknowledgeOn": "dash"
-}
+[
+  { "signal": "oil_press_bar", "firesAt": 1.0, "direction": "below", "acknowledgeOn": "dash" },
+  { "signal": "egt_c", "firesAt": 980, "direction": "above", "acknowledgeOn": "dash" }
+]
 ```
 
-One signal, one threshold, one acknowledge target. When the reading crosses
-`firesAt` in `direction`, the dash takes the full screen in red (DASH §10) and
-holds it until acknowledged. It is **added to** the built-in sources below, never
-a replacement for them: the built-in set is engine protection every car gets, and
-`criticalAlert` is the one thing a particular build cares about on top — an EGT
-limit for a specific turbo, a dry-sump scavenge pressure.
+Each entry is one signal, one threshold, one acknowledge target, and the list holds
+at most `FIRMWARE_CAPS.MAX_CRITICAL_ALERTS`. When a reading crosses `firesAt` in
+`direction`, the dash takes the full screen in red (DASH §10) and holds it until
+acknowledged. Every entry is judged and acknowledged on its own; with several
+critical at once the takeover shows the first unacknowledged one, built-in sources
+first, then the list in order. The list is **added to** the built-in sources below,
+never a replacement for them: the built-in set is engine protection every car gets,
+and `criticalAlerts` is what a particular build cares about on top — an EGT limit
+for a specific turbo, a dry-sump scavenge pressure.
+
+Schema 1.43.0 replaced the single `criticalAlert` object with this list. The
+`1.42.0 → 1.43.0` migration turns an old alert into a one-entry list, and the
+firmware still reads a legacy `criticalAlert` from a `dashboard.json` already on the
+dash, so an update never drops an armed alert.
 
 `acknowledgeOn` accepts `dash` only. Acknowledging from the phone needs a round
 trip over the binary TELE frame that does not exist yet; the enum widens when it
@@ -332,7 +339,7 @@ Absent, nothing changes: the dash watches the built-in set and nothing else.
 
 ### Which signals the firmware watches
 
-Seven built in, plus the one `criticalAlert` names. Everything else can colour a
+Seven built in, plus the ones `criticalAlerts` names. Everything else can colour a
 widget but cannot take the screen:
 
 | Signal           | Direction | Fallback when the catalogue is silent |

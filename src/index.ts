@@ -84,6 +84,7 @@ export {
   CRITICAL_ALERT_DIRECTIONS,
   CriticalAlertDirectionSchema,
   CriticalAlertSchema,
+  CriticalAlertsSchema,
 } from './schemas/critical-alert.js'
 export type {
   AcknowledgeTarget,
@@ -223,13 +224,13 @@ export { DEFAULT_HALF_WIDTH_M, startFinishLineFromPosition } from './track/start
 
 export type { TelemetryFieldKey, TelemetryFrame } from './wire/telemetry-frame.js'
 
-export type { AlertSource, BuiltInAlertSource } from './wire/alert-sources.js'
+export type { AlertOrigin, AlertSource, BuiltInAlertSource } from './wire/alert-sources.js'
 export {
   ALERT_SOURCES,
   BUILT_IN_ALERT_SIGNALS,
   ALERT_ACK_COMMAND,
   alertSourceId,
-  alertSourceFromId,
+  alertOriginFromId,
   alertAckCommand,
 } from './wire/alert-sources.js'
 

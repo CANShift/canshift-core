@@ -8,7 +8,7 @@ import {
 } from '../constants/firmware-caps.js'
 
 import { HexColorSchema, SemVerSchema } from './common.js'
-import { CriticalAlertSchema } from './critical-alert.js'
+import { CriticalAlertsSchema } from './critical-alert.js'
 import { PageButtonsSchema } from './page-buttons.js'
 import { UNIT_SYSTEMS } from '../units/index.js'
 import { ScreenProfileIdSchema } from './screen-profile.js'
@@ -147,7 +147,7 @@ export const DashboardConfigSchema = z
     topBar: TopBarConfigSchema,
     theme: ThemePresetSchema.optional(),
     dayNightSignal: z.string().min(1).max(DAY_NIGHT_SIGNAL_MAX_LEN).optional(),
-    criticalAlert: CriticalAlertSchema.optional(),
+    criticalAlerts: CriticalAlertsSchema.optional(),
     pageButtons: PageButtonsSchema.optional(),
     pages: z
       .array(PageConfigSchema)
