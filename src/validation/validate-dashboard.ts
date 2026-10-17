@@ -1,5 +1,6 @@
 import type * as z from 'zod'
 
+import { isDashSignal } from '../constants/dash-signals.js'
 import { DashboardConfigSchema } from '../schemas/dashboard.js'
 import type { DashboardConfig } from '../schemas/dashboard.js'
 import type { SignalConfig } from '../schemas/signal.js'
@@ -143,6 +144,17 @@ const checkPageButtonSignalRefs = (
       : [`pageButtons.${role} references signal "${signal}" which is not defined in config.signals`]
   )
 
+const checkPageButtonsReadable = (
+  pageButtons: z.infer<typeof DashboardConfigSchema>['pageButtons']
+): string[] =>
+  Object.entries(pageButtons ?? {}).flatMap(([role, signal]) =>
+    signal === undefined || isDashSignal(signal)
+      ? []
+      : [
+          `pageButtons.${role} signal "${signal}" is not one the dash reads — the button does nothing`,
+        ]
+  )
+
 export const validateDashboard = (
   config: unknown,
   options?: ValidateDashboardOptions
@@ -168,6 +180,8 @@ export const validateDashboard = (
       )
     )
   })
+
+  warnings.push(...checkPageButtonsReadable(dashboard.pageButtons))
 
   const knownSignalIds = collectSignalIds(config, options?.signalCatalog)
   if (knownSignalIds !== null) {

@@ -108,8 +108,12 @@ Settings drawer or by `CMD_TOGGLE_DAY_NIGHT` / `CMD_SET_DAY_NIGHT`.
 `pageButtons.next` and `pageButtons.previous` each name a signal that turns the
 dash page, for steering-wheel buttons on the bus. A press is the signal going
 from `0` to any non-zero value; the firmware debounces it and ignores a stale
-signal. Like `dayNightSignal`, the name has to be one the firmware stores, and
-`validateDashboard` warns when it is not in the signal catalog.
+signal. The name has to be one the firmware stores, listed in `DASH_SIGNALS`
+(kept equal to the firmware's `rust/signal-map` table by a parity test).
+`WHEEL_BUTTON_SIGNALS` (`wheel_button_1` to `wheel_button_4`) are the generic
+slots a CAN button is mapped onto in `signals.json`. `validateDashboard` warns
+when a page button names a signal outside `DASH_SIGNALS`, or one missing from
+the signal catalog.
 
 ### Top bar
 

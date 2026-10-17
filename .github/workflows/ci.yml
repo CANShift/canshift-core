@@ -98,7 +98,8 @@ jobs:
             canshift-firmware/src/ui/control_vocabulary.cpp \
             canshift-firmware/src/hal/ble/alert_frame.h \
             canshift-firmware/test/test_alert_frame/test_main.cpp \
-            canshift-firmware/rust/layout-grid/src/lib.rs; do
+            canshift-firmware/rust/layout-grid/src/lib.rs \
+            canshift-firmware/rust/signal-map/src/lib.rs; do
             if [ ! -f "$f" ]; then
               echo "::error::firmware parity source missing: $f"
               missing=1
