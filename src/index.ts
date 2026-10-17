@@ -91,6 +91,9 @@ export type {
   CriticalAlertDirection,
 } from './schemas/critical-alert.js'
 
+export { PageButtonsSchema } from './schemas/page-buttons.js'
+export type { PageButtonRole, PageButtons } from './schemas/page-buttons.js'
+
 export type {
   ButtonAction,
   ButtonWidgetConfig,

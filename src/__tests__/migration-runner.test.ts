@@ -551,6 +551,15 @@ describe('migrateConfig — 1.40.0 → 1.41.0 (per-widget kicker and warn tier, 
   })
 })
 
+describe('migrateConfig — 1.41.0 → 1.42.0 (CAN page buttons)', () => {
+  it('bumps the version and leaves every field as it was — pageButtons is optional', () => {
+    const config = { version: '1.41.0', pages: [{ id: 'p1', widgets: [] }] }
+    const { config: out, applied } = migrateConfig(config, '1.42.0')
+    expect(applied).toEqual(['1.41.0 → 1.42.0'])
+    expect(out).toEqual({ ...config, version: '1.42.0' })
+  })
+})
+
 describe('assertVersionBump (#1647)', () => {
   it('throws when a migration forgets to bump version', () => {
     expect(() => {

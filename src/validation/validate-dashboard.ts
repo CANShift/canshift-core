@@ -133,6 +133,16 @@ const checkCriticalAlertSignalRef = (
   ]
 }
 
+const checkPageButtonSignalRefs = (
+  pageButtons: z.infer<typeof DashboardConfigSchema>['pageButtons'],
+  known: Set<string>
+): string[] =>
+  Object.entries(pageButtons ?? {}).flatMap(([role, signal]) =>
+    signal === undefined || known.has(signal)
+      ? []
+      : [`pageButtons.${role} references signal "${signal}" which is not defined in config.signals`]
+  )
+
 export const validateDashboard = (
   config: unknown,
   options?: ValidateDashboardOptions
@@ -163,6 +173,7 @@ export const validateDashboard = (
   if (knownSignalIds !== null) {
     warnings.push(...checkWidgetSignalRefs(dashboard.pages, knownSignalIds))
     warnings.push(...checkCriticalAlertSignalRef(dashboard.criticalAlert, knownSignalIds))
+    warnings.push(...checkPageButtonSignalRefs(dashboard.pageButtons, knownSignalIds))
     if (dashboard.topBar.layout) {
       warnings.push(...checkTopBarSignalRefs(dashboard.topBar.layout, knownSignalIds))
     }
