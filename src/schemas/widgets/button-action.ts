@@ -5,6 +5,7 @@ import {
   CAN_RAW_DATA_MAX_HEX_CHARS,
   CAN_RAW_DATA_REGEX,
   MAP_INDEX_MAX,
+  STRING_CAPS,
 } from '../../constants/firmware-caps.js'
 
 const ActionIdSchema = z.string().min(1).optional()
@@ -16,7 +17,7 @@ const NavigateActionSchema = z
     id: ActionIdSchema,
     category: z.literal('dashboard'),
     type: z.literal('navigate'),
-    pageId: z.string(),
+    pageId: z.string().max(STRING_CAPS.ID),
   })
   .strict()
 

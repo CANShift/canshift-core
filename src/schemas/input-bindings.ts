@@ -11,7 +11,7 @@ export const MAX_INPUT_BINDINGS = 16
 const DEBOUNCE_MIN_MS = 1
 const DEBOUNCE_MAX_MS = 500
 
-export const INPUT_BINDING_ID_MAX_LEN = 32
+export const INPUT_BINDING_ID_MAX_LEN = STRING_CAPS.ID
 
 const InputBindingIdSchema = z
   .string()

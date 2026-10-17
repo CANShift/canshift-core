@@ -79,7 +79,7 @@ const refineCycleButton = (cfg: CycleConfig, ctx: z.RefinementCtx): void => {
 
 export const WidgetSchema = z
   .object({
-    id: z.string().min(1, 'widget id must be a non-empty string'),
+    id: z.string().min(1, 'widget id must be a non-empty string').max(STRING_CAPS.ID),
     type: WidgetTypeSchema,
     signal: z.string().max(STRING_CAPS.SIGNAL_NAME),
     layout: WidgetLayoutSchema,

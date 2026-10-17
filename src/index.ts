@@ -248,6 +248,13 @@ export {
   encodeTelemetryFrame,
   decodeTelemetryFrame,
 } from './wire/telemetry-frame.js'
+export {
+  TELEMETRY_FIELD_SIGNALS,
+  TELEMETRY_KEEPALIVE_MS,
+  TELEMETRY_STALE_MS,
+} from './wire/telemetry-signals.js'
+export type { DeviceCommand } from './wire/device-commands.js'
+export { DEVICE_COMMANDS } from './wire/device-commands.js'
 
 export type { ScreenSettings, ScreenSettingsResult } from './schemas/screen-settings.js'
 export {
@@ -259,7 +266,12 @@ export {
 export type { BleStatus, BleStatusResult } from './schemas/ble-status.js'
 export { BLE_STATUS_MAX_STRING_LEN, parseBleStatus } from './schemas/ble-status.js'
 export type { UsbStatus, UsbStatusResult } from './schemas/usb-status.js'
-export { USB_STATUS_MAX_STRING_LEN, parseUsbStatus } from './schemas/usb-status.js'
+export {
+  USB_STATUS_MAX_STRING_LEN,
+  USB_SEQ_MAX,
+  UsbSeqSchema,
+  parseUsbStatus,
+} from './schemas/usb-status.js'
 export type {
   TimerBleLap,
   TimerBleState,
@@ -334,6 +346,8 @@ export {
   REV_LIMIT_RPM,
   DECIMAL_PLACES,
   MAX_RAMP_STOPS,
+  STRING_CAPS,
+  Z_ORDER,
 } from './constants/firmware-caps.js'
 
 export { TopBarMetrics } from './topbar-metrics.js'

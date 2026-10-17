@@ -1,5 +1,6 @@
 import { asPlainObject } from '../config-traverse.js'
 import type { MigrationFn } from '../types.js'
+import { DEFAULT_TOP_BAR_LAYOUT } from '../../schemas/dashboard.js'
 
 const LEGACY_FLAG_TOP_BAR = [
   { type: 'label', text: 'CAN', position: 'left' },
@@ -17,14 +18,6 @@ const LEGACY_FLAG_TOP_BAR = [
   { type: 'themeToggle', position: 'right' },
 ]
 
-const TRACK_TOP_BAR = [
-  { type: 'label', text: 'CAN', position: 'left' },
-  { type: 'canRate', position: 'left' },
-  { type: 'label', text: 'MAP', position: 'center' },
-  { type: 'signal', signal: 'map_number', format: '%.0f', position: 'center' },
-  { type: 'trackBadge', position: 'right' },
-]
-
 const isLegacyFlagTopBar = (layout: unknown): boolean =>
   JSON.stringify(layout) === JSON.stringify(LEGACY_FLAG_TOP_BAR)
 
@@ -34,6 +27,6 @@ export const retrackTopBar: MigrationFn = (config) => {
   return {
     ...config,
     version: '1.29.0',
-    topBar: { ...topBar, layout: TRACK_TOP_BAR.map((item) => ({ ...item })) },
+    topBar: { ...topBar, layout: DEFAULT_TOP_BAR_LAYOUT.map((item) => ({ ...item })) },
   }
 }

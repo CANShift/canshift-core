@@ -58,6 +58,9 @@ export const PageTemplateSchema = z.enum(PAGE_TEMPLATES)
 
 export const TopBarItemPositionSchema = z.enum(['left', 'center', 'right'])
 
+const TopBarTextSchema = z.string().max(STRING_CAPS.TOPBAR_TEXT)
+const TopBarFormatSchema = z.string().max(STRING_CAPS.TOPBAR_FORMAT)
+
 const iconOnlyTopBarItemShape = z.object({ position: TopBarItemPositionSchema })
 
 const signalBoundTopBarItemShape = z.object({
@@ -72,15 +75,21 @@ export const TopBarItemSchema = z.discriminatedUnion('type', [
     .strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('separator') }).strict(),
   signalBoundTopBarItemShape
-    .extend({ type: z.literal('signal'), format: z.string().optional() })
+    .extend({ type: z.literal('signal'), format: TopBarFormatSchema.optional() })
     .strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('bleIcon') }).strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('themeToggle') }).strict(),
-  signalBoundTopBarItemShape.extend({ type: z.literal('modeFlag'), text: z.string() }).strict(),
+  signalBoundTopBarItemShape
+    .extend({ type: z.literal('modeFlag'), text: TopBarTextSchema })
+    .strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('trackBadge') }).strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('canRate') }).strict(),
   signalBoundTopBarItemShape
-    .extend({ type: z.literal('signalMax'), text: z.string(), format: z.string().optional() })
+    .extend({
+      type: z.literal('signalMax'),
+      text: TopBarTextSchema,
+      format: TopBarFormatSchema.optional(),
+    })
     .strict(),
 ])
 
@@ -93,7 +102,7 @@ export const PageStatusRowSchema = z
 
 export const PageConfigSchema = z
   .object({
-    id: z.string().min(1, 'page id must be a non-empty string'),
+    id: z.string().min(1, 'page id must be a non-empty string').max(STRING_CAPS.ID),
     backgroundImage: z.string().nullable(),
     backgroundColor: HexColorSchema,
     palette: PagePaletteSchema.optional(),
@@ -127,9 +136,10 @@ export const TopBarConfigSchema = z
 
 export const DEFAULT_TOP_BAR_LAYOUT = [
   { type: 'label', text: 'CAN', position: 'left' },
-  { type: 'statusDot', signal: 'any', position: 'left' },
-  { type: 'bleIcon', position: 'right' },
-  { type: 'themeToggle', position: 'right' },
+  { type: 'canRate', position: 'left' },
+  { type: 'label', text: 'MAP', position: 'center' },
+  { type: 'signal', signal: 'map_number', format: '%.0f', position: 'center' },
+  { type: 'trackBadge', position: 'right' },
 ] as const satisfies readonly z.infer<typeof TopBarItemSchema>[]
 
 export const DAY_NIGHT_SIGNAL_MAX_LEN = 31
@@ -142,7 +152,10 @@ export const DashboardConfigSchema = z
     version: SemVerSchema,
     name: z.string().min(1, 'name must be a non-empty string'),
     description: z.string().optional(),
-    defaultPageId: z.string().min(1, 'defaultPageId must be a non-empty string'),
+    defaultPageId: z
+      .string()
+      .min(1, 'defaultPageId must be a non-empty string')
+      .max(STRING_CAPS.ID),
     revLimitRpm: z.number().min(REV_LIMIT_RPM.MIN).max(REV_LIMIT_RPM.MAX),
     topBar: TopBarConfigSchema,
     theme: ThemePresetSchema.optional(),

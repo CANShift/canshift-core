@@ -134,9 +134,17 @@ the signal catalog.
 | `themeToggle` | —                                   |
 | `separator`   | —                                   |
 
-Omitting `layout` falls back to `DEFAULT_TOP_BAR_LAYOUT`. A page may also
-declare a `statusRow` with its own `center` and `right` items, using the same
-union.
+Omitting `layout` falls back to `DEFAULT_TOP_BAR_LAYOUT`, the track bar the
+firmware draws in the same case (`CAN` + bus rate, `MAP` + map number, track
+badge), so the tuner preview and the dash agree. A page may also declare a
+`statusRow` with its own `center` and `right` items, using the same union.
+
+`text` holds at most `STRING_CAPS.TOPBAR_TEXT` (15) characters and `format` at
+most `STRING_CAPS.TOPBAR_FORMAT` (15): the firmware copies both into 16-byte
+buffers. Page, widget and navigate-action page ids hold at most
+`STRING_CAPS.ID` (31), and `zOrder` is a byte (`Z_ORDER`, 0..255). Since schema
+1.44.0 the schema rejects anything longer, and the `1.43.0 → 1.44.0` migration
+cuts older configs exactly where the firmware already cut them.
 
 ### PageConfig
 

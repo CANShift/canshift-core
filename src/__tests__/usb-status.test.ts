@@ -12,6 +12,16 @@ describe('UsbStatusWireSchema', () => {
     expect(parsed.board_id).toBe('crowpanel_28')
   })
 
+  it('carries the seq the firmware echoes back', () => {
+    expect(usbStatusFromWire({ ...validWire, seq: 7 }).seq).toBe(7)
+    expect(usbStatusFromWire(validWire).seq).toBeUndefined()
+  })
+
+  it('rejects a seq outside an unsigned 32-bit integer', () => {
+    expect(UsbStatusWireSchema.safeParse({ ...validWire, seq: -1 }).success).toBe(false)
+    expect(UsbStatusWireSchema.safeParse({ ...validWire, seq: 2 ** 32 }).success).toBe(false)
+  })
+
   it('tolerates unknown wire fields (passthrough)', () => {
     expect(UsbStatusWireSchema.safeParse({ ...validWire, unexpected: 'x' }).success).toBe(true)
   })

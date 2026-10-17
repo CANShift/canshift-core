@@ -61,6 +61,16 @@ This is a soft signal: the tuner surface that issued the unknown command sees an
 
 The protocol number (`USB_PROTOCOL_VERSION`) is informational today — the handshake reports it but doesn't gate on it. It's there so a future tuner can refine the compatibility check (e.g. "major match AND protocol ≥ N").
 
+## Request id
+
+A command may carry `"seq"`, an unsigned 32-bit integer (`UsbSeqSchema`). The
+firmware appends the same `"seq"` to every `{"status":…}` reply the command
+sends, except a reply longer than 256 bytes such as GET_CONFIG. A host matches
+the reply on it and drops one that answers an older command. A reply without
+`seq` comes from a firmware that predates the echo, and the host falls back to
+taking the next status line. That is why the field is optional, not a protocol
+bump.
+
 ## Related
 
 - [USB transport](https://github.com/CANShift/canshift-firmware/blob/main/docs/architecture/usb-transport.md) — the full command table and wire format.

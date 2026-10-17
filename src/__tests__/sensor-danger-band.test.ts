@@ -54,9 +54,10 @@ describe('sensorDefaultDangerBand', () => {
 describe('isOutsideDangerBand', () => {
   const battery: SensorDangerBand = { below: 11.5, above: 15.5 }
 
-  it('trips strictly below the low side', () => {
+  it('trips at and below the low side, as the dash does', () => {
     expect(isOutsideDangerBand(11.4, battery)).toBe(true)
-    expect(isOutsideDangerBand(11.5, battery)).toBe(false)
+    expect(isOutsideDangerBand(11.5, battery)).toBe(true)
+    expect(isOutsideDangerBand(11.6, battery)).toBe(false)
   })
 
   it('trips at and above the high side', () => {

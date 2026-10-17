@@ -1,7 +1,7 @@
 import * as z from 'zod'
 
 import { HEX_REGEX } from '../colors/hex.js'
-import { FONT_SIZE_MAX, FONT_SIZE_MIN } from '../constants/firmware-caps.js'
+import { FONT_SIZE_MAX, FONT_SIZE_MIN, Z_ORDER } from '../constants/firmware-caps.js'
 import { SEMVER_PATTERN } from '../constants/validation.js'
 import { LAYOUT_GRID } from '../layout-grid.js'
 
@@ -24,7 +24,7 @@ export const WidgetLayoutSchema = z
       .min(0)
       .max(LAYOUT_GRID.ROWS - 1),
     rowSpan: z.number().int().min(1).max(LAYOUT_GRID.ROWS),
-    zOrder: z.number().int(),
+    zOrder: z.number().int().min(Z_ORDER.MIN).max(Z_ORDER.MAX),
   })
   .strict()
   .refine((l) => l.col + l.colSpan <= LAYOUT_GRID.COLUMNS, {

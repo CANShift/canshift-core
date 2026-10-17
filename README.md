@@ -115,12 +115,14 @@ All exports live behind the `src/index.ts` barrel — consumers must not reach i
 - Schemas (boundary parsing): `DashboardConfigSchema`, `SignalConfigSchema`, `DeviceConfigSchema`, `DeviceConfigWireSchema`, `Esp32OutputGpioSchema`, `Esp32InputGpioSchema`, `TrackTelemetrySchema`, `ScreenSettingsSchema`
 - BLE STATUS helpers: `BLE_STATUS_MAX_STRING_LEN`, `SCREEN_SETTINGS_BOUNDS`, `parseBleStatus`
 - BLE ALERT frame ([spec](docs/ble-alert-frame.md)): `encodeAlertFrame`, `decodeAlertFrame`, `ALERT_FRAME_VERSION`, `MAX_ALERT_ACTIVE_SECONDS`, `ALERT_SOURCES`, `BUILT_IN_ALERT_SIGNALS`, `alertSourceId`, `alertOriginFromId`, `ALERT_ACK_COMMAND`, `alertAckCommand`
+- BLE commands and TELE: `DEVICE_COMMANDS`, `TELEMETRY_FIELDS`, `TELEMETRY_FIELD_SIGNALS`, `TELEMETRY_KEEPALIVE_MS`, `TELEMETRY_STALE_MS`
+- USB status: `parseUsbStatus`, `USB_STATUS_MAX_STRING_LEN`, `UsbSeqSchema`, `USB_SEQ_MAX`
 - Sensors: `SENSOR_DEFAULT_RAMPS`, `SENSOR_PALETTE`, `resolveDefaultRamp`, `resolveSensorKind`, `colorAtValue`, `sensorOkColor`, `sensorWarningColor`
 - Design tokens: `COLOR_KEY_TO_CSS_VAR`, `DARK_TOKENS`, `tokensToCssVars`, `DAY_PALETTE_DEFAULT`, `DAY_BG_DEFAULT`, `DAY_THEME_PRESET`
 - Hardware / ECU: `HARDWARE_PROFILES`, `isPinAvailableForBoard`, `ECU_PROFILES`, `DEFAULT_PROFILE_ID`, `MAXXECU_SIGNAL_UNITS`
 - CAN XML: `parseCanXml`
 - TopBar mirrors: `TopBarMetrics`, `TopBarColors`
-- Firmware caps: `FIRMWARE_CAPS`, `CANVAS`, `TOPBAR_HEIGHT`, `REV_LIMIT_RPM`, `DECIMAL_PLACES`, `HEX_COLOR_REGEX`, `MAX_RAMP_STOPS`
+- Firmware caps: `FIRMWARE_CAPS`, `CANVAS`, `TOPBAR_HEIGHT`, `REV_LIMIT_RPM`, `DECIMAL_PLACES`, `HEX_COLOR_REGEX`, `MAX_RAMP_STOPS`, `STRING_CAPS`, `Z_ORDER`
 
 **Validators** — all return `{ valid: boolean, errors: string[], warnings: string[], config?: T }`
 
@@ -175,6 +177,7 @@ The registry holds **shape changes only**. A release that only adds optional fie
 | 1.36.0 → 1.37.0 | Theme faces paired into `theme.day` / `theme.night`                                     |
 | 1.39.0 → 1.40.0 | Gauge `alertThreshold` dropped — it armed nothing                                       |
 | 1.42.0 → 1.43.0 | `criticalAlert` becomes the one-entry list `criticalAlerts`                             |
+| 1.43.0 → 1.44.0 | Strings cut to the firmware buffers (top bar text/format 15, ids 31), `zOrder` clamped  |
 
 `migrateConfig` deep-clones the input before any migration runs (#282) so individual migrations can mutate freely without aliasing the caller's object.
 
