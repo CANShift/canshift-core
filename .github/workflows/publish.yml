@@ -70,6 +70,9 @@ jobs:
           echo "::error::ci-success did not finish on $GITHUB_SHA in time"
           exit 1
 
+      - name: No high or critical advisory in runtime dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - run: npm ci
       - run: npm test
       - run: npm run build
