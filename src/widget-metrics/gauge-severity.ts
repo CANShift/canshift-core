@@ -7,7 +7,15 @@ export const GAUGE_SEVERITIES = ['normal', 'warn', 'danger'] as const
 export type GaugeSeverity = (typeof GAUGE_SEVERITIES)[number]
 
 export type GaugeThresholds = Pick<GaugeWidgetConfig, 'warnLevel' | 'dangerLevel' | 'dangerBelow'>
-export type SignalWarnLevels = Pick<SignalDef, 'warningLevel' | 'highWarningLevel'>
+export type SignalLimits = Pick<
+  SignalDef,
+  'warningLevel' | 'dangerLevel' | 'highWarningLevel' | 'highDangerLevel'
+>
+
+const SEVERITY_RANK: Record<GaugeSeverity, number> = { normal: 0, warn: 1, danger: 2 }
+
+const strongerOf = (a: GaugeSeverity, b: GaugeSeverity): GaugeSeverity =>
+  SEVERITY_RANK[a] >= SEVERITY_RANK[b] ? a : b
 
 export const warnSitsBeforeDanger = (
   warnLevel: number,
@@ -15,34 +23,39 @@ export const warnSitsBeforeDanger = (
   dangerBelow = false
 ): boolean => (dangerBelow ? warnLevel > dangerLevel : warnLevel < dangerLevel)
 
-const catalogueWarnCandidates = (
-  signal: SignalWarnLevels | undefined,
-  dangerBelow: boolean
-): (number | undefined)[] =>
-  dangerBelow
-    ? [signal?.warningLevel, signal?.highWarningLevel]
-    : [signal?.highWarningLevel, signal?.warningLevel]
-
-export const gaugeWarnLevel = (
-  thresholds: GaugeThresholds,
-  signal?: SignalWarnLevels
-): number | undefined => {
-  if (thresholds.warnLevel !== undefined) return thresholds.warnLevel
-  const below = thresholds.dangerBelow === true
-  return catalogueWarnCandidates(signal, below).find(
-    (level): level is number =>
-      level !== undefined && warnSitsBeforeDanger(level, thresholds.dangerLevel, below)
-  )
+const readingSeverity = (
+  value: number,
+  warnLevel: number | undefined,
+  dangerLevel: number | undefined,
+  below: boolean
+): GaugeSeverity => {
+  if (dangerLevel !== undefined && isValueInDanger(value, dangerLevel, below)) return 'danger'
+  if (warnLevel !== undefined && isValueInDanger(value, warnLevel, below)) return 'warn'
+  return 'normal'
 }
+
+const primarySideIsLow = (limits: SignalLimits): boolean =>
+  limits.warningLevel !== undefined &&
+  limits.dangerLevel !== undefined &&
+  limits.warningLevel > limits.dangerLevel
+
+export const signalSeverity = (value: number, limits: SignalLimits): GaugeSeverity =>
+  strongerOf(
+    readingSeverity(value, limits.warningLevel, limits.dangerLevel, primarySideIsLow(limits)),
+    readingSeverity(value, limits.highWarningLevel, limits.highDangerLevel, false)
+  )
 
 export const gaugeSeverity = (
   value: number,
   thresholds: GaugeThresholds,
-  signal?: SignalWarnLevels
-): GaugeSeverity => {
-  const below = thresholds.dangerBelow === true
-  if (isValueInDanger(value, thresholds.dangerLevel, below)) return 'danger'
-  const warnLevel = gaugeWarnLevel(thresholds, signal)
-  if (warnLevel !== undefined && isValueInDanger(value, warnLevel, below)) return 'warn'
-  return 'normal'
-}
+  signal: SignalLimits = {}
+): GaugeSeverity =>
+  strongerOf(
+    readingSeverity(
+      value,
+      thresholds.warnLevel,
+      thresholds.dangerLevel,
+      thresholds.dangerBelow === true
+    ),
+    signalSeverity(value, signal)
+  )

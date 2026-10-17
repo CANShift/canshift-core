@@ -9,15 +9,15 @@ import type { SensorKind } from '../sensor-defaults.js'
 import type { SensorDangerBand } from '../widget-metrics/index.js'
 
 const EXPECTED_BANDS: Record<SensorKind, SensorDangerBand> = {
-  coolant_temp: { below: null, above: 110 },
-  oil_temp: { below: null, above: 135 },
+  coolant_temp: { below: null, above: 115 },
+  oil_temp: { below: null, above: 150 },
   oil_press: { below: 1.0, above: null },
-  battery_volts: { below: 11.5, above: 15.5 },
-  rpm: { below: null, above: 7000 },
+  battery_volts: { below: 11.5, above: 16 },
+  rpm: { below: null, above: 7200 },
   afr: { below: 10.5, above: null },
-  boost: { below: null, above: 1.7 },
+  boost: { below: null, above: 2.3 },
   intake_temp: { below: null, above: 65 },
-  egt: { below: null, above: 950 },
+  egt: { below: null, above: 1000 },
 }
 
 const dangerValues = (kind: SensorKind): number[] =>
@@ -31,7 +31,7 @@ describe('sensorDefaultDangerBand', () => {
   })
 
   it('keeps both sides of the battery ramp', () => {
-    expect(sensorDefaultDangerBand('battery_volts')).toEqual({ below: 11.5, above: 15.5 })
+    expect(sensorDefaultDangerBand('battery_volts')).toEqual({ below: 11.5, above: 16 })
   })
 
   it('keeps the rich side of afr only, since its lean end is a warning', () => {

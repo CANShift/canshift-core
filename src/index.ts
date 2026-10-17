@@ -370,7 +370,7 @@ export {
   isValueInDanger,
   GAUGE_SEVERITIES,
   gaugeSeverity,
-  gaugeWarnLevel,
+  signalSeverity,
   warnSitsBeforeDanger,
   gaugeArcPath,
   LABEL_FONT_RATIO,
@@ -417,7 +417,7 @@ export type {
   GaugeThresholds,
   SensorDangerBand,
   SensorDangerThreshold,
-  SignalWarnLevels,
+  SignalLimits,
 } from './widget-metrics/index.js'
 
 export { DAY_PALETTE_DEFAULT, DAY_BG_DEFAULT, DAY_THEME_FACE } from './day-theme-defaults.js'

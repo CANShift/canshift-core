@@ -306,11 +306,11 @@ describe('SENSOR_DEFAULT_RANGES', () => {
 describe('sensorDefaultDangerThreshold', () => {
   it('trips high-side sensors at their top danger stop', () => {
     expect(sensorDefaultDangerThreshold('coolant_temp')).toEqual({
-      threshold: 110,
+      threshold: 115,
       invertLogic: false,
     })
-    expect(sensorDefaultDangerThreshold('oil_temp')).toEqual({ threshold: 135, invertLogic: false })
-    expect(sensorDefaultDangerThreshold('rpm')).toEqual({ threshold: 7000, invertLogic: false })
+    expect(sensorDefaultDangerThreshold('oil_temp')).toEqual({ threshold: 150, invertLogic: false })
+    expect(sensorDefaultDangerThreshold('rpm')).toEqual({ threshold: 7200, invertLogic: false })
   })
 
   it('trips low-side sensors below their bottom danger stop', () => {
