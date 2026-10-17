@@ -2,7 +2,7 @@ import { hex } from '../colors/hex.js'
 import type { ColorRampStop } from '../schemas/signal.js'
 import { SENSOR_DEFAULT_RAMPS } from '../sensor-defaults.js'
 import type { SensorKind } from '../sensor-defaults.js'
-import { isWarningTripped } from './warning.js'
+import { isValueInDanger } from './gauge.js'
 
 export const SENSOR_DEFAULT_RANGES = {
   coolant_temp: { min: 0, max: 120 },
@@ -75,7 +75,7 @@ export const sensorDefaultDangerBand = (kind: SensorKind): SensorDangerBand => {
 }
 
 export const isOutsideDangerBand = (value: number, band: SensorDangerBand): boolean => {
-  const tripsBelow = band.below !== null && isWarningTripped(value, band.below, true)
-  const tripsAbove = band.above !== null && isWarningTripped(value, band.above, false)
+  const tripsBelow = band.below !== null && isValueInDanger(value, band.below, true)
+  const tripsAbove = band.above !== null && isValueInDanger(value, band.above, false)
   return tripsBelow || tripsAbove
 }

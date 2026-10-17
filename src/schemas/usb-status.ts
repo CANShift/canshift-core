@@ -3,6 +3,10 @@ import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelop
 
 export const USB_STATUS_MAX_STRING_LEN = 64
 
+export const USB_SEQ_MAX = 0xffffffff
+
+export const UsbSeqSchema = z.number().int().min(0).max(USB_SEQ_MAX)
+
 const CappedStringSchema = z.string().max(USB_STATUS_MAX_STRING_LEN)
 
 const ZeroOrOneSchema = z.union([z.literal(0), z.literal(1)])
@@ -14,6 +18,7 @@ export const UsbStatusWireSchema = z
     protocol: z.number().int().nonnegative(),
     is_day: ZeroOrOneSchema,
     board_id: CappedStringSchema.optional(),
+    seq: UsbSeqSchema.optional(),
   })
   .loose()
 
@@ -24,6 +29,7 @@ export interface UsbStatus {
   protocolVersion: number
   isDay: boolean
   boardId?: string
+  seq?: number
 }
 
 export const usbStatusFromWire = (wire: UsbStatusWire): UsbStatus => {
@@ -33,6 +39,7 @@ export const usbStatusFromWire = (wire: UsbStatusWire): UsbStatus => {
     isDay: wire.is_day !== 0,
   }
   if (wire.board_id !== undefined) out.boardId = wire.board_id
+  if (wire.seq !== undefined) out.seq = wire.seq
   return out
 }
 

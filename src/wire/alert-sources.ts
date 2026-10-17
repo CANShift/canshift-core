@@ -1,3 +1,4 @@
+import { DEVICE_COMMANDS } from './device-commands.js'
 import { FIRMWARE_CAPS } from '../constants/firmware-caps.js'
 
 export const ALERT_SOURCES = [
@@ -52,7 +53,7 @@ export const alertOriginFromId = (id: number): AlertOrigin | undefined => {
   return { source: 'configured', configuredIndex: id - FIRST_CONFIGURED_ALERT_ID }
 }
 
-export const ALERT_ACK_COMMAND = 'ack_alert'
+export const ALERT_ACK_COMMAND = DEVICE_COMMANDS.ackAlert
 
 export const alertAckCommand = (origin?: AlertOrigin): string =>
   JSON.stringify(

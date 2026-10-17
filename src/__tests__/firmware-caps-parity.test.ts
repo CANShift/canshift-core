@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
-import { FIRMWARE_CAPS, STRING_CAPS } from '../constants/firmware-caps.js'
+import { FIRMWARE_CAPS, STRING_CAPS, Z_ORDER } from '../constants/firmware-caps.js'
 import { LAYOUT_GRID } from '../layout-grid.js'
 import { SIGNAL_BYTE_LENGTHS } from '../schemas/signal.js'
 
@@ -68,12 +68,34 @@ describeIfTypes('string caps firmware parity (config_types.h buffers minus NUL)'
     ['IMAGE_PATH', 'CfgImageParams', 'imagePath'],
     ['PROTOCOL', 'CfgSignalConfig', 'protocol'],
     ['BINDING_SIGNAL', 'CfgInputBinding', 'signal'],
+    ['TOPBAR_TEXT', 'CfgTopBarItem', 'text'],
+    ['TOPBAR_FORMAT', 'CfgTopBarItem', 'format'],
+    ['ID', 'CfgWidget', 'id'],
+    ['ID', 'CfgPage', 'id'],
+    ['ID', 'CfgButtonAction', 'pageId'],
+    ['ID', 'CfgInputBinding', 'id'],
   ]
 
   it.each(cases)('%s fits firmware %s.%s', (cap, structName, fieldName) => {
     const bufferSize = extractStructArrayLen(structName, fieldName)
     expect(bufferSize).not.toBeNull()
     expect(STRING_CAPS[cap]).toBe((bufferSize ?? 0) - 1)
+  })
+
+  const listCaps: [keyof typeof FIRMWARE_CAPS, string][] = [
+    ['MAX_TOPBAR_ITEMS', 'kCfgMaxTopbarItems'],
+    ['MAX_BUTTON_ACTIONS', 'kCfgMaxButtonActions'],
+  ]
+
+  it.each(listCaps)('%s matches firmware %s', (cap, constant) => {
+    const firmware = extractDefine(source, constant)
+    expect(firmware).not.toBeNull()
+    expect(FIRMWARE_CAPS[cap]).toBe(firmware)
+  })
+
+  it('bounds zOrder to the firmware CfgLayout byte', () => {
+    expect(/struct\s+CfgLayout\s*\{[^}]*uint8_t\s+zOrder;/.test(source)).toBe(true)
+    expect(Z_ORDER).toEqual({ MIN: 0, MAX: 255 })
   })
 })
 

@@ -828,13 +828,9 @@ describe('duplicate signal names', () => {
 })
 
 describe('MaxxECU fixture', () => {
-  const fixturePath = path.resolve(
-    __dirname,
-    '../../../../RealDash-extras/RealDash-CAN/XML-files/MaxxECU/maxxecu_default_can.xml'
-  )
-  const maybeIt = fs.existsSync(fixturePath) ? it : it.skip
+  const fixturePath = path.resolve(__dirname, '__fixtures__/maxxecu-default-can.xml')
 
-  maybeIt('parses at least 30 signals with no root-level warning', () => {
+  it('parses at least 30 signals with no root-level warning', () => {
     const content = fs.readFileSync(fixturePath, 'utf-8')
     const { signals, warnings } = parseCanXml(content)
     expect(signals.length).toBeGreaterThan(30)
@@ -844,7 +840,7 @@ describe('MaxxECU fixture', () => {
     }
   })
 
-  maybeIt('extracts bit-shift signals from frame 0x526', () => {
+  it('extracts bit-shift signals from frame 0x526', () => {
     const content = fs.readFileSync(fixturePath, 'utf-8')
     const { signals } = parseCanXml(content)
     const frame526 = signals.filter((s) => s.canFrameId === '0x526')
@@ -853,7 +849,7 @@ describe('MaxxECU fixture', () => {
     expect(frame526.find((s) => s.bitMask === '0x08')).toBeDefined()
   })
 
-  maybeIt('defaults to little-endian (MaxxECU uses no endian attr)', () => {
+  it('defaults to little-endian (MaxxECU uses no endian attr)', () => {
     const content = fs.readFileSync(fixturePath, 'utf-8')
     const { signals } = parseCanXml(content)
     expect(signals.every((s) => !s.bigEndian)).toBe(true)

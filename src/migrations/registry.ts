@@ -1,4 +1,5 @@
 import type { Migration } from './types.js'
+import { capFirmwareStrings } from './steps/1-43-to-1-44.js'
 import { liftCriticalAlertIntoList } from './steps/1-42-to-1-43.js'
 import { dropAlertThreshold } from './steps/1-39-to-1-40.js'
 import { pairThemeFaces } from './steps/1-36-to-1-37.js'
@@ -19,4 +20,5 @@ export const BUILTIN_MIGRATIONS: readonly Migration[] = [
   { fromVersion: '1.36.0', toVersion: '1.37.0', migrate: pairThemeFaces },
   { fromVersion: '1.39.0', toVersion: '1.40.0', migrate: dropAlertThreshold },
   { fromVersion: '1.42.0', toVersion: '1.43.0', migrate: liftCriticalAlertIntoList },
+  { fromVersion: '1.43.0', toVersion: '1.44.0', migrate: capFirmwareStrings },
 ]

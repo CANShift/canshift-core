@@ -40,4 +40,9 @@ export const STRING_CAPS = {
   IMAGE_PATH: 63,
   PROTOCOL: 31,
   BINDING_SIGNAL: 63,
+  TOPBAR_TEXT: 15,
+  TOPBAR_FORMAT: 15,
+  ID: 31,
 } as const
+
+export const Z_ORDER = { MIN: 0, MAX: 255 } as const
