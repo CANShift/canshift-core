@@ -43,10 +43,10 @@ export {
 export {
   GAUGE_SEVERITIES,
   gaugeSeverity,
-  gaugeWarnLevel,
+  signalSeverity,
   warnSitsBeforeDanger,
 } from './gauge-severity.js'
-export type { GaugeSeverity, GaugeThresholds, SignalWarnLevels } from './gauge-severity.js'
+export type { GaugeSeverity, GaugeThresholds, SignalLimits } from './gauge-severity.js'
 export {
   LABEL_FONT_RATIO,
   labelFontSize,

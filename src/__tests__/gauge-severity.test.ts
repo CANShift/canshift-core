@@ -1,7 +1,13 @@
-import { gaugeSeverity, gaugeWarnLevel } from '../widget-metrics/index.js'
+import { gaugeSeverity, signalSeverity } from '../widget-metrics/index.js'
 
 const coolant = { dangerLevel: 110 }
 const oilPressure = { dangerLevel: 1.0, dangerBelow: true }
+const batteryCatalogue = {
+  warningLevel: 12.0,
+  dangerLevel: 11.5,
+  highWarningLevel: 15.0,
+  highDangerLevel: 16.0,
+}
 
 describe('gaugeSeverity', () => {
   it('walks normal → warn → danger on a high-side gauge', () => {
@@ -21,23 +27,46 @@ describe('gaugeSeverity', () => {
   it('has no amber tier when neither the widget nor the catalogue gives one', () => {
     expect(gaugeSeverity(105, coolant)).toBe('normal')
   })
+
+  it('takes the low side of a battery from the catalogue', () => {
+    const widget = { dangerLevel: 16 }
+    expect(gaugeSeverity(13.8, widget, batteryCatalogue)).toBe('normal')
+    expect(gaugeSeverity(11.9, widget, batteryCatalogue)).toBe('warn')
+    expect(gaugeSeverity(10.8, widget, batteryCatalogue)).toBe('danger')
+    expect(gaugeSeverity(16.1, widget, batteryCatalogue)).toBe('danger')
+  })
+
+  it('never looks calmer than the catalogue', () => {
+    const lateWidget = { dangerLevel: 125 }
+    expect(gaugeSeverity(116, lateWidget, { warningLevel: 100, dangerLevel: 115 })).toBe('danger')
+  })
+
+  it('keeps a widget limit that fires before the catalogue', () => {
+    const earlyWidget = { dangerLevel: 105 }
+    expect(gaugeSeverity(106, earlyWidget, { warningLevel: 100, dangerLevel: 115 })).toBe('danger')
+  })
 })
 
-describe('gaugeWarnLevel', () => {
-  it('prefers the widget warn level over the catalogue', () => {
-    expect(gaugeWarnLevel({ ...coolant, warnLevel: 98 }, { highWarningLevel: 100 })).toBe(98)
+describe('signalSeverity', () => {
+  it('reads both sides of a battery', () => {
+    expect(signalSeverity(15.2, batteryCatalogue)).toBe('warn')
+    expect(signalSeverity(11.5, batteryCatalogue)).toBe('danger')
+    expect(signalSeverity(13.8, batteryCatalogue)).toBe('normal')
   })
 
-  it('falls back to the catalogue high-side warn level on a high-side gauge', () => {
-    expect(gaugeWarnLevel(coolant, { warningLevel: 10, highWarningLevel: 100 })).toBe(100)
+  it('infers a low-side primary pair from its order', () => {
+    const oil = { warningLevel: 1.5, dangerLevel: 1.0 }
+    expect(signalSeverity(3, oil)).toBe('normal')
+    expect(signalSeverity(1.4, oil)).toBe('warn')
+    expect(signalSeverity(0.9, oil)).toBe('danger')
   })
 
-  it('falls back to the catalogue low-side warn level on a low-side gauge', () => {
-    expect(gaugeWarnLevel(oilPressure, { warningLevel: 1.5, highWarningLevel: 9 })).toBe(1.5)
+  it('reads a lone danger level as high side', () => {
+    expect(signalSeverity(120, { dangerLevel: 115 })).toBe('danger')
+    expect(signalSeverity(-20, { dangerLevel: 115 })).toBe('normal')
   })
 
-  it('skips a catalogue level that sits past the danger level', () => {
-    expect(gaugeWarnLevel(coolant, { highWarningLevel: 120, warningLevel: 105 })).toBe(105)
-    expect(gaugeWarnLevel(coolant, { highWarningLevel: 120 })).toBeUndefined()
+  it('stays normal without limits', () => {
+    expect(signalSeverity(9999, {})).toBe('normal')
   })
 })

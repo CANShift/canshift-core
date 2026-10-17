@@ -210,9 +210,14 @@ A gauge colours itself in three tiers: normal, amber from `warnLevel`, red from
 `dangerLevel`. `dangerBelow` sets the direction of both — `true` means the
 reading is in trouble when it **falls**, which is how an oil-pressure gauge is
 written. `warnLevel` is optional and must be reached before `dangerLevel` in
-that direction. When it is absent the firmware falls back to the signal's
-catalogue warn level, so a dashboard written before schema 1.41.0 renders
-exactly as before.
+that direction.
+
+The signal's own catalogue limits colour the widget too, on both sides: the
+widget shows the stronger of its own tier and the one `signals.json` gives the
+reading (`gaugeSeverity`, `signalSeverity`). A battery gauge with only a high
+`dangerLevel` still turns red at the catalogue's low `dangerLevel`, and a widget
+limit set past the catalogue's can never hide what the alert engine reacts to.
+A widget limit set earlier than the catalogue's still fires first.
 
 **Layout is a grid, not pixels.** Widgets are placed on a 12×12 grid
 ([`layout-grid.ts`](../src/layout-grid.ts)) with `col`, `colSpan`, `row`,

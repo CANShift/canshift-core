@@ -11,7 +11,7 @@ export const SENSOR_DEFAULT_RANGES = {
   battery_volts: { min: 8, max: 16 },
   rpm: { min: 0, max: 8000 },
   afr: { min: 10, max: 18 },
-  boost: { min: -1, max: 2 },
+  boost: { min: -1, max: 3 },
   intake_temp: { min: 0, max: 80 },
   egt: { min: 0, max: 1000 },
 } as const satisfies Record<SensorKind, { min: number; max: number }>

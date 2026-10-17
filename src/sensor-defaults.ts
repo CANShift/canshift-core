@@ -37,7 +37,7 @@ export const SENSOR_DEFAULT_RAMPS: Record<SensorKind, ColorRamp> = {
       { value: 60, color: hex('#4A90E2') },
       { value: 90, color: hex('#44CC66') },
       { value: 100, color: hex('#CC8800') },
-      { value: 110, color: hex('#CC3333') },
+      { value: 115, color: hex('#CC3333') },
     ],
   },
   oil_temp: {
@@ -45,15 +45,15 @@ export const SENSOR_DEFAULT_RAMPS: Record<SensorKind, ColorRamp> = {
     stops: [
       { value: 70, color: hex('#4A90E2') },
       { value: 95, color: hex('#44CC66') },
-      { value: 120, color: hex('#CC8800') },
-      { value: 135, color: hex('#CC3333') },
+      { value: 130, color: hex('#CC8800') },
+      { value: 150, color: hex('#CC3333') },
     ],
   },
   oil_press: {
     interpolate: 'linear',
     stops: [
       { value: 1.0, color: hex('#CC3333') },
-      { value: 1.8, color: hex('#CC8800') },
+      { value: 1.5, color: hex('#CC8800') },
       { value: 2.5, color: hex('#44CC66') },
       { value: 6.0, color: hex('#44CC66') },
     ],
@@ -62,10 +62,10 @@ export const SENSOR_DEFAULT_RAMPS: Record<SensorKind, ColorRamp> = {
     interpolate: 'linear',
     stops: [
       { value: 11.5, color: hex('#CC3333') },
-      { value: 12.5, color: hex('#CC8800') },
+      { value: 12.0, color: hex('#CC8800') },
       { value: 13.5, color: hex('#44CC66') },
-      { value: 14.8, color: hex('#CC8800') },
-      { value: 15.5, color: hex('#CC3333') },
+      { value: 15.0, color: hex('#CC8800') },
+      { value: 16.0, color: hex('#CC3333') },
     ],
   },
   rpm: {
@@ -74,7 +74,7 @@ export const SENSOR_DEFAULT_RAMPS: Record<SensorKind, ColorRamp> = {
       { value: 1500, color: hex('#44CC66') },
       { value: 5500, color: hex('#44CC66') },
       { value: 6500, color: hex('#CC8800') },
-      { value: 7000, color: hex('#CC3333') },
+      { value: 7200, color: hex('#CC3333') },
     ],
   },
   afr: {
@@ -92,8 +92,8 @@ export const SENSOR_DEFAULT_RAMPS: Record<SensorKind, ColorRamp> = {
     stops: [
       { value: 0.0, color: hex('#44CC66') },
       { value: 1.0, color: hex('#44CC66') },
-      { value: 1.4, color: hex('#CC8800') },
-      { value: 1.7, color: hex('#CC3333') },
+      { value: 1.5, color: hex('#CC8800') },
+      { value: 2.3, color: hex('#CC3333') },
     ],
   },
   intake_temp: {
@@ -108,8 +108,8 @@ export const SENSOR_DEFAULT_RAMPS: Record<SensorKind, ColorRamp> = {
     interpolate: 'linear',
     stops: [
       { value: 600, color: hex('#44CC66') },
-      { value: 850, color: hex('#CC8800') },
-      { value: 950, color: hex('#CC3333') },
+      { value: 950, color: hex('#CC8800') },
+      { value: 1000, color: hex('#CC3333') },
     ],
   },
 }
