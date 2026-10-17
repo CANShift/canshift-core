@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { ALERT_FRAME_VERSION } from '../wire/alert-frame.js'
-import { ALERT_SOURCES, BUILT_IN_ALERT_SIGNALS } from '../wire/alert-sources.js'
+import { ALERT_SOURCE_ID_COUNT, BUILT_IN_ALERT_SIGNALS } from '../wire/alert-sources.js'
 import {
   CONFIGURED_AND_COOLANT_VECTOR,
   OIL_PRESSURE_VECTOR,
@@ -47,8 +47,8 @@ describeIfFirmware('alert-frame firmware parity', () => {
     expect(extractConstant(frameHeader, 'kVersion')).toBe(ALERT_FRAME_VERSION)
   })
 
-  it('sizes the frame for the same source table', () => {
-    expect(extractConstant(frameHeader, 'kSourceCount')).toBe(ALERT_SOURCES.length)
+  it('sizes the frame for the same source ids', () => {
+    expect(extractConstant(frameHeader, 'kSourceCount')).toBe(ALERT_SOURCE_ID_COUNT)
   })
 
   it('orders the built-in sources the same way on both sides', () => {

@@ -1,6 +1,6 @@
 import * as z from 'zod'
 
-import { STRING_CAPS } from '../constants/firmware-caps.js'
+import { FIRMWARE_CAPS, STRING_CAPS } from '../constants/firmware-caps.js'
 
 export const CRITICAL_ALERT_DIRECTIONS = ['above', 'below'] as const
 export const CriticalAlertDirectionSchema = z.enum(CRITICAL_ALERT_DIRECTIONS)
@@ -16,6 +16,13 @@ export const CriticalAlertSchema = z
     acknowledgeOn: AcknowledgeTargetSchema,
   })
   .strict()
+
+export const CriticalAlertsSchema = z
+  .array(CriticalAlertSchema)
+  .max(
+    FIRMWARE_CAPS.MAX_CRITICAL_ALERTS,
+    `criticalAlerts cannot exceed ${String(FIRMWARE_CAPS.MAX_CRITICAL_ALERTS)} entries (firmware cap)`
+  )
 
 export type CriticalAlertDirection = z.infer<typeof CriticalAlertDirectionSchema>
 export type AcknowledgeTarget = z.infer<typeof AcknowledgeTargetSchema>

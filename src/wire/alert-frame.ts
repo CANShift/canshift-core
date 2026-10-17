@@ -1,10 +1,11 @@
 import { STRING_CAPS } from '../constants/firmware-caps.js'
 import type { CriticalAlertDirection } from '../schemas/critical-alert.js'
 import {
-  ALERT_SOURCES,
-  alertSourceFromId,
+  ALERT_SOURCE_ID_COUNT,
+  alertOriginFromId,
   alertSourceId,
-  type AlertSource,
+  isConfiguredAlertIndex,
+  type AlertOrigin,
 } from './alert-sources.js'
 import { toFixedPoint } from './fixed-point.js'
 import { TELEMETRY_SCALE } from './telemetry-frame.js'
@@ -14,8 +15,7 @@ export interface AlertLimit {
   direction: CriticalAlertDirection
 }
 
-export interface ActiveAlert {
-  source: AlertSource
+export interface AlertReading {
   signal: string
   value: number
   limit: AlertLimit | null
@@ -24,7 +24,9 @@ export interface ActiveAlert {
   activeSeconds: number
 }
 
-export const ALERT_FRAME_VERSION = 1
+export type ActiveAlert = AlertOrigin & AlertReading
+
+export const ALERT_FRAME_VERSION = 2
 
 export const MAX_ALERT_ACTIVE_SECONDS = 0xffff
 
@@ -43,16 +45,20 @@ const PRINTABLE_ASCII_RE = /^[\x21-\x7e]+$/
 const isEncodableSignal = (signal: string): boolean =>
   signal.length <= STRING_CAPS.SIGNAL_NAME && PRINTABLE_ASCII_RE.test(signal)
 
+const isEncodableOrigin = (origin: AlertOrigin): boolean =>
+  origin.source !== 'configured' || isConfiguredAlertIndex(origin.configuredIndex)
+
 const isEncodable = (alert: ActiveAlert): boolean =>
+  isEncodableOrigin(alert) &&
   Number.isFinite(alert.value) &&
   (alert.limit === null || Number.isFinite(alert.limit.value)) &&
   isEncodableSignal(alert.signal)
 
 const isEncodableSet = (alerts: readonly ActiveAlert[]): boolean =>
-  alerts.length <= ALERT_SOURCES.length &&
-  new Set(alerts.map((alert) => alert.source)).size === alerts.length &&
-  alerts.filter((alert) => alert.displayed).length <= 1 &&
-  alerts.every(isEncodable)
+  alerts.length <= ALERT_SOURCE_ID_COUNT &&
+  alerts.every(isEncodable) &&
+  new Set(alerts.map(alertSourceId)).size === alerts.length &&
+  alerts.filter((alert) => alert.displayed).length <= 1
 
 const flagsOf = (alert: ActiveAlert): number =>
   (alert.limit === null ? 0 : FLAG_HAS_LIMIT) |
@@ -61,7 +67,7 @@ const flagsOf = (alert: ActiveAlert): number =>
   (alert.displayed ? FLAG_DISPLAYED : 0)
 
 const writeEntry = (view: DataView, offset: number, alert: ActiveAlert): number => {
-  view.setUint8(offset, alertSourceId(alert.source))
+  view.setUint8(offset, alertSourceId(alert))
   view.setUint8(offset + 1, flagsOf(alert))
   view.setInt32(offset + 2, toFixedPoint(alert.value, TELEMETRY_SCALE), true)
   view.setInt32(offset + 6, toFixedPoint(alert.limit?.value ?? 0, TELEMETRY_SCALE), true)
@@ -111,14 +117,14 @@ const readLimit = (view: DataView, offset: number, flags: number): AlertLimit | 
 
 const readEntry = (view: DataView, bytes: Uint8Array, offset: number): DecodedEntry | null => {
   if (offset + ENTRY_FIXED_BYTES > bytes.length) return null
-  const source = alertSourceFromId(view.getUint8(offset))
+  const origin = alertOriginFromId(view.getUint8(offset))
   const flags = view.getUint8(offset + 1)
-  if (source === undefined || (flags & ~KNOWN_FLAGS) !== 0) return null
+  if (origin === undefined || (flags & ~KNOWN_FLAGS) !== 0) return null
   const signalLength = view.getUint8(offset + 12)
   const signal = readSignal(bytes, offset + ENTRY_FIXED_BYTES, signalLength)
   if (signal === null) return null
   const alert: ActiveAlert = {
-    source,
+    ...origin,
     signal,
     value: view.getInt32(offset + 2, true) / TELEMETRY_SCALE,
     limit: readLimit(view, offset, flags),
@@ -146,7 +152,7 @@ export const decodeAlertFrame = (bytes: Uint8Array): ActiveAlert[] | null => {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   if (view.getUint8(0) !== ALERT_FRAME_VERSION) return null
   const count = view.getUint8(1)
-  if (count > ALERT_SOURCES.length) return null
+  if (count > ALERT_SOURCE_ID_COUNT) return null
   const alerts = readEntries(view, bytes, count)
   if (alerts === null || !isEncodableSet(alerts)) return null
   return alerts

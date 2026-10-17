@@ -30,6 +30,7 @@ describeIfFirmware('firmware-caps parity', () => {
     ['MAX_PAGES', 'kConfigMaxPages'],
     ['MAX_WIDGETS_PER_PAGE', 'kConfigMaxWidgetsPerPage'],
     ['MAX_SIGNALS', 'kConfigMaxSignals'],
+    ['MAX_CRITICAL_ALERTS', 'kConfigMaxCriticalAlerts'],
   ]
 
   it.each(cases)('%s matches firmware %s', (cap, define) => {

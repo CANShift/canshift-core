@@ -1,6 +1,6 @@
 import { DashboardConfigSchema } from '../schemas/dashboard.js'
 import { CriticalAlertSchema } from '../schemas/critical-alert.js'
-import { STRING_CAPS } from '../constants/firmware-caps.js'
+import { FIRMWARE_CAPS, STRING_CAPS } from '../constants/firmware-caps.js'
 
 const oilPressure = {
   signal: 'oil_press_bar',
@@ -10,7 +10,7 @@ const oilPressure = {
 }
 
 const dashboard = (extra: Record<string, unknown>): Record<string, unknown> => ({
-  version: '1.41.0',
+  version: '1.43.0',
   name: 'Test',
   defaultPageId: 'p1',
   revLimitRpm: 7000,
@@ -60,17 +60,23 @@ describe('CriticalAlertSchema', () => {
   })
 })
 
-describe('DashboardConfigSchema.criticalAlert', () => {
+describe('DashboardConfigSchema.criticalAlerts', () => {
+  const parses = (extra: Record<string, unknown>): boolean =>
+    DashboardConfigSchema.safeParse(dashboard(extra)).success
+
   it('is optional — a dashboard without one never takes the screen for a user signal', () => {
-    expect(DashboardConfigSchema.safeParse(dashboard({})).success).toBe(true)
+    expect(parses({})).toBe(true)
+    expect(parses({ criticalAlerts: [] })).toBe(true)
   })
 
-  it('carries exactly one alert object, not a list', () => {
-    expect(DashboardConfigSchema.safeParse(dashboard({ criticalAlert: oilPressure })).success).toBe(
-      true
-    )
-    expect(
-      DashboardConfigSchema.safeParse(dashboard({ criticalAlert: [oilPressure] })).success
-    ).toBe(false)
+  it('carries a list of alerts up to the firmware cap', () => {
+    const full = Array.from({ length: FIRMWARE_CAPS.MAX_CRITICAL_ALERTS }, () => oilPressure)
+    expect(parses({ criticalAlerts: full })).toBe(true)
+    expect(parses({ criticalAlerts: [...full, oilPressure] })).toBe(false)
+  })
+
+  it('refuses the single-object field the list replaced', () => {
+    expect(parses({ criticalAlert: oilPressure })).toBe(false)
+    expect(parses({ criticalAlerts: oilPressure })).toBe(false)
   })
 })
