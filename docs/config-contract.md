@@ -56,6 +56,7 @@ together.
   "ecuProfileKey": "string",
   "dayNightSignal": "string",
   "criticalAlert": CriticalAlert,
+  "pageButtons": { "next": "string", "previous": "string" },
   "topBar": {
     "height": 24,
     "bgColor": "#RRGGBB",
@@ -71,7 +72,7 @@ together.
 ```
 
 Optional: `description`, `targetProfile`, `ecuProfileKey`, `dayNightSignal`,
-`criticalAlert`, `theme`, `topBar.layout`. Everything else is required. The schema is `.strict()`
+`criticalAlert`, `pageButtons` (and each of its keys), `theme`, `topBar.layout`. Everything else is required. The schema is `.strict()`
 throughout — an unknown key is a validation error, not a silently ignored field.
 
 ### Caps
@@ -101,6 +102,14 @@ dashboard palette with its own `palette`.
 `dayNightSignal` names the signal that drives automatic day/night switching.
 Without it the dash stays on whichever face was last selected, toggled from the
 Settings drawer or by `CMD_TOGGLE_DAY_NIGHT` / `CMD_SET_DAY_NIGHT`.
+
+### Page buttons
+
+`pageButtons.next` and `pageButtons.previous` each name a signal that turns the
+dash page, for steering-wheel buttons on the bus. A press is the signal going
+from `0` to any non-zero value; the firmware debounces it and ignores a stale
+signal. Like `dayNightSignal`, the name has to be one the firmware stores, and
+`validateDashboard` warns when it is not in the signal catalog.
 
 ### Top bar
 

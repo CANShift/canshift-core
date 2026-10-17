@@ -327,6 +327,17 @@ describe('validateDashboard — signal cross-reference', () => {
     ])
   })
 
+  it('warns on each page button signal that is not in the catalog', () => {
+    const pageButtons = { next: 'wheel_next', previous: 'rpm' }
+    const result = validateDashboard(validConfig({ pageButtons }), {
+      signalCatalog: signalCatalog(['rpm']),
+    })
+    expect(result.valid).toBe(true)
+    expect(result.warnings).toEqual([
+      'pageButtons.next references signal "wheel_next" which is not defined in config.signals',
+    ])
+  })
+
   it('produces no warnings when every signal is in the catalog', () => {
     const result = validateDashboard(validConfig(), {
       signalCatalog: signalCatalog(['rpm']),
