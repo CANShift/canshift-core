@@ -1,6 +1,4 @@
-import { readFileSync, existsSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
+import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import {
   CONTROLS,
@@ -10,9 +8,9 @@ import {
   supportsArmed,
   type ControlState,
 } from '../controls/vocabulary.js'
+import { firmwarePath, readFirmwareSource } from './firmware-source.js'
 
-const here = dirname(fileURLToPath(import.meta.url))
-const VOCABULARY = resolve(here, '../../../canshift-firmware/src/ui/control_vocabulary.cpp')
+const VOCABULARY = firmwarePath('src/ui/control_vocabulary.cpp')
 
 interface FirmwareControl {
   kicker: string
@@ -52,7 +50,7 @@ const parseFirmware = (source: string): FirmwareControl[] => {
 const describeIfFirmware = existsSync(VOCABULARY) ? describe : describe.skip
 
 describeIfFirmware('control vocabulary firmware parity', () => {
-  const firmware = parseFirmware(existsSync(VOCABULARY) ? readFileSync(VOCABULARY, 'utf8') : '')
+  const firmware = parseFirmware(readFirmwareSource(VOCABULARY))
 
   it('declares the same controls, in the same order', () => {
     expect(firmware.map((c) => c.kicker)).toEqual(CONTROLS.map((c) => c.kicker))

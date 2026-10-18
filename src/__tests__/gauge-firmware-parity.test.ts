@@ -39,3 +39,15 @@ describeIfFirmware('gauge firmware parity', () => {
     expect(GAUGE_ARC.yShift).toBe(fromArcs('kArcYShift'))
   })
 })
+
+describeIfFirmware('gauge stroke firmware parity', () => {
+  const fromArcs = (name: string): number | null =>
+    firmwareConstant(readFirmwareSource(GAUGE_ARCS), name)
+
+  it('sizes the arc stroke with the firmware ratios', () => {
+    expect(GAUGE_ARC.strokeWidthRatioW).toBe(fromArcs('kStrokeRadiusRatioW'))
+    expect(GAUGE_ARC.strokeWidthRatioH).toBe(fromArcs('kStrokeRadiusRatioH'))
+    expect(GAUGE_ARC.strokeRatio).toBe(fromArcs('kStrokeRatio'))
+    expect(GAUGE_ARC.strokeWidthFloor).toBe(fromArcs('kStrokeWidthFloor'))
+  })
+})

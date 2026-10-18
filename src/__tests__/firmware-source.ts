@@ -14,7 +14,7 @@ export const readFirmwareSource = (path: string): string =>
 
 export const firmwareConstant = (source: string, name: string): number | null => {
   const match = new RegExp(
-    `constexpr\\s+[\\w:]+\\s+${name}\\s*=\\s*(0x[0-9a-fA-F]+|\\d+(?:\\.\\d+)?)f?;`
+    `constexpr\\s+[\\w:]+\\s+${name}\\s*=\\s*(0x[0-9a-fA-F]+|\\d+(?:\\.\\d+)?)[uUlLf]*\\s*;`
   ).exec(source)
   return match ? Number(match[1]) : null
 }
