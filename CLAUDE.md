@@ -45,6 +45,7 @@ Non-negotiable. Reviewed on every PR, ahead of feature count.
 - An `index.ts` may only re-export. An `index.ts` containing a declaration is a bug.
 - A constant must be read by the code it names. An exported constant nothing reads — or that duplicates a number the function hardcodes — is a bug, not documentation.
 - CI gates must cover every file extension in the repo. A green check that silently skipped files is a broken gate.
+- ESLint enforces depth 2, 30 lines per function, 300 per file, no nested ternary and no chained `else if` on the whole repo, tests and `scripts/` included. Existing offenders sit in `eslint-suppressions.json`, which only shrinks: after a fix, `npx eslint . --prune-suppressions`; never `--suppress-all` or `--suppress-rule` to let a new offender in.
 
 ## Workflow
 
