@@ -1,3 +1,4 @@
+import { clamp } from '../math/clamp.js'
 import type { HexColor } from '../schemas/common.js'
 
 export const HEX_REGEX = /^#([0-9a-fA-F]{6})$/
@@ -23,7 +24,7 @@ export const hexToRgb255 = (value: string): RgbChannels | null => {
   return { r: (packed >> 16) & 0xff, g: (packed >> 8) & 0xff, b: packed & 0xff }
 }
 
-const clampByte = (value: number): number => (value < 0 ? 0 : value > 255 ? 255 : Math.round(value))
+const clampByte = (value: number): number => Math.round(clamp(value, 0, 255))
 
 const byteToHex = (value: number): string =>
   clampByte(value).toString(16).padStart(2, '0').toUpperCase()

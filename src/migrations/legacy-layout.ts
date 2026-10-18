@@ -1,10 +1,8 @@
 import { LAYOUT_GRID } from '../layout-grid.js'
 import { SCREEN_PROFILES, resolveScreenProfile } from '../schemas/screen-profile.js'
+import { clamp } from '../math/clamp.js'
 
 type Config = Record<string, unknown>
-
-const clampInt = (value: number, min: number, max: number): number =>
-  Math.min(Math.max(value, min), max)
 
 const legacyAxisToSpan = (
   start: number,
@@ -17,8 +15,8 @@ const legacyAxisToSpan = (
   const pitch = content + LAYOUT_GRID.GUTTER
   const boundary = (px: number): number =>
     Math.round(((px - LAYOUT_GRID.FRAME_PADDING) * tracks) / pitch)
-  const track = clampInt(boundary(start), 0, tracks - 1)
-  const end = clampInt(boundary(start + length + LAYOUT_GRID.GUTTER), track + 1, tracks)
+  const track = clamp(boundary(start), 0, tracks - 1)
+  const end = clamp(boundary(start + length + LAYOUT_GRID.GUTTER), track + 1, tracks)
   return { track, span: end - track }
 }
 

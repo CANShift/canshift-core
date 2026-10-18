@@ -1,15 +1,21 @@
 import { hexToRgb255 } from './hex.js'
+import type { RgbChannels } from './hex.js'
+
+const rawHue = (channels: RgbChannels, max: number, delta: number): number => {
+  const { r, g, b } = channels
+  if (max === r) return ((g - b) / delta) % 6
+  if (max === g) return (b - r) / delta + 2
+  return (r - g) / delta + 4
+}
 
 export const hexToHslChannels = (hexValue: string): string => {
   const channels = hexToRgb255(hexValue)
   if (channels === null) {
     throw new Error(`Invalid hex color: ${hexValue} (expected #RRGGBB)`)
   }
-  const r = channels.r / 255
-  const g = channels.g / 255
-  const b = channels.b / 255
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
+  const unit = { r: channels.r / 255, g: channels.g / 255, b: channels.b / 255 }
+  const max = Math.max(unit.r, unit.g, unit.b)
+  const min = Math.min(unit.r, unit.g, unit.b)
   const delta = max - min
   const l = (max + min) / 2
 
@@ -17,14 +23,7 @@ export const hexToHslChannels = (hexValue: string): string => {
   let s = 0
   if (delta !== 0) {
     s = delta / (1 - Math.abs(2 * l - 1))
-    if (max === r) {
-      h = ((g - b) / delta) % 6
-    } else if (max === g) {
-      h = (b - r) / delta + 2
-    } else {
-      h = (r - g) / delta + 4
-    }
-    h *= 60
+    h = rawHue(unit, max, delta) * 60
     if (h < 0) h += 360
   }
 

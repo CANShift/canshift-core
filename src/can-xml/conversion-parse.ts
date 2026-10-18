@@ -8,10 +8,12 @@ interface Conversion {
   bitShift: number | null
 }
 
+const PAREN_DEPTH_STEP: Readonly<Record<string, number>> = { '(': 1, ')': -1 }
+
 const isFullyParenWrapped = (expr: string): boolean => {
   let depth = 0
   for (let i = 0; i < expr.length - 1; i++) {
-    depth += expr[i] === '(' ? 1 : expr[i] === ')' ? -1 : 0
+    depth += PAREN_DEPTH_STEP[expr.charAt(i)] ?? 0
     if (depth === 0) return false
   }
   return true

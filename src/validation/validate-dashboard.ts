@@ -18,20 +18,14 @@ export interface ValidateDashboardOptions {
 
 const TOPBAR_LAYOUT_ANY_SIGNAL = 'any'
 
-const formatPath = (path: readonly PropertyKey[]): string => {
-  if (path.length === 0) return ''
-  let out = ''
-  for (const seg of path) {
-    if (typeof seg === 'number') {
-      out += `[${String(seg)}]`
-    } else if (typeof seg === 'symbol') {
-      out += out.length === 0 ? seg.toString() : `.${seg.toString()}`
-    } else {
-      out += out.length === 0 ? seg : `.${seg}`
-    }
-  }
-  return out
+const appendPathSegment = (out: string, seg: PropertyKey): string => {
+  if (typeof seg === 'number') return `${out}[${String(seg)}]`
+  const name = typeof seg === 'symbol' ? seg.toString() : seg
+  return out.length === 0 ? name : `${out}.${name}`
 }
+
+const formatPath = (path: readonly PropertyKey[]): string =>
+  path.reduce<string>(appendPathSegment, '')
 
 const formatZodIssue = (issue: z.core.$ZodIssue): string => {
   const path = formatPath(issue.path)
