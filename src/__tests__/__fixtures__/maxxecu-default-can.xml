@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RealDashCAN version="2">
+<CanXml version="2">
   <frames>
     <!-- https://www.maxxecu.com/webhelp/can-default_maxxecu_protocol.html -->
 	  
@@ -169,5 +169,5 @@
     </frame>
 	  
   </frames>
-</RealDashCAN>
+</CanXml>
 
