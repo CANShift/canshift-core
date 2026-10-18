@@ -1,3 +1,5 @@
+import { clamp } from '../math/clamp.js'
+
 export interface Ratio {
   numerator: number
   denominator: number
@@ -11,15 +13,12 @@ const applyRatio = (value: number, ratio: Ratio): number =>
 
 export const ratioScale = (ratio: Ratio): number => ratio.numerator / ratio.denominator
 
-export const clamp01 = (value: number): number => (value < 0 ? 0 : value > 1 ? 1 : value)
+export const clamp01 = (value: number): number => clamp(value, 0, 1)
 
 export const WIDGET_FONT_CLAMP = { min: 10, max: 48 } as const
 
-const clampFont = (size: number): number => {
-  if (size < WIDGET_FONT_CLAMP.min) return WIDGET_FONT_CLAMP.min
-  if (size > WIDGET_FONT_CLAMP.max) return WIDGET_FONT_CLAMP.max
-  return size
-}
+const clampFont = (size: number): number =>
+  clamp(size, WIDGET_FONT_CLAMP.min, WIDGET_FONT_CLAMP.max)
 
 export interface FontBreakpoint {
   minHeight: number

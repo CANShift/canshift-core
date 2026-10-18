@@ -1,4 +1,5 @@
 import type { GeoPoint, LineSegment } from './lap-detection.js'
+import { clamp } from '../math/clamp.js'
 
 export interface StartFinishLine {
   line: LineSegment
@@ -13,7 +14,7 @@ const MAX_ABS_LAT_FOR_LNG_SCALE = 89.9
 const toRad = (deg: number): number => (deg * Math.PI) / 180
 
 const clampLatForLngScale = (lat: number): number =>
-  Math.min(Math.max(lat, -MAX_ABS_LAT_FOR_LNG_SCALE), MAX_ABS_LAT_FOR_LNG_SCALE)
+  clamp(lat, -MAX_ABS_LAT_FOR_LNG_SCALE, MAX_ABS_LAT_FOR_LNG_SCALE)
 
 const offsetPoint = (origin: GeoPoint, bearingDeg: number, distanceM: number): GeoPoint => {
   const bearingRad = toRad(bearingDeg)

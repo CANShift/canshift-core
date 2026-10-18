@@ -200,26 +200,10 @@
   "src/can-xml/conversion-parse.ts": {
     "max-depth": {
       "count": 1
-    },
-    "no-nested-ternary": {
-      "count": 1
     }
   },
   "src/can-xml/value-to-signal.ts": {
     "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/colors/hex.ts": {
-    "no-nested-ternary": {
-      "count": 1
-    }
-  },
-  "src/colors/hsl.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    },
-    "no-restricted-syntax": {
       "count": 1
     }
   },
@@ -256,14 +240,6 @@
       "count": 2
     },
     "max-lines-per-function": {
-      "count": 1
-    },
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/widget-metrics/scale.ts": {
-    "no-nested-ternary": {
       "count": 1
     }
   },

@@ -1,3 +1,5 @@
+import { clamp } from './math/clamp.js'
+
 export const LAYOUT_GRID = {
   COLUMNS: 12,
   ROWS: 12,
@@ -34,9 +36,6 @@ export const BASE_GRID_TRACKS: GridTracks = {
   rows: LAYOUT_GRID.ROWS,
 }
 
-const clampInt = (value: number, min: number, max: number): number =>
-  Math.min(Math.max(value, min), max)
-
 const contentSize = (size: number): number => Math.max(size - 2 * LAYOUT_GRID.FRAME_PADDING, 0)
 
 const trackOffset = (track: number, content: number, tracks: number): number =>
@@ -71,17 +70,17 @@ export const nearestTrack = (offset: number, size: number, tracks: number): numb
   const raw = Math.round(
     ((offset - LAYOUT_GRID.FRAME_PADDING) * tracks) / (content + LAYOUT_GRID.GUTTER)
   )
-  return clampInt(raw, 0, tracks)
+  return clamp(raw, 0, tracks)
 }
 
 export const clampGridPlacement = (
   placement: GridPlacement,
   tracks: GridTracks = BASE_GRID_TRACKS
 ): GridPlacement => {
-  const colSpan = clampInt(Math.round(placement.colSpan), 1, tracks.columns)
-  const rowSpan = clampInt(Math.round(placement.rowSpan), 1, tracks.rows)
-  const col = clampInt(Math.round(placement.col), 0, tracks.columns - colSpan)
-  const row = clampInt(Math.round(placement.row), 0, tracks.rows - rowSpan)
+  const colSpan = clamp(Math.round(placement.colSpan), 1, tracks.columns)
+  const rowSpan = clamp(Math.round(placement.rowSpan), 1, tracks.rows)
+  const col = clamp(Math.round(placement.col), 0, tracks.columns - colSpan)
+  const row = clamp(Math.round(placement.row), 0, tracks.rows - rowSpan)
   return { col, colSpan, row, rowSpan }
 }
 
