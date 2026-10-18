@@ -70,7 +70,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.mjs', 'vitest.config.ts'],
+          allowDefaultProject: ['*.mjs', 'vitest.config.ts', 'scripts/*.ts'],
         },
         tsconfigRootDir: import.meta.dirname,
       },
@@ -81,9 +81,16 @@ export default tseslint.config(
       'no-console': 'error',
       'no-comments/no-comments': 'error',
       'func-style': ['error', 'expression'],
-      'max-depth': ['error', 3],
+      'max-depth': ['error', 2],
+      'max-lines-per-function': ['error', { max: 30, skipBlankLines: true, skipComments: true }],
+      'max-lines': ['error', { max: 300, skipBlankLines: true }],
+      'no-nested-ternary': 'error',
       'no-restricted-syntax': [
         'error',
+        {
+          selector: 'IfStatement > IfStatement.alternate',
+          message: 'A chained `else if` is a union that lost its type: use a lookup table.',
+        },
         {
           selector: "ImportDeclaration[source.value='zod'] > ImportSpecifier[imported.name='z']",
           message:
@@ -103,6 +110,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ['scripts/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-argument': 'off',
+    },
+  },
+  {
     files: ['src/**/index.ts'],
     plugins: { 'barrel-only': barrelOnlyPlugin },
     rules: {
@@ -117,6 +130,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ['dist/**', 'node_modules/**', 'scripts/**'],
+    ignores: ['dist/**', 'node_modules/**'],
   }
 )
