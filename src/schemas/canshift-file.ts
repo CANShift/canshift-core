@@ -5,6 +5,7 @@ import { migrateConfig } from '../migrations/index.js'
 import { isSemverGreater } from '../migrations/semver.js'
 import { asPlainObject, stripForbiddenKeys } from '../wire/plain-object.js'
 import { isIntegerFormatVersion, parseJsonObject } from '../wire/parse-envelope.js'
+import { summarizeIssues } from '../wire/summarize-issues.js'
 import { MigrationError, type MigrationErrorCode } from '../migrations/errors.js'
 
 import { ProjectSchema, type Project } from './project.js'
@@ -135,15 +136,6 @@ const MIGRATION_FAILURE_COPY: Record<MigrationErrorCode, string> = {
   registry_corrupt:
     'The upgrade could not run because of a defect in CANShift. Please report this.',
 }
-
-const summarizeIssues = (issues: z.core.$ZodIssue[]): string =>
-  issues
-    .slice(0, 3)
-    .map((issue) => {
-      const path = issue.path.join('.')
-      return path ? `${path}: ${issue.message}` : issue.message
-    })
-    .join('; ')
 
 export const describeCanshiftFileError = (error: CanshiftFileError): string => {
   switch (error.kind) {

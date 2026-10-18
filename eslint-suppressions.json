@@ -197,11 +197,6 @@
       "count": 1
     }
   },
-  "src/can-xml/conversion-parse.ts": {
-    "max-depth": {
-      "count": 1
-    }
-  },
   "src/can-xml/value-to-signal.ts": {
     "max-lines-per-function": {
       "count": 1
@@ -222,29 +217,13 @@
       "count": 1
     }
   },
-  "src/sensor-defaults.ts": {
-    "max-depth": {
-      "count": 1
-    },
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/track/lap-detection.ts": {
     "max-lines-per-function": {
       "count": 1
     }
   },
   "src/validation/validate-dashboard.ts": {
-    "max-depth": {
-      "count": 2
-    },
     "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/wire/plain-object.ts": {
-    "max-depth": {
       "count": 1
     }
   }

@@ -120,6 +120,40 @@ const BLACK_CHANNELS: RgbChannels = { r: 0, g: 0, b: 0 }
 
 const channelsOf = (color: HexColor): RgbChannels => hexToRgb255(color) ?? BLACK_CHANNELS
 
+type RampStop = ColorRamp['stops'][number]
+
+const steppedColor = (stops: readonly RampStop[], value: number, fallback: HexColor): HexColor => {
+  let active = fallback
+  for (const stop of stops) {
+    if (value < stop.value) break
+    active = stop.color
+  }
+  return active
+}
+
+const blend = (lower: RampStop, upper: RampStop, value: number): HexColor => {
+  const span = upper.value - lower.value
+  const t = span > 0 ? (value - lower.value) / span : 0
+  const a = channelsOf(lower.color)
+  const b = channelsOf(upper.color)
+  return rgb255ToHex({
+    r: a.r + (b.r - a.r) * t,
+    g: a.g + (b.g - a.g) * t,
+    b: a.b + (b.b - a.b) * t,
+  })
+}
+
+const interpolatedColor = (stops: readonly RampStop[], value: number): HexColor | null => {
+  for (let i = 0; i < stops.length - 1; i++) {
+    const lower = stops[i]
+    const upper = stops[i + 1]
+    if (lower && upper && value >= lower.value && value <= upper.value) {
+      return blend(lower, upper, value)
+    }
+  }
+  return null
+}
+
 export const colorAtValue = (ramp: ColorRamp, value: number): HexColor => {
   const stops = ramp.stops
   if (stops.length === 0) return BLACK
@@ -129,31 +163,6 @@ export const colorAtValue = (ramp: ColorRamp, value: number): HexColor => {
   if (stops.length === 1 || value <= first.value) return first.color
   if (value >= last.value) return last.color
 
-  if (ramp.interpolate === 'step') {
-    let active = first.color
-    for (const stop of stops) {
-      if (value >= stop.value) active = stop.color
-      else break
-    }
-    return active
-  }
-
-  for (let i = 0; i < stops.length - 1; i++) {
-    const lower = stops[i]
-    const upper = stops[i + 1]
-    if (!lower || !upper) continue
-    if (value >= lower.value && value <= upper.value) {
-      const span = upper.value - lower.value
-      const t = span > 0 ? (value - lower.value) / span : 0
-      const a = channelsOf(lower.color)
-      const b = channelsOf(upper.color)
-      return rgb255ToHex({
-        r: a.r + (b.r - a.r) * t,
-        g: a.g + (b.g - a.g) * t,
-        b: a.b + (b.b - a.b) * t,
-      })
-    }
-  }
-
-  return last.color
+  if (ramp.interpolate === 'step') return steppedColor(stops, value, first.color)
+  return interpolatedColor(stops, value) ?? last.color
 }
