@@ -1,11 +1,9 @@
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { DASH_SIGNALS, WHEEL_BUTTON_SIGNALS, isDashSignal } from '../constants/dash-signals.js'
+import { firmwarePath, readFirmwareSource } from './firmware-source.js'
 
-const here = dirname(fileURLToPath(import.meta.url))
-const SIGNAL_MAP = resolve(here, '../../../canshift-firmware/rust/signal-map/src/lib.rs')
+const SIGNAL_MAP = firmwarePath('rust/signal-map/src/lib.rs')
 
 const firmwareNames = (source: string): string[] => {
   const table = /const NAME_TO_ID[^=]*=\s*&\[([\s\S]*?)\];/.exec(source)?.[1] ?? ''
@@ -15,7 +13,7 @@ const firmwareNames = (source: string): string[] => {
 const describeIfFirmware = existsSync(SIGNAL_MAP) ? describe : describe.skip
 
 describeIfFirmware('dash signal catalog parity', () => {
-  const names = existsSync(SIGNAL_MAP) ? firmwareNames(readFileSync(SIGNAL_MAP, 'utf8')) : []
+  const names = firmwareNames(readFirmwareSource(SIGNAL_MAP))
 
   it('reads a non-empty table from the firmware', () => {
     expect(names.length).toBeGreaterThan(0)
