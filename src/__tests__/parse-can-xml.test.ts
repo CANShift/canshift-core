@@ -32,6 +32,21 @@ describe('non-CAN-XML input', () => {
   })
 })
 
+describe('root tag', () => {
+  const frames =
+    '<frames><frame id="0x520"><value name="rpm" offset="0" length="2"/></frame></frames>'
+
+  it('reads the external format root', () => {
+    const { signals } = parseCanXml(`<RealDashCAN version="2">${frames}</RealDashCAN>`)
+    expect(signals.map((signal) => signal.name)).toEqual(['rpm'])
+  })
+
+  it('reads the neutral root', () => {
+    const { signals } = parseCanXml(`<CanXml version="2">${frames}</CanXml>`)
+    expect(signals.map((signal) => signal.name)).toEqual(['rpm'])
+  })
+})
+
 describe('name generation', () => {
   it('snake_cases the name attribute', () => {
     const { signals } = parseCanXml(
