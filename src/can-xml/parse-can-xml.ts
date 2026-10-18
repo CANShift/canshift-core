@@ -9,8 +9,12 @@ export interface ParseCanXmlResult {
   warnings: string[]
 }
 
+const CAN_XML_ROOTS = ['<CanXml', '<RealDashCAN'] as const
+
+const hasCanXmlRoot = (xml: string): boolean => CAN_XML_ROOTS.some((root) => xml.includes(root))
+
 export const parseCanXml = (xml: string): ParseCanXmlResult => {
-  if (!xml.includes('<RealDashCAN')) {
+  if (!hasCanXmlRoot(xml)) {
     return { signals: [], warnings: ['Not a supported CAN XML file (missing root tag)'] }
   }
 
