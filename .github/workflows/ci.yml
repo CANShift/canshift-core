@@ -102,6 +102,7 @@ jobs:
             canshift-firmware/src/ui/alert_sources.h \
             canshift-firmware/.github/boards.json \
             canshift-firmware/src/ui/control_vocabulary.cpp \
+            canshift-firmware/src/ui/signal_presentation.cpp \
             canshift-firmware/src/ui/widgets/gauge_widget.cpp \
             canshift-firmware/src/ui/widgets/gauge_arcs.cpp \
             canshift-firmware/src/ui/widgets/gauge_arcs.h \

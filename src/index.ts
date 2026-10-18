@@ -96,6 +96,7 @@ export { PageButtonsSchema } from './schemas/page-buttons.js'
 
 export { DASH_SIGNALS, WHEEL_BUTTON_SIGNALS, isDashSignal } from './constants/dash-signals.js'
 export type { DashSignal, WheelButtonSignal } from './constants/dash-signals.js'
+export { signalDisplayLabel } from './constants/signal-labels.js'
 export type { PageButtonRole, PageButtons } from './schemas/page-buttons.js'
 
 export type {
