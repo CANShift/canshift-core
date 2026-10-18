@@ -1,5 +1,6 @@
 import * as z from 'zod'
 import { findForbiddenKey } from './plain-object.js'
+import { summarizeIssues } from './summarize-issues.js'
 
 export type WireEnvelopeFailure =
   | { kind: 'invalid_json'; raw: string }
@@ -45,15 +46,6 @@ export const parseWireJson = <Wire, Domain>(
   if (!result.success) return { kind: 'wrong_shape', issues: result.error.issues }
   return { kind: 'ok', value: fromWire(result.data) }
 }
-
-const summarizeIssues = (issues: z.core.$ZodIssue[]): string =>
-  issues
-    .slice(0, 3)
-    .map((issue) => {
-      const path = issue.path.join('.')
-      return path ? `${path}: ${issue.message}` : issue.message
-    })
-    .join('; ')
 
 export const describeWireParseFailure = (failure: WireParseFailure): string => {
   switch (failure.kind) {

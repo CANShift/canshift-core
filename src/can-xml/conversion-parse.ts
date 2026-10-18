@@ -61,6 +61,12 @@ const normaliseExpr = (expr: string): string | null => {
     .replace(IMPLICIT_MUL_BEFORE_V_RE, '$1*V')
 }
 
+const numberLiteralEnd = (expr: string, start: number): number => {
+  let end = start
+  while (end < expr.length && /[\d.]/.test(expr.charAt(end))) end++
+  return end
+}
+
 const tokeniseArith = (expr: string): string[] | null => {
   const tokens: string[] = []
   let i = 0
@@ -81,10 +87,9 @@ const tokeniseArith = (expr: string): string[] | null => {
       continue
     }
     if (/[\d.]/.test(c)) {
-      let j = i
-      while (j < expr.length && /[\d.]/.test(expr[j] ?? '')) j++
-      tokens.push(expr.slice(i, j))
-      i = j
+      const end = numberLiteralEnd(expr, i)
+      tokens.push(expr.slice(i, end))
+      i = end
       continue
     }
     return null

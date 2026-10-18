@@ -4,6 +4,7 @@ import { isDashSignal } from '../constants/dash-signals.js'
 import { DashboardConfigSchema } from '../schemas/dashboard.js'
 import type { DashboardConfig } from '../schemas/dashboard.js'
 import type { SignalConfig } from '../schemas/signal.js'
+import { asPlainObject } from '../wire/plain-object.js'
 
 export interface ValidationResult {
   valid: boolean
@@ -56,29 +57,22 @@ const duplicateIds = (entries: readonly { id: string }[]): string[] => {
   return [...dupes]
 }
 
+const signalNamesOf = (signals: readonly unknown[]): Set<string> =>
+  new Set(
+    signals
+      .map((signal) => asPlainObject(signal)?.name)
+      .filter((name): name is string => typeof name === 'string')
+  )
+
 const collectSignalIds = (
   rawConfig: unknown,
   signalCatalog: SignalConfig | undefined
 ): Set<string> | null => {
   if (signalCatalog && Array.isArray(signalCatalog.signals)) {
-    const ids = new Set<string>()
-    for (const sig of signalCatalog.signals) {
-      if (typeof sig.name === 'string') ids.add(sig.name)
-    }
-    return ids
+    return signalNamesOf(signalCatalog.signals)
   }
-
-  if (typeof rawConfig !== 'object' || rawConfig === null) return null
-  const maybeSignals = (rawConfig as Record<string, unknown>).signals
-  if (!Array.isArray(maybeSignals)) return null
-  const ids = new Set<string>()
-  for (const sig of maybeSignals) {
-    if (typeof sig === 'object' && sig !== null) {
-      const name = (sig as Record<string, unknown>).name
-      if (typeof name === 'string') ids.add(name)
-    }
-  }
-  return ids
+  const maybeSignals = asPlainObject(rawConfig)?.signals
+  return Array.isArray(maybeSignals) ? signalNamesOf(maybeSignals) : null
 }
 
 const checkWidgetSignalRefs = (
