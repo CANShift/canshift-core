@@ -1,48 +1,41 @@
-import { readFileSync, existsSync } from 'node:fs'
-import { fileURLToPath } from 'node:url'
-import { dirname, resolve } from 'node:path'
+import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { GAUGE_ARC, GAUGE_VALUE_FONT_BREAKPOINTS } from '../widget-metrics/gauge.js'
+import { firmwareConstant, firmwarePath, readFirmwareSource } from './firmware-source.js'
 
-const here = dirname(fileURLToPath(import.meta.url))
-const WIDGETS = resolve(here, '../../../canshift-firmware/src/ui/widgets')
-const GAUGE_WIDGET = resolve(WIDGETS, 'gauge_widget.cpp')
-const GAUGE_ARCS = resolve(WIDGETS, 'gauge_arcs.cpp')
-const GAUGE_ARCS_HEADER = resolve(WIDGETS, 'gauge_arcs.h')
-
-const readIfPresent = (path: string): string => (existsSync(path) ? readFileSync(path, 'utf8') : '')
-
-const constant = (source: string, name: string): number | null => {
-  const match = new RegExp(`constexpr\\s+[\\w:]+\\s+${name}\\s*=\\s*([\\d.]+)f?;`).exec(source)
-  return match ? Number(match[1]) : null
-}
+const GAUGE_WIDGET = firmwarePath('src/ui/widgets/gauge_widget.cpp')
+const GAUGE_ARCS = firmwarePath('src/ui/widgets/gauge_arcs.cpp')
+const GAUGE_ARCS_HEADER = firmwarePath('src/ui/widgets/gauge_arcs.h')
 
 const firmwarePresent = [GAUGE_WIDGET, GAUGE_ARCS, GAUGE_ARCS_HEADER].every((p) => existsSync(p))
 const describeIfFirmware = firmwarePresent ? describe : describe.skip
 
 describeIfFirmware('gauge firmware parity', () => {
-  const widget = readIfPresent(GAUGE_WIDGET)
-  const arcs = readIfPresent(GAUGE_ARCS) + readIfPresent(GAUGE_ARCS_HEADER)
+  const widget = readFirmwareSource(GAUGE_WIDGET)
+  const arcs = readFirmwareSource(GAUGE_ARCS) + readFirmwareSource(GAUGE_ARCS_HEADER)
+  const fromWidget = (name: string): number | null => firmwareConstant(widget, name)
+  const fromArcs = (name: string): number | null => firmwareConstant(arcs, name)
 
   it('steps the value font at the heights the firmware compiles in', () => {
     expect(GAUGE_VALUE_FONT_BREAKPOINTS).toEqual([
       {
-        minHeight: constant(widget, 'kValueFontHeightPrimary'),
-        size: constant(widget, 'kValueFontSizePrimary'),
+        minHeight: fromWidget('kValueFontHeightPrimary'),
+        size: fromWidget('kValueFontSizePrimary'),
       },
       {
-        minHeight: constant(widget, 'kValueFontHeightSecondary'),
-        size: constant(widget, 'kValueFontSizeSecondary'),
+        minHeight: fromWidget('kValueFontHeightSecondary'),
+        size: fromWidget('kValueFontSizeSecondary'),
       },
-      { minHeight: 0, size: constant(widget, 'kValueFontSizeUnits') },
+      { minHeight: 0, size: fromWidget('kValueFontSizeUnits') },
     ])
   })
 
   it('draws the arc with the firmware geometry', () => {
-    expect(GAUGE_ARC.sweepDeg).toBe(constant(arcs, 'kArcSweepInt'))
-    expect(GAUGE_ARC.rotationDeg).toBe(constant(arcs, 'kArcRotation'))
-    expect(GAUGE_ARC.minDiameter).toBe(constant(arcs, 'kMinArcDiam'))
-    expect(GAUGE_ARC.containerPadding).toBe(constant(arcs, 'kArcContainerPadding'))
-    expect(GAUGE_ARC.yShift).toBe(constant(arcs, 'kArcYShift'))
+    expect(GAUGE_ARC.sweepDeg).toBe(fromArcs('kArcSweep'))
+    expect(GAUGE_ARC.sweepDeg).toBe(fromArcs('kArcSweepInt'))
+    expect(GAUGE_ARC.rotationDeg).toBe(fromArcs('kArcRotation'))
+    expect(GAUGE_ARC.minDiameter).toBe(fromArcs('kMinArcDiam'))
+    expect(GAUGE_ARC.containerPadding).toBe(fromArcs('kArcContainerPadding'))
+    expect(GAUGE_ARC.yShift).toBe(fromArcs('kArcYShift'))
   })
 })
