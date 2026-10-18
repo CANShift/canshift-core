@@ -51,12 +51,8 @@ export const serializeCanshiftFile = (project: Project): string => {
   return JSON.stringify(file, null, 2)
 }
 
-export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
-  const json = parseJsonObject(raw, stripForbiddenKeys)
-  if (json.kind !== 'ok') return json
-  const parsed = json.value
+const rejectEnvelope = (parsed: object): CanshiftFileError | null => {
   const record = parsed as Record<string, unknown>
-
   if (record.format !== CANSHIFT_FILE_FORMAT) {
     return { kind: 'not_a_canshift_file', payload: parsed }
   }
@@ -70,17 +66,31 @@ export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
       supported: CANSHIFT_FILE_FORMAT_VERSION,
     }
   }
+  return null
+}
 
-  const envelope = CanshiftFileEnvelopeSchema.safeParse(parsed)
-  if (!envelope.success) {
-    return { kind: 'wrong_shape', issues: envelope.error.issues }
+const versionOf = (dashboard: Record<string, unknown> | null): string | null =>
+  dashboard !== null && typeof dashboard.version === 'string' ? dashboard.version : null
+
+type MigratedProject = { kind: 'ok'; candidate: Record<string, unknown> } | CanshiftFileError
+
+const migrateProjectDashboard = (
+  project: Record<string, unknown>,
+  dashboard: Record<string, unknown> | null,
+  dashboardVersion: string | null
+): MigratedProject => {
+  if (dashboard === null || dashboardVersion === null) return { kind: 'ok', candidate: project }
+  try {
+    const migrated = migrateConfig(dashboard, CURRENT_SCHEMA_VERSION)
+    return { kind: 'ok', candidate: { ...project, dashboard: migrated.config } }
+  } catch (err) {
+    return toMigrationFailure(err)
   }
+}
 
-  const project = envelope.data.project
+const upgradeProject = (project: Record<string, unknown>): CanshiftFileResult => {
   const dashboard = asPlainObject(project.dashboard)
-  const dashboardVersion =
-    dashboard !== null && typeof dashboard.version === 'string' ? dashboard.version : null
-
+  const dashboardVersion = versionOf(dashboard)
   if (dashboardVersion !== null && isSemverGreater(dashboardVersion, CURRENT_SCHEMA_VERSION)) {
     return {
       kind: 'schema_too_new',
@@ -88,30 +98,22 @@ export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
       supported: CURRENT_SCHEMA_VERSION,
     }
   }
+  const migration = migrateProjectDashboard(project, dashboard, dashboardVersion)
+  if (migration.kind !== 'ok') return migration
+  const result = ProjectSchema.safeParse(migration.candidate)
+  if (!result.success) return { kind: 'wrong_shape', issues: result.error.issues }
+  const migratedFrom = dashboardVersion !== CURRENT_SCHEMA_VERSION ? dashboardVersion : null
+  return { kind: 'ok', project: result.data, migratedFrom }
+}
 
-  let candidate: Record<string, unknown> = project
-  if (dashboard !== null && dashboardVersion !== null) {
-    try {
-      const migrated = migrateConfig(dashboard, CURRENT_SCHEMA_VERSION)
-      candidate = { ...project, dashboard: migrated.config }
-    } catch (err) {
-      return toMigrationFailure(err)
-    }
-  }
-
-  const result = ProjectSchema.safeParse(candidate)
-  if (!result.success) {
-    return { kind: 'wrong_shape', issues: result.error.issues }
-  }
-
-  return {
-    kind: 'ok',
-    project: result.data,
-    migratedFrom:
-      dashboardVersion !== null && dashboardVersion !== CURRENT_SCHEMA_VERSION
-        ? dashboardVersion
-        : null,
-  }
+export const parseCanshiftFile = (raw: string): CanshiftFileResult => {
+  const json = parseJsonObject(raw, stripForbiddenKeys)
+  if (json.kind !== 'ok') return json
+  const rejected = rejectEnvelope(json.value)
+  if (rejected !== null) return rejected
+  const envelope = CanshiftFileEnvelopeSchema.safeParse(json.value)
+  if (!envelope.success) return { kind: 'wrong_shape', issues: envelope.error.issues }
+  return upgradeProject(envelope.data.project)
 }
 
 const toMigrationFailure = (err: unknown): CanshiftFileError => {

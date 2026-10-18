@@ -197,33 +197,8 @@
       "count": 1
     }
   },
-  "src/can-xml/value-to-signal.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/index.ts": {
     "max-lines": {
-      "count": 1
-    }
-  },
-  "src/schemas/canshift-file.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/schemas/signal.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/track/lap-detection.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
-  "src/validation/validate-dashboard.ts": {
-    "max-lines-per-function": {
       "count": 1
     }
   }

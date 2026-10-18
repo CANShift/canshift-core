@@ -69,6 +69,90 @@ export const SIGNAL_BYTE_LENGTHS: readonly SignalByteLength[] = SignalByteLength
   (o) => o.value
 )
 
+type LevelKey = 'warningLevel' | 'dangerLevel' | 'highWarningLevel' | 'highDangerLevel'
+
+const LEVEL_KEYS: readonly LevelKey[] = [
+  'warningLevel',
+  'dangerLevel',
+  'highWarningLevel',
+  'highDangerLevel',
+]
+
+interface SignalLevels {
+  min: number
+  max: number
+  warningLevel?: number | undefined
+  dangerLevel?: number | undefined
+  highWarningLevel?: number | undefined
+  highDangerLevel?: number | undefined
+}
+
+interface LevelIssue {
+  path: LevelKey
+  message: string
+}
+
+const outOfRangeIssue = (s: SignalLevels, key: LevelKey): LevelIssue[] => {
+  const v = s[key]
+  if (v === undefined) return []
+  if (!(v < s.min || v > s.max)) return []
+  return [
+    {
+      path: key,
+      message: `${key} (${v.toString()}) must be within [min=${s.min.toString()}, max=${s.max.toString()}]`,
+    },
+  ]
+}
+
+const flatLowRampIssue = (s: SignalLevels): LevelIssue[] =>
+  s.warningLevel !== undefined && s.dangerLevel !== undefined && s.warningLevel === s.dangerLevel
+    ? [
+        {
+          path: 'dangerLevel',
+          message:
+            'warningLevel and dangerLevel must differ to form a monotonic ramp: ' +
+            'use warningLevel < dangerLevel for high-side, ' +
+            'or warningLevel > dangerLevel for low-side',
+        },
+      ]
+    : []
+
+const invertedHighRampIssue = (s: SignalLevels): LevelIssue[] =>
+  s.highWarningLevel !== undefined &&
+  s.highDangerLevel !== undefined &&
+  s.highWarningLevel > s.highDangerLevel
+    ? [
+        {
+          path: 'highDangerLevel',
+          message: 'highWarningLevel must be <= highDangerLevel (high-side ramp)',
+        },
+      ]
+    : []
+
+const isLowSideRamp = (s: SignalLevels): boolean =>
+  s.warningLevel !== undefined && s.dangerLevel !== undefined && s.dangerLevel <= s.warningLevel
+
+const overlappingRampsIssue = (s: SignalLevels): LevelIssue[] =>
+  isLowSideRamp(s) &&
+  s.highDangerLevel !== undefined &&
+  s.highWarningLevel !== undefined &&
+  s.warningLevel !== undefined &&
+  s.warningLevel >= s.highWarningLevel
+    ? [
+        {
+          path: 'highWarningLevel',
+          message: 'low-side warningLevel must be below highWarningLevel',
+        },
+      ]
+    : []
+
+const levelIssues = (s: SignalLevels): LevelIssue[] => [
+  ...LEVEL_KEYS.flatMap((key) => outOfRangeIssue(s, key)),
+  ...flatLowRampIssue(s),
+  ...invertedHighRampIssue(s),
+  ...overlappingRampsIssue(s),
+]
+
 const SignalDefShapeSchema = z
   .object({
     _comment: z.string().optional(),
@@ -130,64 +214,8 @@ const SignalDefShapeSchema = z
     path: ['min'],
   })
   .superRefine((s, ctx) => {
-    const levelKeys: ('warningLevel' | 'dangerLevel' | 'highWarningLevel' | 'highDangerLevel')[] = [
-      'warningLevel',
-      'dangerLevel',
-      'highWarningLevel',
-      'highDangerLevel',
-    ]
-    for (const key of levelKeys) {
-      const v = s[key]
-      if (v === undefined) continue
-      if (v < s.min || v > s.max) {
-        ctx.addIssue({
-          code: 'custom' as const,
-          message: `${key} (${v.toString()}) must be within [min=${s.min.toString()}, max=${s.max.toString()}]`,
-          path: [key],
-        })
-      }
-    }
-
-    if (
-      s.warningLevel !== undefined &&
-      s.dangerLevel !== undefined &&
-      s.warningLevel === s.dangerLevel
-    ) {
-      ctx.addIssue({
-        code: 'custom' as const,
-        message:
-          'warningLevel and dangerLevel must differ to form a monotonic ramp: ' +
-          'use warningLevel < dangerLevel for high-side, ' +
-          'or warningLevel > dangerLevel for low-side',
-        path: ['dangerLevel'],
-      })
-    }
-
-    if (
-      s.highWarningLevel !== undefined &&
-      s.highDangerLevel !== undefined &&
-      s.highWarningLevel > s.highDangerLevel
-    ) {
-      ctx.addIssue({
-        code: 'custom' as const,
-        message: 'highWarningLevel must be <= highDangerLevel (high-side ramp)',
-        path: ['highDangerLevel'],
-      })
-    }
-
-    if (
-      s.warningLevel !== undefined &&
-      s.dangerLevel !== undefined &&
-      s.highWarningLevel !== undefined &&
-      s.highDangerLevel !== undefined &&
-      s.dangerLevel <= s.warningLevel &&
-      s.warningLevel >= s.highWarningLevel
-    ) {
-      ctx.addIssue({
-        code: 'custom' as const,
-        message: 'low-side warningLevel must be below highWarningLevel',
-        path: ['highWarningLevel'],
-      })
+    for (const issue of levelIssues(s)) {
+      ctx.addIssue({ code: 'custom' as const, message: issue.message, path: [issue.path] })
     }
   })
 
