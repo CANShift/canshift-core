@@ -24,6 +24,31 @@ interface InternalState {
   lastCrossingMs: number
 }
 
+type TimedPoint = NonNullable<InternalState['prev']>
+
+const crossingMs = (line: LineSegment, prev: TimedPoint, sample: TimedPoint): number | null => {
+  const crossing = segmentIntersect(
+    { x: prev.lng, y: prev.lat },
+    { x: sample.lng, y: sample.lat },
+    { x: line.a.lng, y: line.a.lat },
+    { x: line.b.lng, y: line.b.lat }
+  )
+  if (crossing === null) return null
+  return prev.t + (sample.t - prev.t) * crossing.tAlong
+}
+
+const travelsBackwards = (
+  prev: TimedPoint,
+  sample: TimedPoint,
+  forwardBearingDeg: number
+): boolean => {
+  const travelBearing = bearingDeg(
+    { lat: prev.lat, lng: prev.lng },
+    { lat: sample.lat, lng: sample.lng }
+  )
+  return Math.abs(signedAngleDelta(travelBearing, forwardBearingDeg)) > 90
+}
+
 export const createLapCrossingDetector = (
   line: LineSegment,
   opts: LapCrossingDetectorOptions = {}
@@ -39,31 +64,13 @@ export const createLapCrossingDetector = (
     update(sample) {
       const prev = state.prev
       state.prev = sample
-
       if (prev === null) return null
-
-      const crossing = segmentIntersect(
-        { x: prev.lng, y: prev.lat },
-        { x: sample.lng, y: sample.lat },
-        { x: line.a.lng, y: line.a.lat },
-        { x: line.b.lng, y: line.b.lat }
-      )
-      if (crossing === null) return null
-
-      const interpolatedMs = prev.t + (sample.t - prev.t) * crossing.tAlong
+      const interpolatedMs = crossingMs(line, prev, sample)
+      if (interpolatedMs === null) return null
       if (state.lastCrossingMs !== 0 && interpolatedMs - state.lastCrossingMs < hysteresis) {
         return null
       }
-
-      if (enforceDir) {
-        const travelBearing = bearingDeg(
-          { lat: prev.lat, lng: prev.lng },
-          { lat: sample.lat, lng: sample.lng }
-        )
-        const diff = signedAngleDelta(travelBearing, forwardBearingDeg)
-        if (Math.abs(diff) > 90) return null
-      }
-
+      if (enforceDir && travelsBackwards(prev, sample, forwardBearingDeg)) return null
       state.lastCrossingMs = interpolatedMs
       return interpolatedMs
     },

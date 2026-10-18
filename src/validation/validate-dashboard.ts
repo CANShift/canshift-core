@@ -145,44 +145,42 @@ const checkPageButtonsReadable = (
         ]
   )
 
+type ParsedDashboard = z.infer<typeof DashboardConfigSchema>
+
+const structuralErrors = (dashboard: ParsedDashboard): string[] => [
+  ...validateDefaultPageId(dashboard),
+  ...duplicateIds(dashboard.pages).map((id) => `pages: duplicate page id "${id}"`),
+  ...dashboard.pages.flatMap((page, idx) =>
+    duplicateIds(page.widgets).map(
+      (id) => `pages[${String(idx)}].widgets: duplicate widget id "${id}"`
+    )
+  ),
+]
+
+const signalRefWarnings = (dashboard: ParsedDashboard, known: Set<string> | null): string[] => {
+  if (known === null) return []
+  return [
+    ...checkWidgetSignalRefs(dashboard.pages, known),
+    ...checkCriticalAlertSignalRefs(dashboard.criticalAlerts, known),
+    ...checkPageButtonSignalRefs(dashboard.pageButtons, known),
+    ...(dashboard.topBar.layout ? checkTopBarSignalRefs(dashboard.topBar.layout, known) : []),
+  ]
+}
+
 export const validateDashboard = (
   config: unknown,
   options?: ValidateDashboardOptions
 ): ValidationResult => {
-  const errors: string[] = []
-  const warnings: string[] = []
-
   const parsed = DashboardConfigSchema.safeParse(config)
-
   if (!parsed.success) {
-    errors.push(...formatZodIssues(parsed.error.issues))
-    return { valid: false, errors, warnings }
+    return { valid: false, errors: formatZodIssues(parsed.error.issues), warnings: [] }
   }
-
   const dashboard = parsed.data
-
-  errors.push(...validateDefaultPageId(dashboard))
-  errors.push(...duplicateIds(dashboard.pages).map((id) => `pages: duplicate page id "${id}"`))
-  dashboard.pages.forEach((page, idx) => {
-    errors.push(
-      ...duplicateIds(page.widgets).map(
-        (id) => `pages[${String(idx)}].widgets: duplicate widget id "${id}"`
-      )
-    )
-  })
-
-  warnings.push(...checkPageButtonsReadable(dashboard.pageButtons))
-
-  const knownSignalIds = collectSignalIds(config, options?.signalCatalog)
-  if (knownSignalIds !== null) {
-    warnings.push(...checkWidgetSignalRefs(dashboard.pages, knownSignalIds))
-    warnings.push(...checkCriticalAlertSignalRefs(dashboard.criticalAlerts, knownSignalIds))
-    warnings.push(...checkPageButtonSignalRefs(dashboard.pageButtons, knownSignalIds))
-    if (dashboard.topBar.layout) {
-      warnings.push(...checkTopBarSignalRefs(dashboard.topBar.layout, knownSignalIds))
-    }
-  }
-
+  const errors = structuralErrors(dashboard)
+  const warnings = [
+    ...checkPageButtonsReadable(dashboard.pageButtons),
+    ...signalRefWarnings(dashboard, collectSignalIds(config, options?.signalCatalog)),
+  ]
   return errors.length === 0
     ? { valid: true, errors, warnings, config: dashboard as DashboardConfig }
     : { valid: false, errors, warnings }
