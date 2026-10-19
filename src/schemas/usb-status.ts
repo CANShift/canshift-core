@@ -1,11 +1,11 @@
 import * as z from 'zod'
 import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
-export const USB_STATUS_MAX_STRING_LEN = 64
+const USB_STATUS_MAX_STRING_LEN = 64
 
 export const USB_SEQ_MAX = 0xffffffff
 
-export const UsbSeqSchema = z.number().int().min(0).max(USB_SEQ_MAX)
+const UsbSeqSchema = z.number().int().min(0).max(USB_SEQ_MAX)
 
 const CappedStringSchema = z.string().max(USB_STATUS_MAX_STRING_LEN)
 

@@ -1,14 +1,14 @@
 import {
   CANSHIFT_FILE_FORMAT,
   CANSHIFT_FILE_FORMAT_VERSION,
-  CURRENT_SCHEMA_VERSION,
-  PROJECT_FILE_VERSION,
   describeCanshiftFileError,
   parseCanshiftFile,
   serializeCanshiftFile,
-  type CanshiftFileError,
-  type Project,
-} from '../index.js'
+} from '../schemas/canshift-file.js'
+import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
+import { PROJECT_FILE_VERSION } from '../schemas/project.js'
+import type { CanshiftFileError } from '../schemas/canshift-file.js'
+import type { Project } from '../schemas/project.js'
 
 const dashboardAt = (version: string): Record<string, unknown> => ({
   version,

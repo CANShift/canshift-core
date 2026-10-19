@@ -12,7 +12,7 @@ export const ALERT_SOURCES = [
   'configured',
 ] as const
 
-export type AlertSource = (typeof ALERT_SOURCES)[number]
+type AlertSource = (typeof ALERT_SOURCES)[number]
 
 export type BuiltInAlertSource = Exclude<AlertSource, 'configured'>
 

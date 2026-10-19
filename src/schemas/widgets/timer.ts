@@ -2,7 +2,7 @@ import * as z from 'zod'
 
 export const TIMER_SOURCES = ['elapsed', 'lap', 'best', 'last', 'lapCount', 'delta'] as const
 
-export const TimerSourceSchema = z.enum(TIMER_SOURCES)
+const TimerSourceSchema = z.enum(TIMER_SOURCES)
 
 export type TimerSource = z.infer<typeof TimerSourceSchema>
 

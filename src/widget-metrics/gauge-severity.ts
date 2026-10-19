@@ -3,8 +3,7 @@ import type { SignalDef } from '../schemas/signal.js'
 
 import { isValueInDanger } from './gauge.js'
 
-export const GAUGE_SEVERITIES = ['normal', 'warn', 'danger'] as const
-export type GaugeSeverity = (typeof GAUGE_SEVERITIES)[number]
+export type GaugeSeverity = 'normal' | 'warn' | 'danger'
 
 export type GaugeThresholds = Pick<GaugeWidgetConfig, 'warnLevel' | 'dangerLevel' | 'dangerBelow'>
 export type SignalLimits = Pick<

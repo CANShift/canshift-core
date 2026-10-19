@@ -1,6 +1,6 @@
 import * as z from 'zod'
 
-export const SIGNAL_TYPES = [
+const SIGNAL_TYPES = [
   'rpm',
   'speed',
   'throttle',
@@ -18,5 +18,3 @@ export const SIGNAL_TYPES = [
 ] as const
 
 export const SignalTypeSchema = z.enum(SIGNAL_TYPES)
-
-export type SignalType = z.infer<typeof SignalTypeSchema>

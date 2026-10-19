@@ -1,6 +1,6 @@
 import { asPlainObject } from '../wire/plain-object.js'
 
-export const DEPRECATED_SIGNAL_KEYS = ['colorRamp'] as const
+const DEPRECATED_SIGNAL_KEYS = ['colorRamp'] as const
 
 const isDeprecated = (key: string): boolean =>
   DEPRECATED_SIGNAL_KEYS.some((deprecated) => deprecated === key)

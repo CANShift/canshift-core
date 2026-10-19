@@ -15,5 +15,3 @@ export const ECU_PROFILES: EcuProfile[] = [
   MAXXECU_STREET_PROFILE,
   OBD2_J1979_PROFILE,
 ]
-
-export const DEFAULT_PROFILE_ID = 'generic-blank' as const

@@ -11,8 +11,6 @@ export const truncDiv = (value: number, numerator: number, denominator: number):
 const applyRatio = (value: number, ratio: Ratio): number =>
   truncDiv(value, ratio.numerator, ratio.denominator)
 
-export const ratioScale = (ratio: Ratio): number => ratio.numerator / ratio.denominator
-
 export const clamp01 = (value: number): number => clamp(value, 0, 1)
 
 export const WIDGET_FONT_CLAMP = { min: 10, max: 48 } as const

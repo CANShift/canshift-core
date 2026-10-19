@@ -23,7 +23,7 @@ const CanshiftFileEnvelopeSchema = z
   })
   .strict()
 
-export interface CanshiftFile {
+interface CanshiftFile {
   format: typeof CANSHIFT_FILE_FORMAT
   formatVersion: number
   project: Project

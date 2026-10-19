@@ -1,4 +1,4 @@
-import { ProjectSchema, PROJECT_FILE_VERSION } from '../index.js'
+import { ProjectSchema, PROJECT_FILE_VERSION } from '../schemas/project.js'
 
 const minimalDashboard = {
   version: '1.26.0',

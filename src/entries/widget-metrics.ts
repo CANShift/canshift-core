@@ -1,0 +1,27 @@
+export type { SensorKind } from '../sensor-defaults.js'
+export type { GaugeSeverity, SensorDangerBand, SignalLimits } from '../widget-metrics/index.js'
+export {
+  GAUGE_ARC,
+  GAUGE_TRACK_COLORS,
+  SECONDARY_BAR,
+  SHIFT_LIGHT,
+  STALE_PLACEHOLDER,
+  WIDGET_ACCENT_COLOR,
+  WIDGET_DIM_COLORS,
+  WIDGET_LOCK_INK_COLORS,
+  WIDGET_LOCK_LINE_COLORS,
+  WIDGET_TOP_RULE,
+  WIDGET_ZONE_COLORS,
+  deviceValueFontPx,
+  gaugeArcPath,
+  gaugeSeverity,
+  gaugeValueFontSize,
+  gearFontSize,
+  gearGlyph,
+  isOutsideDangerBand,
+  sensorDefaultDangerBand,
+  sensorDefaultRange,
+  shiftLightLitSegments,
+  valueUnitFontSize,
+  widgetTopRulePx,
+} from '../widget-metrics/index.js'

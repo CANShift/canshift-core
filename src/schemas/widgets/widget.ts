@@ -8,7 +8,6 @@ import { warnSitsBeforeDanger } from '../../widget-metrics/gauge-severity.js'
 import {
   ButtonWidgetConfigSchema,
   CycleButtonConfigSchema,
-  CycleButtonStateSchema,
   SingleActionButtonConfigSchema,
 } from './button.js'
 import { GaugeWidgetConfigSchema } from './gauge.js'
@@ -95,15 +94,14 @@ export const WidgetSchema = z.discriminatedUnion('type', [
 ])
 
 export type GaugeWidgetConfig = ExactOptional<z.infer<typeof GaugeWidgetConfigSchema>>
-export type WarningWidgetConfig = ExactOptional<z.infer<typeof WarningWidgetConfigSchema>>
+type WarningWidgetConfig = ExactOptional<z.infer<typeof WarningWidgetConfigSchema>>
 export type SingleActionButtonConfig = ExactOptional<z.infer<typeof SingleActionButtonConfigSchema>>
-export type CycleButtonConfig = ExactOptional<z.infer<typeof CycleButtonConfigSchema>>
+type CycleButtonConfig = ExactOptional<z.infer<typeof CycleButtonConfigSchema>>
 export type ButtonWidgetConfig = SingleActionButtonConfig | CycleButtonConfig
-export type CycleButtonState = ExactOptional<z.infer<typeof CycleButtonStateSchema>>
-export type TimerWidgetConfig = ExactOptional<z.infer<typeof TimerWidgetConfigSchema>>
+type TimerWidgetConfig = ExactOptional<z.infer<typeof TimerWidgetConfigSchema>>
 export type GearWidgetConfig = ExactOptional<z.infer<typeof GearWidgetConfigSchema>>
 export type ImageWidgetConfig = ExactOptional<z.infer<typeof ImageWidgetConfigSchema>>
-export type ShiftLightWidgetConfig = ExactOptional<z.infer<typeof ShiftLightWidgetConfigSchema>>
+type ShiftLightWidgetConfig = ExactOptional<z.infer<typeof ShiftLightWidgetConfigSchema>>
 
 interface WidgetConfigByType {
   gauge: GaugeWidgetConfig

@@ -3,7 +3,7 @@ import {
   OBD2_MAX_INTERVAL_MS,
   OBD2_MIN_INTERVAL_MS,
   Obd2PollingSchema,
-} from '../index.js'
+} from '../schemas/obd2.js'
 import { SignalDefSchema } from '../schemas/signal.js'
 
 const broadcastSignal = (overrides: Record<string, unknown> = {}): Record<string, unknown> => ({

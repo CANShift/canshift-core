@@ -1,8 +1,8 @@
 import { truncDiv } from './scale.js'
 
 export const VALUE_UNIT_FONT_SIZE = 10
-export const VALUE_UNIT_RATIO = { numerator: 1, denominator: 4 } as const
-export const VALUE_UNIT_FONT_MIN = 10
+const VALUE_UNIT_RATIO = { numerator: 1, denominator: 4 } as const
+const VALUE_UNIT_FONT_MIN = 10
 export const STALE_PLACEHOLDER = '- -'
 
 export const valueUnitFontSize = (valueFontSize: number): number => {
@@ -10,7 +10,7 @@ export const valueUnitFontSize = (valueFontSize: number): number => {
   return size < VALUE_UNIT_FONT_MIN ? VALUE_UNIT_FONT_MIN : size
 }
 
-export const BIG_TO_DEVICE_FONT = [
+const BIG_TO_DEVICE_FONT = [
   { minBig: 96, px: 48 },
   { minBig: 88, px: 44 },
   { minBig: 80, px: 40 },

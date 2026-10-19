@@ -1,15 +1,5 @@
-export type {
-  ControlDefinition,
-  ControlKind,
-  ControlParam,
-  ControlPaint,
-  ControlPhrase,
-  ControlState,
-  ControlTone,
-} from './vocabulary.js'
+export type { ControlDefinition, ControlState, ControlTone } from './vocabulary.js'
 export {
-  CONTROLS,
-  CONTROL_KINDS,
   CONTROL_KICKER_ENGAGED_OPACITY,
   CONTROL_PAINT,
   CONTROL_STATES,

@@ -2,18 +2,18 @@ import * as z from 'zod'
 
 import { camelToSnakeDeep, snakeToCamelDeep } from '../wire/keymap.js'
 
-export const CHIP_FAMILIES = ['esp32', 'esp32s3'] as const
-export const LCD_DRIVERS = ['ili9341', 'st7789', 'ili9488', 'gc9a01'] as const
-export const TOUCH_DRIVERS = ['none', 'xpt2046', 'ft6336', 'gt911', 'cst816s'] as const
-export const CAN_CONTROLLERS = ['none', 'esp_twai'] as const
+const CHIP_FAMILIES = ['esp32', 'esp32s3'] as const
+const LCD_DRIVERS = ['ili9341', 'st7789', 'ili9488', 'gc9a01'] as const
+const TOUCH_DRIVERS = ['none', 'xpt2046', 'ft6336', 'gt911', 'cst816s'] as const
+const CAN_CONTROLLERS = ['none', 'esp_twai'] as const
 
-export type ChipFamily = (typeof CHIP_FAMILIES)[number]
-export type LcdDriver = (typeof LCD_DRIVERS)[number]
-export type TouchDriver = (typeof TOUCH_DRIVERS)[number]
-export type CanController = (typeof CAN_CONTROLLERS)[number]
+type ChipFamily = (typeof CHIP_FAMILIES)[number]
+type LcdDriver = (typeof LCD_DRIVERS)[number]
+type TouchDriver = (typeof TOUCH_DRIVERS)[number]
+type CanController = (typeof CAN_CONTROLLERS)[number]
 
-export const BOARD_ID_MAX_LEN = 48
-export const BOARD_NAME_MAX_LEN = 64
+const BOARD_ID_MAX_LEN = 48
+const BOARD_NAME_MAX_LEN = 64
 
 const Int8Schema = z.number().int().min(-128).max(127)
 const UInt8Schema = z.number().int().min(0).max(255)
@@ -108,7 +108,7 @@ export const BoardProfileWireSchema = z
 
 export type BoardProfileWire = z.infer<typeof BoardProfileWireSchema>
 
-export interface LcdProfile {
+interface LcdProfile {
   driver: LcdDriver
   pinMosi: number
   pinMiso: number
@@ -130,7 +130,7 @@ export interface LcdProfile {
   colorDepth: number
 }
 
-export interface BacklightProfile {
+interface BacklightProfile {
   present: boolean
   pwmChannel: number
   pwmFreqHz: number
@@ -138,7 +138,7 @@ export interface BacklightProfile {
   invert: boolean
 }
 
-export interface TouchProfile {
+interface TouchProfile {
   driver: TouchDriver
   pinCs: number
   pinIrq: number
@@ -148,21 +148,21 @@ export interface TouchProfile {
   pinScl: number
 }
 
-export interface CanProfile {
+interface CanProfile {
   controller: CanController
   pinTx: number
   pinRx: number
   defaultSpeedKbps: number
 }
 
-export interface StorageProfile {
+interface StorageProfile {
   spiffsPresent: boolean
   spiffsSizeKb: number
   sdPresent: boolean
   sdPinCs: number
 }
 
-export interface ConnectivityProfile {
+interface ConnectivityProfile {
   wifiSupported: boolean
   bleSupported: boolean
   psramPresent: boolean

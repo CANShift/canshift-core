@@ -5,10 +5,10 @@ type RenameKey = (key: string) => string
 const SNAKE_SEGMENT_RE = /_([a-z0-9])/g
 const UPPERCASE_RE = /[A-Z]/g
 
-export const snakeToCamelKey = (key: string): string =>
+const snakeToCamelKey = (key: string): string =>
   key.replace(SNAKE_SEGMENT_RE, (_match, char: string) => char.toUpperCase())
 
-export const camelToSnakeKey = (key: string): string =>
+const camelToSnakeKey = (key: string): string =>
   key.replace(UPPERCASE_RE, (char) => `_${char.toLowerCase()}`)
 
 const mapEntryKeys = (

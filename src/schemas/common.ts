@@ -57,7 +57,3 @@ export const SemVerSchema = z
 export type HexColor = z.infer<typeof HexColorSchema>
 
 export type WidgetLayout = z.infer<typeof WidgetLayoutSchema>
-
-export type WidgetStyle = z.infer<typeof WidgetStyleSchema>
-
-export type SemVer = z.infer<typeof SemVerSchema>

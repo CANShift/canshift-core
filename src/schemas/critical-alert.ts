@@ -2,11 +2,11 @@ import * as z from 'zod'
 
 import { FIRMWARE_CAPS, STRING_CAPS } from '../constants/firmware-caps.js'
 
-export const CRITICAL_ALERT_DIRECTIONS = ['above', 'below'] as const
-export const CriticalAlertDirectionSchema = z.enum(CRITICAL_ALERT_DIRECTIONS)
+const CRITICAL_ALERT_DIRECTIONS = ['above', 'below'] as const
+const CriticalAlertDirectionSchema = z.enum(CRITICAL_ALERT_DIRECTIONS)
 
-export const ACKNOWLEDGE_TARGETS = ['dash'] as const
-export const AcknowledgeTargetSchema = z.enum(ACKNOWLEDGE_TARGETS)
+const ACKNOWLEDGE_TARGETS = ['dash'] as const
+const AcknowledgeTargetSchema = z.enum(ACKNOWLEDGE_TARGETS)
 
 export const CriticalAlertSchema = z
   .object({
@@ -25,5 +25,4 @@ export const CriticalAlertsSchema = z
   )
 
 export type CriticalAlertDirection = z.infer<typeof CriticalAlertDirectionSchema>
-export type AcknowledgeTarget = z.infer<typeof AcknowledgeTargetSchema>
 export type CriticalAlert = z.infer<typeof CriticalAlertSchema>

@@ -1,4 +1,4 @@
-import { TrackTelemetrySchema, parseTrackTelemetry } from '../index.js'
+import { TrackTelemetrySchema, parseTrackTelemetry } from '../schemas/track-telemetry.js'
 
 describe('TrackTelemetrySchema', () => {
   it('accepts the minimal { trackMode } shape', () => {

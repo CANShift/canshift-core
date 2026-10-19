@@ -1,14 +1,13 @@
 import {
   BASE_DISPLAY_TIER,
-  CANVAS,
   DISPLAY_TIERS,
   DISPLAY_TIER_IDS,
   DISPLAY_TIER_LIST,
-  FIRMWARE_CAPS,
-  LAYOUT_GRID,
   displayTier,
   tierForPanel,
-} from '../index.js'
+} from '../display-tiers.js'
+import { CANVAS, FIRMWARE_CAPS } from '../constants/firmware-caps.js'
+import { LAYOUT_GRID } from '../layout-grid.js'
 
 describe('display tiers', () => {
   it('keeps the base tier equal to the canvas the dash is authored against', () => {

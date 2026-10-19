@@ -189,4 +189,3 @@ const computeRange = (
 }
 
 export { parseConversion, computeRange }
-export type { ParseConversionResult }

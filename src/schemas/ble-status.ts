@@ -1,7 +1,7 @@
 import * as z from 'zod'
 import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
-export const BLE_STATUS_MAX_STRING_LEN = 32
+const BLE_STATUS_MAX_STRING_LEN = 32
 
 const CappedStringSchema = z.string().max(BLE_STATUS_MAX_STRING_LEN)
 

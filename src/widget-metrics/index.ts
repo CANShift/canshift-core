@@ -1,5 +1,4 @@
-export type { FontBreakpoint, Ratio } from './scale.js'
-export { WIDGET_FONT_CLAMP, ratioScale } from './scale.js'
+export { WIDGET_FONT_CLAMP } from './scale.js'
 export {
   WIDGET_ZONE_COLORS,
   WIDGET_ACCENT_COLOR,
@@ -20,11 +19,8 @@ export {
 } from './colors.js'
 export {
   VALUE_UNIT_FONT_SIZE,
-  VALUE_UNIT_RATIO,
-  VALUE_UNIT_FONT_MIN,
   STALE_PLACEHOLDER,
   valueUnitFontSize,
-  BIG_TO_DEVICE_FONT,
   deviceValueFontPx,
 } from './value-font.js'
 export {
@@ -39,13 +35,8 @@ export {
   gaugeArcPath,
   isValueInDanger,
 } from './gauge.js'
-export {
-  GAUGE_SEVERITIES,
-  gaugeSeverity,
-  signalSeverity,
-  warnSitsBeforeDanger,
-} from './gauge-severity.js'
-export type { GaugeSeverity, GaugeThresholds, SignalLimits } from './gauge-severity.js'
+export { gaugeSeverity, signalSeverity } from './gauge-severity.js'
+export type { GaugeSeverity, SignalLimits } from './gauge-severity.js'
 export {
   LABEL_FONT_RATIO,
   labelFontSize,
@@ -69,12 +60,11 @@ export {
   TIMER_STATE_BORDER_WIDTH,
   TIMER_BORDER_COLORS,
   TIMER_FONT_BREAKPOINTS,
-  TIMER_PRIMARY_MIN_WIDTH,
   timerFontSize,
   formatTimerMmSs,
   formatTimerSsMmm,
 } from './timer.js'
-export type { SensorDangerBand, SensorDangerThreshold } from './sensor.js'
+export type { SensorDangerBand } from './sensor.js'
 export {
   SENSOR_DEFAULT_RANGES,
   sensorDefaultRange,
