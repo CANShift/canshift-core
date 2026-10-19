@@ -69,6 +69,8 @@ const buttonWithActions = (count: number): Record<string, unknown> => ({
   },
 })
 
+const LEGACY_RAMP_STOP_CAP = 8
+
 const signalCatalogWithLegacyRamp = (stops: unknown[]): SignalConfig =>
   ({
     version: semver('1.14.0'),
@@ -140,7 +142,7 @@ describe('validateDashboard — legacy colorRamp on a catalogue signal (issue #8
   })
 
   it('no longer rejects a ramp that breaks the old stop rules', () => {
-    const overCap = Array.from({ length: FIRMWARE_CAPS.MAX_RAMP_STOPS + 1 }, (_, i) => ({
+    const overCap = Array.from({ length: LEGACY_RAMP_STOP_CAP + 1 }, (_, i) => ({
       value: i * 10,
       color: '#00FF00',
     }))

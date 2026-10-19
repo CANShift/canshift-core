@@ -1,8 +1,17 @@
 import { hex, hexToRgb255, rgb255ToHex } from './colors/hex.js'
 import type { RgbChannels } from './colors/hex.js'
 import type { HexColor } from './schemas/common.js'
-import type { ColorRamp } from './schemas/signal.js'
 import type { SensorIconName } from './schemas/widgets/sensor-icon.js'
+
+export interface ColorRampStop {
+  readonly value: number
+  readonly color: HexColor
+}
+
+export interface ColorRamp {
+  readonly interpolate: 'linear' | 'step'
+  readonly stops: readonly ColorRampStop[]
+}
 
 export const SENSOR_KINDS = [
   'coolant_temp',
@@ -120,9 +129,11 @@ const BLACK_CHANNELS: RgbChannels = { r: 0, g: 0, b: 0 }
 
 const channelsOf = (color: HexColor): RgbChannels => hexToRgb255(color) ?? BLACK_CHANNELS
 
-type RampStop = ColorRamp['stops'][number]
-
-const steppedColor = (stops: readonly RampStop[], value: number, fallback: HexColor): HexColor => {
+const steppedColor = (
+  stops: readonly ColorRampStop[],
+  value: number,
+  fallback: HexColor
+): HexColor => {
   let active = fallback
   for (const stop of stops) {
     if (value < stop.value) break
@@ -131,7 +142,7 @@ const steppedColor = (stops: readonly RampStop[], value: number, fallback: HexCo
   return active
 }
 
-const blend = (lower: RampStop, upper: RampStop, value: number): HexColor => {
+const blend = (lower: ColorRampStop, upper: ColorRampStop, value: number): HexColor => {
   const span = upper.value - lower.value
   const t = span > 0 ? (value - lower.value) / span : 0
   const a = channelsOf(lower.color)
@@ -143,7 +154,7 @@ const blend = (lower: RampStop, upper: RampStop, value: number): HexColor => {
   })
 }
 
-const interpolatedColor = (stops: readonly RampStop[], value: number): HexColor | null => {
+const interpolatedColor = (stops: readonly ColorRampStop[], value: number): HexColor | null => {
   for (let i = 0; i < stops.length - 1; i++) {
     const lower = stops[i]
     const upper = stops[i + 1]

@@ -1,7 +1,6 @@
 import { hex } from '../colors/hex.js'
-import type { ColorRampStop } from '../schemas/signal.js'
 import { SENSOR_DEFAULT_RAMPS } from '../sensor-defaults.js'
-import type { SensorKind } from '../sensor-defaults.js'
+import type { ColorRampStop, SensorKind } from '../sensor-defaults.js'
 import { isValueInDanger } from './gauge.js'
 
 export const SENSOR_DEFAULT_RANGES = {

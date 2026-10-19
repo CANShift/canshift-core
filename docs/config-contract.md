@@ -84,7 +84,6 @@ throughout — an unknown key is a validation error, not a silently ignored fiel
 | Top bar items         |      16 | `FIRMWARE_CAPS.MAX_TOPBAR_ITEMS`     |
 | Signals per catalogue |      48 | `FIRMWARE_CAPS.MAX_SIGNALS`          |
 | Actions per button    |       4 | `FIRMWARE_CAPS.MAX_BUTTON_ACTIONS`   |
-| Colour ramp stops     |       8 | `FIRMWARE_CAPS.MAX_RAMP_STOPS`       |
 | Critical alerts       |       4 | `FIRMWARE_CAPS.MAX_CRITICAL_ALERTS`  |
 | Top bar height        |   16–60 | `TOPBAR_HEIGHT`                      |
 | Rev limit             | 1–20000 | `REV_LIMIT_RPM`                      |

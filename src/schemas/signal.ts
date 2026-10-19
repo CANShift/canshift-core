@@ -1,6 +1,6 @@
 import * as z from 'zod'
 
-import { HexColorSchema, SemVerSchema } from './common.js'
+import { SemVerSchema } from './common.js'
 import { dropDeprecatedSignalKeys } from './deprecated-signal-keys.js'
 import { Obd2PollingSchema } from './obd2.js'
 import { SignalTypeSchema } from './signal-type.js'
@@ -8,7 +8,6 @@ import {
   CAN_29BIT_MAX,
   CAN_FRAME_MAX_BYTES,
   FIRMWARE_CAPS,
-  MAX_RAMP_STOPS,
   STRING_CAPS,
 } from '../constants/firmware-caps.js'
 import {
@@ -25,38 +24,6 @@ const BIT_MASK_REGEX = /^0[xX][0-9a-fA-F]+$/
 const BIT_MASK_MAX = 0xff
 
 const OUTBOUND_FRAME_ID_REGEX = /^0[xX][0-9a-fA-F]{1,8}$/
-
-export const ColorRampStopSchema = z
-  .object({
-    id: z.string().min(1).optional(),
-    value: z.number(),
-    color: HexColorSchema,
-  })
-  .strict()
-
-export const RampInterpolationSchema = z.enum(['linear', 'step'])
-
-export const ColorRampSchema = z
-  .object({
-    stops: z
-      .array(ColorRampStopSchema)
-      .min(2, 'colorRamp.stops must contain at least 2 stops')
-      .max(
-        MAX_RAMP_STOPS,
-        `colorRamp.stops cannot exceed ${MAX_RAMP_STOPS.toString()} entries (firmware cap)`
-      )
-      .refine(
-        (stops) =>
-          stops.every((stop, idx) => {
-            if (idx === 0) return true
-            const prev = stops[idx - 1]
-            return prev !== undefined && prev.value < stop.value
-          }),
-        { message: 'colorRamp.stops must be sorted strictly ascending by value' }
-      ),
-    interpolate: RampInterpolationSchema,
-  })
-  .strict()
 
 export const SignalByteLengthSchema = z.union(
   [z.literal(1), z.literal(2), z.literal(3), z.literal(4)],
@@ -262,9 +229,6 @@ export const SignalConfigSchema = z
   })
   .strict()
 
-export type ColorRampStop = z.infer<typeof ColorRampStopSchema>
-export type RampInterpolation = z.infer<typeof RampInterpolationSchema>
-export type ColorRamp = z.infer<typeof ColorRampSchema>
 export type SignalDef = z.infer<typeof SignalDefSchema>
 export type OutboundCanSignal = z.infer<typeof OutboundCanSignalSchema>
 export type SignalConfig = z.infer<typeof SignalConfigSchema>
