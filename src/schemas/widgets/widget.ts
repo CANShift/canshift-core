@@ -18,29 +18,6 @@ import { ShiftLightWidgetConfigSchema } from './shift-light.js'
 import { TimerWidgetConfigSchema } from './timer.js'
 import { WarningWidgetConfigSchema } from './warning.js'
 
-export const WidgetConfigSchema = z.discriminatedUnion('type', [
-  GaugeWidgetConfigSchema,
-  WarningWidgetConfigSchema,
-  ButtonWidgetConfigSchema,
-  TimerWidgetConfigSchema,
-  GearWidgetConfigSchema,
-  ImageWidgetConfigSchema,
-  ShiftLightWidgetConfigSchema,
-])
-
-export const WIDGET_TYPES = [
-  'gauge',
-  'warning',
-  'button',
-  'timer',
-  'gear',
-  'image',
-  'shift_light',
-] as const
-export const WidgetTypeSchema = z.enum(WIDGET_TYPES)
-
-const SIGNAL_CONSUMING_WIDGET_TYPES = new Set(['gauge', 'warning', 'gear', 'shift_light'])
-
 type GaugeConfig = z.infer<typeof GaugeWidgetConfigSchema>
 type CycleConfig = z.infer<typeof CycleButtonConfigSchema>
 
@@ -77,36 +54,45 @@ const refineCycleButton = (cfg: CycleConfig, ctx: z.RefinementCtx): void => {
   )
 }
 
-export const WidgetSchema = z
-  .object({
-    id: z.string().min(1, 'widget id must be a non-empty string').max(STRING_CAPS.ID),
-    type: WidgetTypeSchema,
-    signal: z.string().max(STRING_CAPS.SIGNAL_NAME),
-    layout: WidgetLayoutSchema,
-    style: WidgetStyleSchema,
-    config: WidgetConfigSchema,
-  })
-  .strict()
-  .superRefine((w, ctx) => {
-    if (w.type !== w.config.type) {
-      addConfigIssue(
-        ctx,
-        'type',
-        `widget type '${w.type}' does not match config type '${w.config.type}'`
-      )
-    }
-    if (SIGNAL_CONSUMING_WIDGET_TYPES.has(w.type) && w.signal.length === 0) {
-      ctx.addIssue({
-        code: 'custom' as const,
-        message: `signal must be a non-empty string for ${w.type} widgets`,
-        path: ['signal'],
-      })
-    }
-    if (w.config.type === 'gauge') refineGauge(w.config, ctx)
-    if (w.config.type === 'button' && w.config.mode === 'cycle') refineCycleButton(w.config, ctx)
-  })
+const WidgetBaseSchema = z.object({
+  id: z.string().min(1, 'widget id must be a non-empty string').max(STRING_CAPS.ID),
+  signal: z.string().max(STRING_CAPS.SIGNAL_NAME),
+  layout: WidgetLayoutSchema,
+  style: WidgetStyleSchema,
+})
 
-export type WidgetType = z.infer<typeof WidgetTypeSchema>
+const widgetVariant = <T extends string, C extends z.ZodType>(type: T, config: C) =>
+  WidgetBaseSchema.extend({ type: z.literal(type), config }).strict()
+
+const requireSignal = (widget: { type: string; signal: string }, ctx: z.RefinementCtx): void => {
+  if (widget.signal.length > 0) return
+  ctx.addIssue({
+    code: 'custom' as const,
+    message: `signal must be a non-empty string for ${widget.type} widgets`,
+    path: ['signal'],
+  })
+}
+
+const GaugeWidgetSchema = widgetVariant('gauge', GaugeWidgetConfigSchema).superRefine((w, ctx) => {
+  requireSignal(w, ctx)
+  refineGauge(w.config, ctx)
+})
+
+const ButtonWidgetSchema = widgetVariant('button', ButtonWidgetConfigSchema).superRefine(
+  (w, ctx) => {
+    if (w.config.mode === 'cycle') refineCycleButton(w.config, ctx)
+  }
+)
+
+export const WidgetSchema = z.discriminatedUnion('type', [
+  GaugeWidgetSchema,
+  widgetVariant('warning', WarningWidgetConfigSchema).superRefine(requireSignal),
+  ButtonWidgetSchema,
+  widgetVariant('timer', TimerWidgetConfigSchema),
+  widgetVariant('gear', GearWidgetConfigSchema).superRefine(requireSignal),
+  widgetVariant('image', ImageWidgetConfigSchema),
+  widgetVariant('shift_light', ShiftLightWidgetConfigSchema).superRefine(requireSignal),
+])
 
 export type GaugeWidgetConfig = ExactOptional<z.infer<typeof GaugeWidgetConfigSchema>>
 export type WarningWidgetConfig = ExactOptional<z.infer<typeof WarningWidgetConfigSchema>>
@@ -119,15 +105,23 @@ export type GearWidgetConfig = ExactOptional<z.infer<typeof GearWidgetConfigSche
 export type ImageWidgetConfig = ExactOptional<z.infer<typeof ImageWidgetConfigSchema>>
 export type ShiftLightWidgetConfig = ExactOptional<z.infer<typeof ShiftLightWidgetConfigSchema>>
 
-export type WidgetConfig =
-  | GaugeWidgetConfig
-  | WarningWidgetConfig
-  | ButtonWidgetConfig
-  | TimerWidgetConfig
-  | GearWidgetConfig
-  | ImageWidgetConfig
-  | ShiftLightWidgetConfig
-
-export type Widget = Omit<ExactOptional<z.infer<typeof WidgetSchema>>, 'config'> & {
-  config: WidgetConfig
+interface WidgetConfigByType {
+  gauge: GaugeWidgetConfig
+  warning: WarningWidgetConfig
+  button: ButtonWidgetConfig
+  timer: TimerWidgetConfig
+  gear: GearWidgetConfig
+  image: ImageWidgetConfig
+  shift_light: ShiftLightWidgetConfig
 }
+
+export type WidgetType = keyof WidgetConfigByType
+
+export type WidgetConfig = WidgetConfigByType[WidgetType]
+
+export type WidgetOfType<T extends WidgetType> = ExactOptional<z.infer<typeof WidgetBaseSchema>> & {
+  type: T
+  config: WidgetConfigByType[T]
+}
+
+export type Widget = { [T in WidgetType]: WidgetOfType<T> }[WidgetType]

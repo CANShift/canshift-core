@@ -41,7 +41,7 @@ export { GearWidgetConfigSchema } from './gear.js'
 export { ImageWidgetConfigSchema } from './image.js'
 export { SHIFT_LIGHT_SEGMENT_COUNT, ShiftLightWidgetConfigSchema } from './shift-light.js'
 
-export { WIDGET_TYPES, WidgetConfigSchema, WidgetSchema, WidgetTypeSchema } from './widget.js'
+export { WidgetSchema } from './widget.js'
 export type {
   ButtonWidgetConfig,
   CycleButtonConfig,
@@ -55,5 +55,6 @@ export type {
   WarningWidgetConfig,
   Widget,
   WidgetConfig,
+  WidgetOfType,
   WidgetType,
 } from './widget.js'

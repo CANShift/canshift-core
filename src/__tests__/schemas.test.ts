@@ -27,6 +27,7 @@ import {
 import { SignalDefSchema } from '../schemas/signal.js'
 import { WidgetLayoutSchema, WidgetStyleSchema } from '../schemas/common.js'
 import type { DeviceConfig, InputBinding, InputBindingsConfig } from '../index.js'
+import type { ImageWidgetConfig, Widget, WidgetOfType } from '../schemas/widgets/index.js'
 import { TopBarItemSchema } from '../schemas/dashboard.js'
 import {
   ButtonActionSchema,
@@ -1871,19 +1872,29 @@ describe('schema bounds hardening', () => {
         expect(
           result.error.issues.some(
             (i) =>
-              i.path.join('.') === 'config.type' && i.message.includes('does not match config type')
+              i.path.join('.') === 'config.type' && i.message === 'Invalid input: expected "gauge"'
           )
         ).toBe(true)
       }
     })
 
-    it('names the accepted types when config.type is unknown', () => {
+    it('holds config.type to the widget type when config.type is unknown', () => {
       const result = WidgetSchema.safeParse(widgetWith('gauge', { ...gaugeConfig, type: 'dial' }))
       expect(result.success).toBe(false)
       if (!result.success) {
         expect(result.error.issues.map((i) => [i.path.join('.'), i.message])).toEqual([
+          ['config.type', 'Invalid input: expected "gauge"'],
+        ])
+      }
+    })
+
+    it('names the accepted types when the widget type is unknown', () => {
+      const result = WidgetSchema.safeParse(widgetWith('dial', gaugeConfig))
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error.issues.map((i) => [i.path.join('.'), i.message])).toEqual([
           [
-            'config.type',
+            'type',
             "Invalid discriminator value. Expected 'gauge' | 'warning' | 'button' | 'timer' | 'gear' | 'image' | 'shift_light'",
           ],
         ])
@@ -1893,6 +1904,18 @@ describe('schema bounds hardening', () => {
     it('flipping only the top-level type on a valid widget makes it invalid', () => {
       expect(WidgetSchema.safeParse(widgetWith('image', imageConfig)).success).toBe(true)
       expect(WidgetSchema.safeParse(widgetWith('gauge', imageConfig)).success).toBe(false)
+    })
+
+    it('narrows config by the widget type', () => {
+      const widget = WidgetSchema.parse(widgetWith('gauge', gaugeConfig))
+      if (widget.type !== 'gauge') throw new Error('expected a gauge widget')
+      expectTypeOf(widget.config.dangerLevel).toEqualTypeOf<number>()
+      expect(widget.config.dangerLevel).toBe(80)
+    })
+
+    it('pairs each public widget type with its own config', () => {
+      expectTypeOf<WidgetOfType<'image'>['config']>().toEqualTypeOf<ImageWidgetConfig>()
+      expectTypeOf<Extract<Widget, { type: 'gear' }>['config']['type']>().toEqualTypeOf<'gear'>()
     })
   })
 
