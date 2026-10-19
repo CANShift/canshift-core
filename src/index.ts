@@ -125,6 +125,7 @@ export type {
   WarningWidgetConfig,
   Widget,
   WidgetConfig,
+  WidgetOfType,
   WidgetType,
 } from './schemas/widgets/index.js'
 export {
