@@ -29,7 +29,7 @@ export const PagePaletteSchema = z
   .strict()
 
 export const DEFAULT_PAGE_PALETTE: z.infer<typeof PagePaletteSchema> = PagePaletteSchema.parse({
-  surface: '#1E1E1E',
+  surface: '#121212',
   primary: '#FF4444',
   accent: '#FF8800',
   text: '#FFFFFF',

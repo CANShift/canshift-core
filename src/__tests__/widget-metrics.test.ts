@@ -2,7 +2,6 @@ import {
   WIDGET_ZONE_COLORS,
   WIDGET_ACCENT_COLOR,
   WIDGET_DIM_COLORS,
-  WIDGET_MUTED_COLOR,
   WIDGET_TEXT_COLORS,
   WIDGET_STALE_TEXT_COLORS,
   WIDGET_GROUND_COLORS,
@@ -72,10 +71,9 @@ describe('WIDGET_ZONE_COLORS', () => {
   })
 })
 
-describe('device accent / muted tokens', () => {
-  it('pins accent #FF4747 (engaged) and muted #BABABA per the dash token table', () => {
+describe('device accent token', () => {
+  it('pins accent #FF4747 (engaged) per the dash token table', () => {
     expect(WIDGET_ACCENT_COLOR).toBe('#FF4747')
-    expect(WIDGET_MUTED_COLOR).toBe('#BABABA')
   })
 
   it('widgetDimColor: the Dim tier from the design system, matching the firmware theme tokens', () => {
@@ -253,7 +251,7 @@ describe('timer widget (timer_widget.cpp)', () => {
   })
   it('pins running=accent (engaged) / paused=muted borders', () => {
     expect(TIMER_BORDER_COLORS.running).toBe(WIDGET_ACCENT_COLOR)
-    expect(TIMER_BORDER_COLORS.paused).toBe(WIDGET_MUTED_COLOR)
+    expect(TIMER_BORDER_COLORS.paused).toBe(WIDGET_DIM_COLORS.night)
   })
   it('timerFontSize matches device tiers 40/22/17 with the 150px primary width gate', () => {
     expect(timerFontSize(55, 150)).toBe(40)
@@ -430,5 +428,9 @@ describe('the nine dash tokens', () => {
 
   it('gives a new page the Dim the design system specifies', () => {
     expect(DEFAULT_PAGE_PALETTE.textDim).toBe(WIDGET_DIM_COLORS.night)
+  })
+
+  it('gives a new page the ground the design system specifies as its surface', () => {
+    expect(DEFAULT_PAGE_PALETTE.surface).toBe(WIDGET_GROUND_COLORS.night)
   })
 })

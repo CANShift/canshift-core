@@ -1,6 +1,6 @@
 import type { HexColor } from '../schemas/common.js'
 
-import { WIDGET_ACCENT_COLOR, WIDGET_MUTED_COLOR } from './colors.js'
+import { WIDGET_ACCENT_COLOR, WIDGET_DIM_COLORS } from './colors.js'
 import { sizeForHeight } from './scale.js'
 
 export const TIMER_LONG_PRESS_MS = 600
@@ -8,7 +8,7 @@ export const TIMER_BLINK_PERIOD_MS = 1000
 export const TIMER_STATE_BORDER_WIDTH = 2
 export const TIMER_BORDER_COLORS = {
   running: WIDGET_ACCENT_COLOR,
-  paused: WIDGET_MUTED_COLOR,
+  paused: WIDGET_DIM_COLORS.night,
 } as const satisfies Record<'running' | 'paused', HexColor>
 
 export const TIMER_FONT_BREAKPOINTS = [
