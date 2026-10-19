@@ -9,5 +9,3 @@ export const ShiftLightWidgetConfigSchema = z
     redSegments: z.number().int().min(0).max(SHIFT_LIGHT_SEGMENT_COUNT),
   })
   .strict()
-
-export type ShiftLightWidgetConfig = z.infer<typeof ShiftLightWidgetConfigSchema>

@@ -1,4 +1,8 @@
-import { ScreenSettingsSchema, SCREEN_SETTINGS_BOUNDS, parseSettings } from '../index.js'
+import {
+  ScreenSettingsSchema,
+  SCREEN_SETTINGS_BOUNDS,
+  parseSettings,
+} from '../schemas/screen-settings.js'
 
 describe('ScreenSettingsSchema', () => {
   describe('valid payloads', () => {

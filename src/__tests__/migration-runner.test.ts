@@ -6,7 +6,7 @@ import {
 } from '../migrations/index.js'
 import { assertVersionBump } from '../migrations/runner.js'
 import { isSemverGreater } from '../migrations/semver.js'
-import { CURRENT_SCHEMA_VERSION } from '../index.js'
+import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
 import { GaugeWidgetConfigSchema } from '../schemas/widgets/gauge.js'
 
 describe('migrateConfig — no migration needed', () => {

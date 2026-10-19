@@ -12,13 +12,12 @@ export const TIMER_COMMAND_CODES = {
 } as const
 
 export type TimerCommand = keyof typeof TIMER_COMMAND_CODES
-export type TimerCommandCode = (typeof TIMER_COMMAND_CODES)[TimerCommand]
 
 export const encodeTimerCommand = (command: TimerCommand): string =>
   JSON.stringify({ op: TIMER_COMMAND_CODES[command] })
 
-export const TIMER_RUN_STATES = ['reset', 'running', 'paused'] as const
-export type TimerRunState = (typeof TIMER_RUN_STATES)[number]
+const TIMER_RUN_STATES = ['reset', 'running', 'paused'] as const
+type TimerRunState = (typeof TIMER_RUN_STATES)[number]
 
 const NonNegativeIntSchema = z.number().int().nonnegative()
 

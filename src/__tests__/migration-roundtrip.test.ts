@@ -1,4 +1,5 @@
-import { CURRENT_SCHEMA_VERSION, DashboardConfigSchema } from '../index.js'
+import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
+import { DashboardConfigSchema } from '../schemas/dashboard.js'
 import { migrateConfig } from '../migrations/index.js'
 
 const fullStyle = {

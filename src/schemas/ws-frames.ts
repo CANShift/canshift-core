@@ -15,8 +15,6 @@ export const LogFrameSchema = z.object({
   msg: z.string().max(LOG_MESSAGE_MAX_LEN),
 })
 
-export type LogFrame = z.infer<typeof LogFrameSchema>
-
 export const CanFrameSchema = z
   .object({
     can: FiniteNumberSchema,
@@ -29,14 +27,10 @@ export const CanFrameSchema = z
     path: ['len'],
   })
 
-export type CanFrame = z.infer<typeof CanFrameSchema>
-
 export const TeleFrameSchema = z.object({
   tele: FiniteNumberSchema,
   v: z.record(z.string(), FiniteNumberSchema),
 })
-
-export type TeleFrame = z.infer<typeof TeleFrameSchema>
 
 export const HeapStatsFrameWireSchema = z.object({
   heap_stats: FiniteNumberSchema,

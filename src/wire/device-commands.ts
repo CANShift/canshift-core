@@ -7,5 +7,3 @@ export const DEVICE_COMMANDS = {
   trackState: 'track_state',
   ackAlert: 'ack_alert',
 } as const
-
-export type DeviceCommand = (typeof DEVICE_COMMANDS)[keyof typeof DEVICE_COMMANDS]

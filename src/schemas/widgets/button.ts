@@ -8,7 +8,7 @@ import { ButtonActionSchema } from './button-action.js'
 export const MIN_CYCLE_STATES = 2
 export const MAX_CYCLE_STATES = 4
 
-export const CycleButtonStateSchema = z
+const CycleButtonStateSchema = z
   .object({
     id: z.string().min(1).optional(),
     label: z.string().min(1).max(STRING_CAPS.WIDGET_LABEL),

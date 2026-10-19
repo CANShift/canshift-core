@@ -39,7 +39,7 @@ export const DEFAULT_PAGE_PALETTE: z.infer<typeof PagePaletteSchema> = PagePalet
   success: '#00CC44',
 })
 
-export const ThemeFaceSchema = z
+const ThemeFaceSchema = z
   .object({
     bgColor: HexColorSchema,
     palette: PagePaletteSchema.optional(),
@@ -53,10 +53,10 @@ export const ThemePresetSchema = z
   })
   .strict()
 
-export const PAGE_TEMPLATES = ['custom', 'cruise_control'] as const
-export const PageTemplateSchema = z.enum(PAGE_TEMPLATES)
+const PAGE_TEMPLATES = ['custom', 'cruise_control'] as const
+const PageTemplateSchema = z.enum(PAGE_TEMPLATES)
 
-export const TopBarItemPositionSchema = z.enum(['left', 'center', 'right'])
+const TopBarItemPositionSchema = z.enum(['left', 'center', 'right'])
 
 const TopBarTextSchema = z.string().max(STRING_CAPS.TOPBAR_TEXT)
 const TopBarFormatSchema = z.string().max(STRING_CAPS.TOPBAR_FORMAT)
@@ -93,14 +93,14 @@ export const TopBarItemSchema = z.discriminatedUnion('type', [
     .strict(),
 ])
 
-export const PageStatusRowSchema = z
+const PageStatusRowSchema = z
   .object({
     center: TopBarItemSchema.optional(),
     right: TopBarItemSchema.optional(),
   })
   .strict()
 
-export const PageConfigSchema = z
+const PageConfigSchema = z
   .object({
     id: z.string().min(1, 'page id must be a non-empty string').max(STRING_CAPS.ID),
     backgroundImage: z.string().nullable(),
@@ -119,7 +119,7 @@ export const PageConfigSchema = z
   })
   .strict()
 
-export const TopBarConfigSchema = z
+const TopBarConfigSchema = z
   .object({
     height: z.number().min(TOPBAR_HEIGHT.MIN).max(TOPBAR_HEIGHT.MAX),
     bgColor: HexColorSchema,
@@ -144,7 +144,7 @@ export const DEFAULT_TOP_BAR_LAYOUT = [
 
 export const DAY_NIGHT_SIGNAL_MAX_LEN = 31
 
-export const UnitSystemSchema = z.enum(UNIT_SYSTEMS)
+const UnitSystemSchema = z.enum(UNIT_SYSTEMS)
 
 export const DashboardConfigSchema = z
   .object({
@@ -182,7 +182,6 @@ export type PageTemplate = z.infer<typeof PageTemplateSchema>
 export type PageConfig = Omit<ExactOptional<z.infer<typeof PageConfigSchema>>, 'widgets'> & {
   widgets: Widget[]
 }
-export type TopBarItemPosition = z.infer<typeof TopBarItemPositionSchema>
 export type TopBarItem = z.infer<typeof TopBarItemSchema>
 export type PageStatusRow = z.infer<typeof PageStatusRowSchema>
 export type TopBarConfig = ExactOptional<z.infer<typeof TopBarConfigSchema>>

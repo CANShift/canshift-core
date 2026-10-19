@@ -3,7 +3,7 @@ import {
   createLapCrossingDetector,
   segmentIntersect,
   signedAngleDelta,
-} from '../index.js'
+} from '../track/lap-detection.js'
 
 describe('segmentIntersect', () => {
   it('finds the intersection of two crossing segments', () => {

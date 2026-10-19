@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { CURRENT_SCHEMA_VERSION } from '../index.js'
+import { CURRENT_SCHEMA_VERSION } from '../schema-version.js'
 import { migrateConfig } from '../migrations/index.js'
 import type { SignalConfig } from '../schemas/signal.js'
 import { validateDashboard } from '../validation/validate-dashboard.js'

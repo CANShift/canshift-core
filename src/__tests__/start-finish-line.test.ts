@@ -1,8 +1,5 @@
-import {
-  DEFAULT_HALF_WIDTH_M,
-  createLapCrossingDetector,
-  startFinishLineFromPosition,
-} from '../index.js'
+import { DEFAULT_HALF_WIDTH_M, startFinishLineFromPosition } from '../track/start-finish-line.js'
+import { createLapCrossingDetector } from '../track/lap-detection.js'
 
 const METERS_PER_DEG_AT_EQUATOR = 111_320
 

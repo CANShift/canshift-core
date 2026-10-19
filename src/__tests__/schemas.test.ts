@@ -1,20 +1,21 @@
+import { DashboardConfigSchema, DAY_NIGHT_SIGNAL_MAX_LEN } from '../schemas/dashboard.js'
 import {
-  DashboardConfigSchema,
-  DAY_NIGHT_SIGNAL_MAX_LEN,
   DeviceConfigSchema,
   Esp32OutputGpioSchema,
   Esp32InputGpioSchema,
   deviceConfigFromWire,
   deviceConfigToWire,
   parseDeviceConfig,
+  SAFE_OUTPUT_PINS_WROOM32,
+  SAFE_INPUT_PINS_WROOM32,
+} from '../schemas/device.js'
+import {
   inputBindingsFromWire,
   inputBindingsToWire,
   parseInputBindings,
   MAX_INPUT_BINDINGS,
-  SAFE_OUTPUT_PINS_WROOM32,
-  SAFE_INPUT_PINS_WROOM32,
-  TrackTelemetrySchema,
-} from '../index.js'
+} from '../schemas/input-bindings.js'
+import { TrackTelemetrySchema } from '../schemas/track-telemetry.js'
 import {
   CAN_29BIT_MAX,
   CAN_FRAME_MAX_BYTES,
@@ -26,7 +27,8 @@ import {
 } from '../constants/firmware-caps.js'
 import { SignalDefSchema } from '../schemas/signal.js'
 import { WidgetLayoutSchema, WidgetStyleSchema } from '../schemas/common.js'
-import type { DeviceConfig, InputBinding, InputBindingsConfig } from '../index.js'
+import type { DeviceConfig } from '../schemas/device.js'
+import type { InputBinding, InputBindingsConfig } from '../schemas/input-bindings.js'
 import type { ImageWidgetConfig, Widget, WidgetOfType } from '../schemas/widgets/index.js'
 import { TopBarItemSchema } from '../schemas/dashboard.js'
 import {

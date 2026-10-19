@@ -17,7 +17,7 @@ export const TIMER_FONT_BREAKPOINTS = [
   { minHeight: 0, size: 17 },
 ] as const
 
-export const TIMER_PRIMARY_MIN_WIDTH = 150
+const TIMER_PRIMARY_MIN_WIDTH = 150
 
 export const timerFontSize = (height: number, width?: number): number => {
   const size = sizeForHeight(TIMER_FONT_BREAKPOINTS, height)

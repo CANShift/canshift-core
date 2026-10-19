@@ -1,9 +1,5 @@
-import {
-  OBD2_DEFAULT_INTERVAL_MS,
-  OBD2_MODE01_PIDS,
-  Obd2PollingSchema,
-  obd2PidLookup,
-} from '../index.js'
+import { OBD2_DEFAULT_INTERVAL_MS, Obd2PollingSchema } from '../schemas/obd2.js'
+import { OBD2_MODE01_PIDS, obd2PidLookup } from '../ecu-profiles/obd2-mode01-pids.js'
 
 describe('OBD2_MODE01_PIDS catalog', () => {
   it('is non-empty and ordered by PID hex', () => {

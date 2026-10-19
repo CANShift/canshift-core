@@ -59,7 +59,7 @@ export const CRUISE_CONTROL_OPS = [
   'decrement',
 ] as const
 
-export const CruiseControlOpSchema = z.enum(CRUISE_CONTROL_OPS)
+const CruiseControlOpSchema = z.enum(CRUISE_CONTROL_OPS)
 
 const CruiseControlActionSchema = z
   .object({
@@ -73,7 +73,7 @@ const CruiseControlActionSchema = z
 
 export const TIMER_CONTROL_OPS = ['start', 'pause', 'resume', 'toggle', 'reset', 'lap'] as const
 
-export const TimerControlOpSchema = z.enum(TIMER_CONTROL_OPS)
+const TimerControlOpSchema = z.enum(TIMER_CONTROL_OPS)
 
 const TimerControlActionSchema = z
   .object({
@@ -108,8 +108,4 @@ export type CanRawAction = z.infer<typeof CanRawActionSchema>
 export type CruiseControlAction = z.infer<typeof CruiseControlActionSchema>
 export type CruiseControlOp = z.infer<typeof CruiseControlOpSchema>
 export type TimerControlAction = z.infer<typeof TimerControlActionSchema>
-export type TimerControlOp = z.infer<typeof TimerControlOpSchema>
-export type DeviceButtonAction = TimerControlAction
-export type DashboardButtonAction = NavigateAction
-export type EcuButtonAction = MapSwitchAction | CanRawAction | CruiseControlAction
 export type ButtonAction = z.infer<typeof ButtonActionSchema>

@@ -11,7 +11,7 @@ export const MAX_INPUT_BINDINGS = 16
 const DEBOUNCE_MIN_MS = 1
 const DEBOUNCE_MAX_MS = 500
 
-export const INPUT_BINDING_ID_MAX_LEN = STRING_CAPS.ID
+const INPUT_BINDING_ID_MAX_LEN = STRING_CAPS.ID
 
 const InputBindingIdSchema = z
   .string()
@@ -21,11 +21,9 @@ const InputBindingIdSchema = z
     `id must be at most ${String(INPUT_BINDING_ID_MAX_LEN)} characters`
   )
 
-export const InputActiveLevelSchema = z.enum(['low', 'high'])
-export type InputActiveLevel = z.infer<typeof InputActiveLevelSchema>
+const InputActiveLevelSchema = z.enum(['low', 'high'])
 
-export const InputPressKindSchema = z.enum(['short', 'long', 'double'])
-export type InputPressKind = z.infer<typeof InputPressKindSchema>
+const InputPressKindSchema = z.enum(['short', 'long', 'double'])
 
 const DebounceMsSchema = z
   .number()
@@ -76,18 +74,9 @@ export const InputBindingSchema = z
 
 export type InputBinding = z.infer<typeof InputBindingSchema>
 
-export const InputBindingsConfigSchema = z
-  .object({
-    inputBindings: z
-      .array(InputBindingSchema)
-      .max(
-        MAX_INPUT_BINDINGS,
-        `inputBindings cannot exceed ${String(MAX_INPUT_BINDINGS)} entries (firmware cap)`
-      ),
-  })
-  .strict()
-
-export type InputBindingsConfig = z.infer<typeof InputBindingsConfigSchema>
+export interface InputBindingsConfig {
+  inputBindings: InputBinding[]
+}
 
 const inputBindingFromWire = (wire: InputBindingWire): InputBinding =>
   snakeToCamelKeys(wire) as InputBinding

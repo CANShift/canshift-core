@@ -2,15 +2,13 @@ export const CONTROL_STATES = ['off', 'armed', 'active', 'unavailable'] as const
 
 export type ControlState = (typeof CONTROL_STATES)[number]
 
-export const CONTROL_KINDS = ['toggle', 'stepper'] as const
+type ControlKind = 'toggle' | 'stepper'
 
-export type ControlKind = (typeof CONTROL_KINDS)[number]
-
-export type ControlParam = 'none' | 'level' | 'rpm' | 'speedKph' | 'gear'
+type ControlParam = 'none' | 'level' | 'rpm' | 'speedKph' | 'gear'
 
 export type ControlTone = 'ink' | 'dim' | 'white' | 'engaged' | 'lockLine' | 'lockInk'
 
-export interface ControlPhrase {
+interface ControlPhrase {
   kickerSuffix: string
   stateWord: string
   param: ControlParam
@@ -112,7 +110,7 @@ export const CONTROLS: readonly ControlDefinition[] = [
   },
 ]
 
-export interface ControlPaint {
+interface ControlPaint {
   border: ControlTone
   ground: ControlTone | null
   kicker: ControlTone

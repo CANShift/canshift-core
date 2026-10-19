@@ -12,7 +12,7 @@ import {
   getBoardProfile,
   parseBoardProfile,
   serializeBoardProfile,
-} from '../index.js'
+} from '../board-profile/index.js'
 
 const FIRMWARE_BOARDS = resolve(
   dirname(fileURLToPath(import.meta.url)),

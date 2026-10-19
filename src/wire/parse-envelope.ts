@@ -35,18 +35,6 @@ export const parseUntrustedJsonObject = (
   return json
 }
 
-export const parseWireJson = <Wire, Domain>(
-  raw: string,
-  schema: z.ZodType<Wire>,
-  fromWire: (wire: Wire) => Domain
-): { kind: 'ok'; value: Domain } | WireEnvelopeFailure => {
-  const json = parseJsonObject(raw)
-  if (json.kind !== 'ok') return json
-  const result = schema.safeParse(json.value)
-  if (!result.success) return { kind: 'wrong_shape', issues: result.error.issues }
-  return { kind: 'ok', value: fromWire(result.data) }
-}
-
 export const describeWireParseFailure = (failure: WireParseFailure): string => {
   switch (failure.kind) {
     case 'invalid_json':

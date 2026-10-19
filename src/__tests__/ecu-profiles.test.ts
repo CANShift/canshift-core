@@ -1,4 +1,5 @@
-import { ECU_PROFILES, SignalConfigSchema } from '../index.js'
+import { ECU_PROFILES } from '../ecu-profiles/index.js'
+import { SignalConfigSchema } from '../schemas/signal.js'
 
 describe('ECU_PROFILES — built-in preset registry', () => {
   it('exposes the generic-blank fallback', () => {

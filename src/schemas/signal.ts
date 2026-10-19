@@ -25,10 +25,9 @@ const BIT_MASK_MAX = 0xff
 
 const OUTBOUND_FRAME_ID_REGEX = /^0[xX][0-9a-fA-F]{1,8}$/
 
-export const SignalByteLengthSchema = z.union(
-  [z.literal(1), z.literal(2), z.literal(3), z.literal(4)],
-  { error: 'must be 1, 2, 3 or 4 bytes' }
-)
+const SignalByteLengthSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)], {
+  error: 'must be 1, 2, 3 or 4 bytes',
+})
 
 export type SignalByteLength = z.infer<typeof SignalByteLengthSchema>
 
@@ -197,7 +196,7 @@ export const CanSpeedKbpsSchema = z.union([
 
 export type CanSpeedKbps = z.infer<typeof CanSpeedKbpsSchema>
 
-export const OutboundCanSignalSchema = z
+const OutboundCanSignalSchema = z
   .object({
     id: z
       .string()
@@ -230,5 +229,4 @@ export const SignalConfigSchema = z
   .strict()
 
 export type SignalDef = z.infer<typeof SignalDefSchema>
-export type OutboundCanSignal = z.infer<typeof OutboundCanSignalSchema>
 export type SignalConfig = z.infer<typeof SignalConfigSchema>

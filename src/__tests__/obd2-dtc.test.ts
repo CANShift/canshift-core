@@ -6,7 +6,7 @@ import {
   decodeDtc,
   decodeDtcList,
   dtcSystem,
-} from '../index.js'
+} from '../ecu-profiles/obd2-dtc.js'
 
 describe('decodeDtc', () => {
   it('decodes each system prefix from the top two bits', () => {

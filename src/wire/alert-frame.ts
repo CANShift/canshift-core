@@ -16,7 +16,7 @@ export interface AlertLimit {
   direction: CriticalAlertDirection
 }
 
-export interface AlertReading {
+interface AlertReading {
   signal: string
   value: number
   limit: AlertLimit | null
