@@ -146,11 +146,6 @@
       "count": 1
     }
   },
-  "src/__tests__/topbar-metrics.test.ts": {
-    "max-lines-per-function": {
-      "count": 1
-    }
-  },
   "src/__tests__/track-telemetry.test.ts": {
     "max-lines-per-function": {
       "count": 1

@@ -351,8 +351,7 @@ export {
   Z_ORDER,
 } from './constants/firmware-caps.js'
 
-export { TopBarMetrics } from './topbar-metrics.js'
-export type { TopBarMetricsRatios } from './topbar-metrics.js'
+export { TOP_BAR_METRICS } from './topbar-metrics.js'
 
 export {
   WIDGET_ZONE_COLORS,
