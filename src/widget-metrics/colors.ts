@@ -7,7 +7,6 @@ export const WIDGET_ZONE_COLORS = {
 } as const satisfies Record<'warning' | 'danger', HexColor>
 
 export const WIDGET_ACCENT_COLOR = hex('#FF4747')
-export const WIDGET_MUTED_COLOR = hex('#BABABA')
 
 export const WIDGET_TEXT_COLORS = {
   day: hex('#000000'),
