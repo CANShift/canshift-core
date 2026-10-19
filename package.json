@@ -10,6 +10,36 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./ecu-profiles": {
+      "types": "./dist/entries/ecu-profiles.d.ts",
+      "import": "./dist/entries/ecu-profiles.js",
+      "default": "./dist/entries/ecu-profiles.js"
+    },
+    "./schema-version": {
+      "types": "./dist/entries/schema-version.d.ts",
+      "import": "./dist/entries/schema-version.js",
+      "default": "./dist/entries/schema-version.js"
+    },
+    "./tokens": {
+      "types": "./dist/entries/tokens.d.ts",
+      "import": "./dist/entries/tokens.js",
+      "default": "./dist/entries/tokens.js"
+    },
+    "./track": {
+      "types": "./dist/entries/track.d.ts",
+      "import": "./dist/entries/track.js",
+      "default": "./dist/entries/track.js"
+    },
+    "./widget-metrics": {
+      "types": "./dist/entries/widget-metrics.d.ts",
+      "import": "./dist/entries/widget-metrics.js",
+      "default": "./dist/entries/widget-metrics.js"
+    },
+    "./wire": {
+      "types": "./dist/entries/wire.d.ts",
+      "import": "./dist/entries/wire.js",
+      "default": "./dist/entries/wire.js"
     }
   },
   "files": [
