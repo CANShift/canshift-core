@@ -143,10 +143,7 @@ export {
 
 export type {
   CanSpeedKbps,
-  ColorRamp,
-  ColorRampStop,
   OutboundCanSignal,
-  RampInterpolation,
   SignalByteLength,
   SignalConfig,
   SignalDef,
@@ -346,7 +343,6 @@ export {
   TOPBAR_HEIGHT,
   REV_LIMIT_RPM,
   DECIMAL_PLACES,
-  MAX_RAMP_STOPS,
   STRING_CAPS,
   Z_ORDER,
 } from './constants/firmware-caps.js'

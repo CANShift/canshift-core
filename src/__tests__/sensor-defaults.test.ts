@@ -4,12 +4,10 @@ import {
   SENSOR_KIND_TO_ICON,
   colorAtValue,
 } from '../sensor-defaults.js'
-import type { SensorKind } from '../sensor-defaults.js'
+import type { ColorRamp, SensorKind } from '../sensor-defaults.js'
 import { HEX_REGEX } from '../colors/hex.js'
-import { MAX_RAMP_STOPS } from '../constants/firmware-caps.js'
 import { HexColorSchema } from '../schemas/common.js'
 import { SensorIconNameSchema } from '../schemas/widgets/sensor-icon.js'
-import type { ColorRamp } from '../schemas/signal.js'
 
 const hex = (value: string): ReturnType<typeof HexColorSchema.parse> => HexColorSchema.parse(value)
 
@@ -19,9 +17,8 @@ describe('SENSOR_DEFAULT_RAMPS', () => {
     (typeof SENSOR_DEFAULT_RAMPS)[SensorKind],
   ][]
 
-  it.each(entries)('%s has 2..MAX stops, sorted ascending, valid hex', (_kind, ramp) => {
+  it.each(entries)('%s has at least 2 stops, sorted ascending, valid hex', (_kind, ramp) => {
     expect(ramp.stops.length).toBeGreaterThanOrEqual(2)
-    expect(ramp.stops.length).toBeLessThanOrEqual(MAX_RAMP_STOPS)
 
     for (let i = 1; i < ramp.stops.length; i++) {
       expect(ramp.stops[i]!.value).toBeGreaterThan(ramp.stops[i - 1]!.value)
