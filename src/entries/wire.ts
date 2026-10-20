@@ -28,3 +28,17 @@ export {
   TeleFrameSchema,
   heapStatsFromWire,
 } from '../schemas/ws-frames.js'
+
+export type {
+  DatalogDecodeError,
+  DatalogDecodeResult,
+  DatalogSession,
+} from '../wire/datalog-file.js'
+export { DATALOG_FORMAT_VERSION, decodeDatalog } from '../wire/datalog-file.js'
+export type {
+  DatalogEnd,
+  DatalogHeader,
+  DatalogLap,
+  DatalogSample,
+  DatalogSignal,
+} from '../wire/datalog-records.js'
