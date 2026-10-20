@@ -103,6 +103,8 @@ jobs:
             canshift-firmware/.github/boards.json \
             canshift-firmware/src/ui/control_vocabulary.cpp \
             canshift-firmware/src/ui/signal_presentation.cpp \
+            canshift-firmware/src/ui/dash_metrics.h \
+            canshift-firmware/src/config/config_layout_resolver.inc \
             canshift-firmware/src/ui/widgets/gauge_widget.cpp \
             canshift-firmware/src/ui/widgets/gauge_arcs.cpp \
             canshift-firmware/src/ui/widgets/gauge_arcs.h \
