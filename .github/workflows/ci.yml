@@ -109,7 +109,12 @@ jobs:
             canshift-firmware/src/hal/ble/alert_frame.h \
             canshift-firmware/test/test_alert_frame/test_main.cpp \
             canshift-firmware/rust/layout-grid/src/lib.rs \
-            canshift-firmware/rust/signal-map/src/lib.rs; do
+            canshift-firmware/rust/signal-map/src/lib.rs \
+            canshift-firmware/rust/format-float/src/lib.rs \
+            canshift-firmware/src/ui/font_manager.cpp \
+            canshift-firmware/src/ui/widgets/widget_helpers.h \
+            canshift-firmware/src/ui/fonts/lv_font_jbmono_medium_10_nk.c \
+            canshift-firmware/data/fonts/jbmono_extrabold_22.bin; do
             if [ ! -f "$f" ]; then
               echo "::error::firmware parity source missing: $f"
               missing=1

@@ -23,6 +23,8 @@ export {
   valueUnitFontSize,
   deviceValueFontPx,
 } from './value-font.js'
+export { gaugeDeviceValuePx, measureValueFit, widestConfiguredValue } from './value-fit.js'
+export type { GaugeFontInputs, ValueFit, ValueFitSpec } from './value-fit.js'
 export {
   GAUGE_ARC,
   GAUGE_TRACK_COLORS,

@@ -10,12 +10,10 @@ export const valueUnitFontSize = (valueFontSize: number): number => {
   return size < VALUE_UNIT_FONT_MIN ? VALUE_UNIT_FONT_MIN : size
 }
 
-const BIG_TO_DEVICE_FONT = [
+export const BIG_TO_DEVICE_FONT = [
   { minBig: 96, px: 48 },
   { minBig: 88, px: 44 },
-  { minBig: 80, px: 40 },
   { minBig: 64, px: 32 },
-  { minBig: 48, px: 24 },
   { minBig: 44, px: 22 },
   { minBig: 0, px: 17 },
 ] as const
