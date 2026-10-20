@@ -1,4 +1,4 @@
-export { boardProfileFromWire, boardProfileToWire } from './board-profile.js'
+export { boardHasImu, boardProfileFromWire, boardProfileToWire } from './board-profile.js'
 export {
   BOARD_PROFILE_MAGIC,
   BOARD_PROFILE_SCHEMA,

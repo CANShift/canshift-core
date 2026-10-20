@@ -1,6 +1,14 @@
 export type { SensorKind } from '../sensor-defaults.js'
-export type { GaugeSeverity, SensorDangerBand, SignalLimits } from '../widget-metrics/index.js'
+export type {
+  GaugeSeverity,
+  GMeterOffset,
+  GMeterPlotBox,
+  SensorDangerBand,
+  SignalLimits,
+} from '../widget-metrics/index.js'
 export {
+  G_METER,
+  G_METER_RANGE_G,
   GAUGE_ARC,
   GAUGE_TRACK_COLORS,
   SECONDARY_BAR,
@@ -13,6 +21,10 @@ export {
   WIDGET_TOP_RULE,
   WIDGET_ZONE_COLORS,
   deviceValueFontPx,
+  gMeterEnvelopeVertex,
+  gMeterFeltForce,
+  gMeterPlotBox,
+  gMeterPlotOffset,
   gaugeArcPath,
   gaugeSeverity,
   gaugeValueFontSize,
