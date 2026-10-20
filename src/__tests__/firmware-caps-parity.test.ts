@@ -70,6 +70,8 @@ describeIfTypes('string caps firmware parity (config_types.h buffers minus NUL)'
     ['BINDING_SIGNAL', 'CfgInputBinding', 'signal'],
     ['TOPBAR_TEXT', 'CfgTopBarItem', 'text'],
     ['TOPBAR_FORMAT', 'CfgTopBarItem', 'format'],
+    ['SIGNAL_UNIT', 'CfgTopBarItem', 'unit'],
+    ['TOPBAR_TEXT', 'CfgTopBarItem', 'offText'],
     ['ID', 'CfgWidget', 'id'],
     ['ID', 'CfgPage', 'id'],
     ['ID', 'CfgButtonAction', 'pageId'],

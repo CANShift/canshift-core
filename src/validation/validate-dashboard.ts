@@ -99,7 +99,7 @@ const checkTopBarSignalRefs = (
 ): string[] => {
   const warnings: string[] = []
   layout.forEach((item, idx) => {
-    if (item.type !== 'statusDot' && item.type !== 'signal' && item.type !== 'modeFlag') return
+    if (!('signal' in item)) return
     const signal = item.signal
     if (signal.length === 0) return
     if (signal === TOPBAR_LAYOUT_ANY_SIGNAL) return
