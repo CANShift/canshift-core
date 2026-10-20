@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { BleStatusWireSchema } from '../schemas/ble-status.js'
 import { DEVICE_COMMANDS } from '../wire/device-commands.js'
 import { TELEMETRY_FIELDS } from '../wire/telemetry-frame.js'
 import { TELEMETRY_FIELD_SIGNALS, TELEMETRY_KEEPALIVE_MS } from '../wire/telemetry-signals.js'
@@ -11,6 +12,7 @@ const SIGNAL_MAP_RS = firmwarePath('rust/signal-map/src/lib.rs')
 const TELEMETRY_FRAME_H = firmwarePath('src/hal/ble/telemetry_frame.h')
 const APP_CONFIG = firmwarePath('include/app_config.h')
 const DEVICE_COMMANDS_CPP = firmwarePath('src/runtime/device_commands.cpp')
+const BLE_STATUS_CPP = firmwarePath('src/hal/ble/ble_status.cpp')
 
 const idsByConstant = (source: string, pattern: RegExp): Map<string, number> =>
   new Map([...source.matchAll(pattern)].map((m) => [m[1] ?? '', Number(m[2])]))
@@ -53,5 +55,12 @@ describeIfFirmware('BLE contract parity with the firmware', () => {
       /kCommands\[\]\s*=\s*\{([\s\S]*?)\};/.exec(readFirmwareSource(DEVICE_COMMANDS_CPP))?.[1] ?? ''
     const names = [...table.matchAll(/"([a-z_]+)"/g)].map((m) => m[1] ?? '')
     expect([...names].sort()).toEqual(Object.values(DEVICE_COMMANDS).sort())
+  })
+
+  it('reads exactly the STATUS keys the firmware writes', () => {
+    const keys = [...readFirmwareSource(BLE_STATUS_CPP).matchAll(/doc\["([a-z_]+)"\]/g)].map(
+      (m) => m[1] ?? ''
+    )
+    expect([...keys].sort()).toEqual(Object.keys(BleStatusWireSchema.shape).sort())
   })
 })

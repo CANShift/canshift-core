@@ -82,6 +82,17 @@ describe('bleStatusFromWire', () => {
     })
     expect(bleStatusFromWire({ ver: '2.5.0' })).not.toHaveProperty('boardId')
   })
+
+  it('exposes the page on screen as pageId, null when the dash shows none', () => {
+    expect(bleStatusFromWire({ page: 'track' })).toEqual({ pageId: 'track' })
+    expect(bleStatusFromWire({ page: '' })).toEqual({ pageId: null })
+    expect(bleStatusFromWire({ ver: '2.5.0' })).not.toHaveProperty('pageId')
+  })
+
+  it('rejects a page id longer than the firmware id cap', () => {
+    expect(BleStatusWireSchema.safeParse({ page: 'x'.repeat(31) }).success).toBe(true)
+    expect(BleStatusWireSchema.safeParse({ page: 'x'.repeat(32) }).success).toBe(false)
+  })
 })
 
 describe('parseBleStatus', () => {
