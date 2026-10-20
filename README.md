@@ -40,7 +40,7 @@ canshift-core/
     ├── schemas/              # Zod schemas — dashboard, widgets, signals, device, wire payloads
     ├── migrations/           # Shape-change steps from MIGRATION_FLOOR_VERSION to CURRENT_SCHEMA_VERSION
     ├── validation/           # validateDashboard
-    ├── wire/                 # TELE and ALERT binary frames, device commands, JSON envelope parsing
+    ├── wire/                 # TELE, ALERT and CAN monitor binary frames, device commands, JSON envelope parsing
     ├── track/                # Lap crossing detection, start/finish line
     ├── widget-metrics/       # Dash geometry and colours the firmware renderer mirrors
     ├── design-tokens/        # Tuner CSS tokens
@@ -67,15 +67,15 @@ The root export carries everything a consumer imports. Subpaths carry a slice
 of it, so a bundler that does not tree-shake (Metro) loads only the modules
 behind the slice:
 
-| Import                          | What it holds                                                                 |
-| ------------------------------- | ----------------------------------------------------------------------------- |
-| `@canshift/core`                | Everything below, plus the dashboard config contract, validation, migrations  |
-| `@canshift/core/wire`           | TELE and ALERT frames, device commands, STATUS / USB / timer payload parsers  |
-| `@canshift/core/track`          | Lap crossing detector, start/finish line, track telemetry schema              |
-| `@canshift/core/widget-metrics` | Dash geometry, severity, sensor ranges and danger bands, shift-light segments |
-| `@canshift/core/tokens`         | Tuner design tokens and their CSS variables                                   |
-| `@canshift/core/ecu-profiles`   | ECU catalogues, MaxxECU units, OBD-II mode 01 PIDs and DTC decoding           |
-| `@canshift/core/schema-version` | `CURRENT_SCHEMA_VERSION`                                                      |
+| Import                          | What it holds                                                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
+| `@canshift/core`                | Everything below, plus the dashboard config contract, validation, migrations              |
+| `@canshift/core/wire`           | TELE, ALERT and CAN monitor frames, device commands, STATUS / USB / timer payload parsers |
+| `@canshift/core/track`          | Lap crossing detector, start/finish line, track telemetry schema                          |
+| `@canshift/core/widget-metrics` | Dash geometry, severity, sensor ranges and danger bands, shift-light segments             |
+| `@canshift/core/tokens`         | Tuner design tokens and their CSS variables                                               |
+| `@canshift/core/ecu-profiles`   | ECU catalogues, MaxxECU units, OBD-II mode 01 PIDs and DTC decoding                       |
+| `@canshift/core/schema-version` | `CURRENT_SCHEMA_VERSION`                                                                  |
 
 An export no consumer imports is removed, not kept for later. `Widget` is a
 union discriminated on `type`: narrowing `widget.type` narrows `widget.config`,

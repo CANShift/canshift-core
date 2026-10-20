@@ -12,6 +12,13 @@ export { ALERT_ACK_COMMAND, BUILT_IN_ALERT_SIGNALS, alertSourceId } from '../wir
 export type { ActiveAlert, AlertLimit } from '../wire/alert-frame.js'
 export { decodeAlertFrame, encodeAlertFrame } from '../wire/alert-frame.js'
 
+export type { CanMonitorId } from '../wire/can-monitor-id.js'
+export { CAN_EXTENDED_ID_MAX, CAN_STANDARD_ID_MAX } from '../wire/can-monitor-id.js'
+export type { CanMonitorEntry, CanMonitorFrame } from '../wire/can-monitor-frame.js'
+export { decodeCanMonitorFrame, encodeCanMonitorFrame } from '../wire/can-monitor-frame.js'
+export type { CanIdFilter } from '../wire/can-monitor-filter.js'
+export { CAN_MONITOR_MAX_FILTERS, encodeCanMonitorFilter } from '../wire/can-monitor-filter.js'
+
 export { DEVICE_COMMANDS } from '../wire/device-commands.js'
 export { parseUntrustedJsonObject } from '../wire/parse-envelope.js'
 
