@@ -44,6 +44,7 @@ export {
   canonicalValue,
   displayUnit,
   displayValue,
+  displayDecimals,
   hasUnitPair,
 } from './units/index.js'
 
