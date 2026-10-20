@@ -1,5 +1,13 @@
 import type { BoardProfile } from './board-profile.js'
 
+const NO_SD_SLOT = {
+  sdBus: 'none',
+  sdPinClk: -1,
+  sdPinCmd: -1,
+  sdPinD0: -1,
+  sdPinD3: -1,
+} as const
+
 const crowpanel28: BoardProfile = {
   boardId: 'crowpanel_28',
   boardName: 'Elecrow CrowPanel 2.8" ESP32',
@@ -37,7 +45,13 @@ const crowpanel28: BoardProfile = {
     pinRst: -1,
   },
   can: { controller: 'esp_twai', pinTx: 22, pinRx: 21, defaultSpeedKbps: 500 },
-  storage: { spiffsPresent: true, spiffsSizeKb: 1024, sdPresent: false, sdPinCs: -1 },
+  storage: {
+    spiffsPresent: true,
+    spiffsSizeKb: 1024,
+    sdPresent: false,
+    sdPinCs: -1,
+    ...NO_SD_SLOT,
+  },
   conn: { wifiSupported: true, bleSupported: true, psramPresent: false },
 }
 
@@ -78,7 +92,13 @@ const genericIli9341: BoardProfile = {
     pinRst: -1,
   },
   can: { controller: 'esp_twai', pinTx: 25, pinRx: 32, defaultSpeedKbps: 500 },
-  storage: { spiffsPresent: true, spiffsSizeKb: 1024, sdPresent: false, sdPinCs: -1 },
+  storage: {
+    spiffsPresent: true,
+    spiffsSizeKb: 1024,
+    sdPresent: false,
+    sdPinCs: -1,
+    ...NO_SD_SLOT,
+  },
   conn: { wifiSupported: true, bleSupported: true, psramPresent: false },
 }
 
@@ -119,7 +139,13 @@ const genericIli9341Gt911: BoardProfile = {
     pinRst: -1,
   },
   can: { controller: 'esp_twai', pinTx: 25, pinRx: 32, defaultSpeedKbps: 500 },
-  storage: { spiffsPresent: true, spiffsSizeKb: 1024, sdPresent: false, sdPinCs: -1 },
+  storage: {
+    spiffsPresent: true,
+    spiffsSizeKb: 1024,
+    sdPresent: false,
+    sdPinCs: -1,
+    ...NO_SD_SLOT,
+  },
   conn: { wifiSupported: true, bleSupported: true, psramPresent: false },
 }
 
@@ -160,7 +186,17 @@ const waveshareS328: BoardProfile = {
     pinRst: 2,
   },
   can: { controller: 'esp_twai', pinTx: 17, pinRx: 18, defaultSpeedKbps: 500 },
-  storage: { spiffsPresent: true, spiffsSizeKb: 1024, sdPresent: true, sdPinCs: -1 },
+  storage: {
+    spiffsPresent: true,
+    spiffsSizeKb: 1024,
+    sdPresent: true,
+    sdPinCs: -1,
+    sdBus: 'sdmmc_1bit',
+    sdPinClk: 14,
+    sdPinCmd: 17,
+    sdPinD0: 16,
+    sdPinD3: 21,
+  },
   conn: { wifiSupported: true, bleSupported: true, psramPresent: true },
   imu: {
     driver: 'qmi8658',

@@ -8,6 +8,7 @@ const TOUCH_DRIVERS = ['none', 'xpt2046', 'ft6336', 'gt911', 'cst816s', 'cst3530
 const CAN_CONTROLLERS = ['none', 'esp_twai'] as const
 const IMU_DRIVERS = ['none', 'qmi8658'] as const
 const IMU_AXES = ['x', '-x', 'y', '-y', 'z', '-z'] as const
+const SD_BUSES = ['none', 'sdmmc_1bit'] as const
 
 type ChipFamily = (typeof CHIP_FAMILIES)[number]
 type LcdDriver = (typeof LCD_DRIVERS)[number]
@@ -15,6 +16,7 @@ type TouchDriver = (typeof TOUCH_DRIVERS)[number]
 type CanController = (typeof CAN_CONTROLLERS)[number]
 type ImuDriver = (typeof IMU_DRIVERS)[number]
 type ImuAxis = (typeof IMU_AXES)[number]
+type SdBus = (typeof SD_BUSES)[number]
 
 const BOARD_ID_MAX_LEN = 48
 const BOARD_NAME_MAX_LEN = 64
@@ -110,6 +112,11 @@ const StorageProfileWireSchema = z
     spiffs_size_kb: UInt16Schema,
     sd_present: z.boolean(),
     sd_pin_cs: Int8Schema,
+    sd_bus: z.enum(SD_BUSES).optional(),
+    sd_pin_clk: Int8Schema.optional(),
+    sd_pin_cmd: Int8Schema.optional(),
+    sd_pin_d0: Int8Schema.optional(),
+    sd_pin_d3: Int8Schema.optional(),
   })
   .strict()
 
@@ -202,6 +209,11 @@ interface StorageProfile {
   spiffsSizeKb: number
   sdPresent: boolean
   sdPinCs: number
+  sdBus?: SdBus
+  sdPinClk?: number
+  sdPinCmd?: number
+  sdPinD0?: number
+  sdPinD3?: number
 }
 
 interface ConnectivityProfile {

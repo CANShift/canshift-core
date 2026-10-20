@@ -24,6 +24,7 @@ const ENUM_SLUGS: Record<string, string> = {
   NegZ: '-z',
   EspTwai: 'esp_twai',
   Esp32s3: 'esp32s3',
+  Sdmmc1Bit: 'sdmmc_1bit',
 }
 
 const enumSlug = (name: string): string => ENUM_SLUGS[name] ?? name.toLowerCase()
