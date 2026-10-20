@@ -14,6 +14,8 @@ export const SIGNAL_LABELS: ReadonlyMap<string, string> = new Map([
   ['afr_1', 'AFR'],
   ['lambda_1', 'LAMBDA'],
   ['iat_c', 'IAT'],
+  ['maf_gps', 'MAF'],
+  ['run_time_s', 'RUN TIME'],
   ['egt_c', 'EGT'],
   ['gearbox_temp_c', 'GEARBOX'],
   ['diff_temp_c', 'DIFF'],
@@ -31,7 +33,29 @@ export const SIGNAL_LABELS: ReadonlyMap<string, string> = new Map([
 
 export const NO_SIGNAL_LABEL = '—'
 
-const labelFromName = (signal: string): string => signal.replace(/_+/g, ' ').toUpperCase().trim()
+export const SIGNAL_UNIT_SUFFIXES: ReadonlySet<string> = new Set([
+  'c',
+  's',
+  'ms',
+  'gps',
+  'kpa',
+  'pct',
+  'bar',
+  'volts',
+  'kph',
+  'km',
+])
+
+const withoutUnitSuffix = (words: readonly string[]): readonly string[] => {
+  const last = words.at(-1)
+  const isUnit = words.length > 1 && last !== undefined && SIGNAL_UNIT_SUFFIXES.has(last)
+  return isUnit ? words.slice(0, -1) : words
+}
+
+const labelFromName = (signal: string): string => {
+  const words = signal.split('_').filter((word) => word !== '')
+  return withoutUnitSuffix(words).join(' ').toUpperCase()
+}
 
 export const signalDisplayLabel = (signal: string): string => {
   if (!signal) return NO_SIGNAL_LABEL
