@@ -6,4 +6,5 @@ export const DEVICE_COMMANDS = {
   reboot: 'reboot',
   trackState: 'track_state',
   ackAlert: 'ack_alert',
+  showPage: 'show_page',
 } as const

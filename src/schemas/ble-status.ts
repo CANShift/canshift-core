@@ -1,4 +1,5 @@
 import * as z from 'zod'
+import { BlePageIdSchema } from './ble-pages.js'
 import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
 
 const BLE_STATUS_MAX_STRING_LEN = 32
@@ -13,6 +14,7 @@ export const BleStatusWireSchema = z
     board_id: CappedStringSchema.optional(),
     can: ZeroOrOneSchema.optional(),
     is_day: ZeroOrOneSchema.optional(),
+    page: z.union([z.literal(''), BlePageIdSchema]).optional(),
   })
   .loose()
 
@@ -23,6 +25,7 @@ export interface BleStatus {
   boardId?: string
   canHealthy?: boolean
   isDay?: boolean
+  pageId?: string | null
 }
 
 export const bleStatusFromWire = (wire: BleStatusWire): BleStatus => {
@@ -31,6 +34,7 @@ export const bleStatusFromWire = (wire: BleStatusWire): BleStatus => {
   if (wire.board_id !== undefined) out.boardId = wire.board_id
   if (wire.can !== undefined) out.canHealthy = wire.can !== 0
   if (wire.is_day !== undefined) out.isDay = wire.is_day !== 0
+  if (wire.page !== undefined) out.pageId = wire.page === '' ? null : wire.page
   return out
 }
 
