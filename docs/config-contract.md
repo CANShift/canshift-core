@@ -142,7 +142,8 @@ badge), so the tuner preview and the dash agree. A page may also declare a
 
 `unit` is the unit the value arrives in, at most `STRING_CAPS.SIGNAL_UNIT`
 (15) characters. With it, `units: imperial` converts the printed number through
-the same unit pairs as the value widgets, and `showUnit` appends the symbol;
+the same unit pairs as the value widgets, dropping a `format` decimal where
+they do (`displayDecimals`), and `showUnit` appends the symbol;
 without it the value prints unconverted, so a unit written into `format` never
 switches. `timer` reads `TOP_BAR_TIMER_SOURCES`, the timer-widget sources minus
 the launch splits: from track telemetry while it is live, else the stopwatch.
