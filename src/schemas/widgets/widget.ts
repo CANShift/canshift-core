@@ -11,6 +11,7 @@ import {
   SingleActionButtonConfigSchema,
 } from './button.js'
 import { GaugeWidgetConfigSchema } from './gauge.js'
+import { GMeterWidgetConfigSchema } from './g-meter.js'
 import { GearWidgetConfigSchema } from './gear.js'
 import { ImageWidgetConfigSchema } from './image.js'
 import { ShiftLightWidgetConfigSchema } from './shift-light.js'
@@ -91,6 +92,7 @@ export const WidgetSchema = z.discriminatedUnion('type', [
   widgetVariant('gear', GearWidgetConfigSchema).superRefine(requireSignal),
   widgetVariant('image', ImageWidgetConfigSchema),
   widgetVariant('shift_light', ShiftLightWidgetConfigSchema).superRefine(requireSignal),
+  widgetVariant('g_meter', GMeterWidgetConfigSchema),
 ])
 
 export type GaugeWidgetConfig = ExactOptional<z.infer<typeof GaugeWidgetConfigSchema>>
@@ -102,6 +104,7 @@ type TimerWidgetConfig = ExactOptional<z.infer<typeof TimerWidgetConfigSchema>>
 export type GearWidgetConfig = ExactOptional<z.infer<typeof GearWidgetConfigSchema>>
 export type ImageWidgetConfig = ExactOptional<z.infer<typeof ImageWidgetConfigSchema>>
 type ShiftLightWidgetConfig = ExactOptional<z.infer<typeof ShiftLightWidgetConfigSchema>>
+export type GMeterWidgetConfig = ExactOptional<z.infer<typeof GMeterWidgetConfigSchema>>
 
 interface WidgetConfigByType {
   gauge: GaugeWidgetConfig
@@ -111,6 +114,7 @@ interface WidgetConfigByType {
   gear: GearWidgetConfig
   image: ImageWidgetConfig
   shift_light: ShiftLightWidgetConfig
+  g_meter: GMeterWidgetConfig
 }
 
 export type WidgetType = keyof WidgetConfigByType

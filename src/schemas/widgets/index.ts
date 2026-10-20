@@ -23,6 +23,7 @@ export { WidgetSchema } from './widget.js'
 export type {
   ButtonWidgetConfig,
   GaugeWidgetConfig,
+  GMeterWidgetConfig,
   GearWidgetConfig,
   ImageWidgetConfig,
   SingleActionButtonConfig,

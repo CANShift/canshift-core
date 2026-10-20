@@ -334,7 +334,8 @@ describe('migrateConfig — version-only releases need no registry entry', () =>
       '1.31.0 → 1.37.0',
       '1.37.0 → 1.40.0',
       '1.40.0 → 1.43.0',
-      `1.43.0 → ${CURRENT_SCHEMA_VERSION}`,
+      '1.43.0 → 1.44.0',
+      `1.44.0 → ${CURRENT_SCHEMA_VERSION}`,
     ])
   })
 

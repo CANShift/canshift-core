@@ -74,3 +74,13 @@ export {
   isOutsideDangerBand,
 } from './sensor.js'
 export { SECONDARY_BAR, SHIFT_LIGHT, shiftLightLitSegments } from './shift-light.js'
+export {
+  G_METER,
+  G_METER_RANGE_G,
+  G_METER_SECTOR_DIRECTIONS,
+  gMeterEnvelopeVertex,
+  gMeterFeltForce,
+  gMeterPlotBox,
+  gMeterPlotOffset,
+} from './g-meter.js'
+export type { GMeterOffset, GMeterPlotBox } from './g-meter.js'

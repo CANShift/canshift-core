@@ -61,6 +61,7 @@ export type {
   CruiseControlOp,
   GaugeDisplayStyle,
   GaugeWidgetConfig,
+  GMeterWidgetConfig,
   GearWidgetConfig,
   MapSwitchAction,
   NavigateAction,
@@ -128,4 +129,9 @@ export {
   serializeCanshiftFile,
 } from './schemas/canshift-file.js'
 export type { BoardProfileBlob } from './board-profile/index.js'
-export { BOARD_PROFILES, serializeBoardProfile } from './board-profile/index.js'
+export {
+  BOARD_PROFILES,
+  boardHasImu,
+  getBoardProfile,
+  serializeBoardProfile,
+} from './board-profile/index.js'

@@ -202,7 +202,7 @@ firmware's `page_manager.cpp` alongside `buildCruiseControlTemplate`.
 ```
 
 `type` is one of `gauge`, `warning`, `button`, `timer`, `gear`, `image`,
-`shift_light` — see [`schemas/widgets/`](../src/schemas/widgets/) for each
+`shift_light`, `g_meter` — see [`schemas/widgets/`](../src/schemas/widgets/) for each
 config shape. Two rules are enforced beyond the shape: `widget.type` must equal
 `widget.config.type`, and `gauge`, `warning`, `gear` and `shift_light` must
 carry a non-empty `signal`.
@@ -212,6 +212,14 @@ carry a non-empty `signal`.
 derives it from the signal, as it always has. A button already carried its own
 `kicker`. Widgets that draw no kicker (`timer`, `warning`, `shift_light`,
 `image`) do not accept one, so the field can never be a control that lies.
+
+**The g-meter reads the board, not a signal.** `g_meter` plots the onboard
+accelerometer as a friction circle; its `signal` stays empty. `rangeG` (0.5 to
+3 g) is the full-scale radius, `peakHold` (default on) draws the session's peak
+envelope, and `kicker` overrides the default `G`. On a board whose profile
+declares no `imu` the dash renders the widget unavailable, `G · NO IMU`, so a
+config stays portable between boards; `boardHasImu(getBoardProfile(id))` tells
+an editor which case it is in.
 
 A gauge colours itself in three tiers: normal, amber from `warnLevel`, red from
 `dangerLevel`. `dangerBelow` sets the direction of both — `true` means the

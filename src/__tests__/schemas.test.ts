@@ -1897,7 +1897,7 @@ describe('schema bounds hardening', () => {
         expect(result.error.issues.map((i) => [i.path.join('.'), i.message])).toEqual([
           [
             'type',
-            "Invalid discriminator value. Expected 'gauge' | 'warning' | 'button' | 'timer' | 'gear' | 'image' | 'shift_light'",
+            "Invalid discriminator value. Expected 'gauge' | 'warning' | 'button' | 'timer' | 'gear' | 'image' | 'shift_light' | 'g_meter'",
           ],
         ])
       }

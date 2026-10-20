@@ -4,13 +4,17 @@ import { camelToSnakeDeep, snakeToCamelDeep } from '../wire/keymap.js'
 
 const CHIP_FAMILIES = ['esp32', 'esp32s3'] as const
 const LCD_DRIVERS = ['ili9341', 'st7789', 'ili9488', 'gc9a01'] as const
-const TOUCH_DRIVERS = ['none', 'xpt2046', 'ft6336', 'gt911', 'cst816s'] as const
+const TOUCH_DRIVERS = ['none', 'xpt2046', 'ft6336', 'gt911', 'cst816s', 'cst3530'] as const
 const CAN_CONTROLLERS = ['none', 'esp_twai'] as const
+const IMU_DRIVERS = ['none', 'qmi8658'] as const
+const IMU_AXES = ['x', '-x', 'y', '-y', 'z', '-z'] as const
 
 type ChipFamily = (typeof CHIP_FAMILIES)[number]
 type LcdDriver = (typeof LCD_DRIVERS)[number]
 type TouchDriver = (typeof TOUCH_DRIVERS)[number]
 type CanController = (typeof CAN_CONTROLLERS)[number]
+type ImuDriver = (typeof IMU_DRIVERS)[number]
+type ImuAxis = (typeof IMU_AXES)[number]
 
 const BOARD_ID_MAX_LEN = 48
 const BOARD_NAME_MAX_LEN = 64
@@ -63,8 +67,33 @@ const TouchProfileWireSchema = z
     needs_calibration: z.boolean(),
     pin_sda: Int8Schema,
     pin_scl: Int8Schema,
+    pin_rst: Int8Schema.optional(),
   })
   .strict()
+
+const axisLetter = (axis: ImuAxis): string => axis.replace('-', '')
+
+const namesEachAxisOnce = (imu: {
+  screen_x: ImuAxis
+  screen_y: ImuAxis
+  screen_z: ImuAxis
+}): boolean => new Set([imu.screen_x, imu.screen_y, imu.screen_z].map(axisLetter)).size === 3
+
+const ImuProfileWireSchema = z
+  .object({
+    driver: z.enum(IMU_DRIVERS),
+    pin_sda: Int8Schema,
+    pin_scl: Int8Schema,
+    i2c_addr: UInt8Schema,
+    freq_hz: UInt32Schema,
+    screen_x: z.enum(IMU_AXES),
+    screen_y: z.enum(IMU_AXES),
+    screen_z: z.enum(IMU_AXES),
+  })
+  .strict()
+  .refine(namesEachAxisOnce, {
+    message: 'imu: screen_x, screen_y and screen_z must name each axis once',
+  })
 
 const CanProfileWireSchema = z
   .object({
@@ -103,6 +132,7 @@ export const BoardProfileWireSchema = z
     can: CanProfileWireSchema,
     storage: StorageProfileWireSchema,
     conn: ConnectivityProfileWireSchema,
+    imu: ImuProfileWireSchema.optional(),
   })
   .strict()
 
@@ -146,6 +176,18 @@ interface TouchProfile {
   needsCalibration: boolean
   pinSda: number
   pinScl: number
+  pinRst?: number
+}
+
+interface ImuProfile {
+  driver: ImuDriver
+  pinSda: number
+  pinScl: number
+  i2cAddr: number
+  freqHz: number
+  screenX: ImuAxis
+  screenY: ImuAxis
+  screenZ: ImuAxis
 }
 
 interface CanProfile {
@@ -178,7 +220,11 @@ export interface BoardProfile {
   can: CanProfile
   storage: StorageProfile
   conn: ConnectivityProfile
+  imu?: ImuProfile
 }
+
+export const boardHasImu = (profile: BoardProfile): boolean =>
+  profile.imu !== undefined && profile.imu.driver !== 'none'
 
 export const boardProfileFromWire = (wire: BoardProfileWire): BoardProfile =>
   snakeToCamelDeep(wire) as unknown as BoardProfile
