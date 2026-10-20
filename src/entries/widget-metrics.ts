@@ -6,6 +6,9 @@ export type {
   SensorDangerBand,
   SignalLimits,
   TimerSourceKicker,
+  GaugeFontInputs,
+  ValueFit,
+  ValueFitSpec,
 } from '../widget-metrics/index.js'
 export {
   G_METER,
@@ -28,14 +31,17 @@ export {
   gMeterPlotBox,
   gMeterPlotOffset,
   gaugeArcPath,
+  gaugeDeviceValuePx,
   gaugeSeverity,
   gaugeValueFontSize,
   gearFontSize,
   gearGlyph,
   isOutsideDangerBand,
+  measureValueFit,
   sensorDefaultDangerBand,
   sensorDefaultRange,
   shiftLightLitSegments,
   valueUnitFontSize,
+  widestConfiguredValue,
   widgetTopRulePx,
 } from '../widget-metrics/index.js'
