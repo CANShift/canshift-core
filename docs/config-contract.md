@@ -120,23 +120,35 @@ the signal catalog.
 `topBar.layout` is an array of discriminated-union items, each with a
 `position` of `left`, `center` or `right`:
 
-| Type          | Carries                             |
-| ------------- | ----------------------------------- |
-| `label`       | `text`                              |
-| `signal`      | `signal`, optional `format`         |
-| `signalMax`   | `signal`, `text`, optional `format` |
-| `statusDot`   | `signal` — liveness of that signal  |
-| `modeFlag`    | `signal`, `text`                    |
-| `canRate`     | —                                   |
-| `trackBadge`  | —                                   |
-| `bleIcon`     | —                                   |
-| `themeToggle` | —                                   |
-| `separator`   | —                                   |
+| Type          | Carries                                                 |
+| ------------- | ------------------------------------------------------- |
+| `label`       | `text`                                                  |
+| `signal`      | `signal`, optional `format`, `unit`, `showUnit`         |
+| `signalMax`   | `signal`, `text`, optional `format`, `unit`, `showUnit` |
+| `timer`       | `source`, optional `text` prefix                        |
+| `flagWord`    | `signal`, `text` when set, `offText` when clear         |
+| `statusDot`   | `signal` — liveness of that signal                      |
+| `modeFlag`    | `signal`, `text`                                        |
+| `canRate`     | —                                                       |
+| `trackBadge`  | —                                                       |
+| `bleIcon`     | —                                                       |
+| `themeToggle` | —                                                       |
+| `separator`   | —                                                       |
 
 Omitting `layout` falls back to `DEFAULT_TOP_BAR_LAYOUT`, the track bar the
 firmware draws in the same case (`CAN` + bus rate, `MAP` + map number, track
 badge), so the tuner preview and the dash agree. A page may also declare a
 `statusRow` with its own `center` and `right` items, using the same union.
+
+`unit` is the unit the value arrives in, at most `STRING_CAPS.SIGNAL_UNIT`
+(15) characters. With it, `units: imperial` converts the printed number through
+the same unit pairs as the value widgets, and `showUnit` appends the symbol;
+without it the value prints unconverted, so a unit written into `format` never
+switches. `timer` reads `TOP_BAR_TIMER_SOURCES`, the timer-widget sources minus
+the launch splits: from track telemetry while it is live, else the stopwatch.
+`flagWord` prints `text` while its signal is non-zero and `offText` while it is
+zero; a signal that is not being received prints the stale placeholder, never
+`offText`.
 
 `text` holds at most `STRING_CAPS.TOPBAR_TEXT` (15) characters and `format` at
 most `STRING_CAPS.TOPBAR_FORMAT` (15): the firmware copies both into 16-byte

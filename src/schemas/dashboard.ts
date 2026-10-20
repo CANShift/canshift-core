@@ -13,7 +13,7 @@ import { PageButtonsSchema } from './page-buttons.js'
 import { UNIT_SYSTEMS } from '../units/index.js'
 import { ScreenProfileIdSchema } from './screen-profile.js'
 import type { ExactOptional } from './exact-optional.js'
-import { WidgetSchema, type Widget } from './widgets/index.js'
+import { WidgetSchema, type TimerSource, type Widget } from './widgets/index.js'
 
 export const PagePaletteSchema = z
   .object({
@@ -61,12 +61,29 @@ const TopBarItemPositionSchema = z.enum(['left', 'center', 'right'])
 const TopBarTextSchema = z.string().max(STRING_CAPS.TOPBAR_TEXT)
 const TopBarFormatSchema = z.string().max(STRING_CAPS.TOPBAR_FORMAT)
 
+const TopBarUnitSchema = z.string().min(1).max(STRING_CAPS.SIGNAL_UNIT)
+
+export const TOP_BAR_TIMER_SOURCES = [
+  'elapsed',
+  'lap',
+  'best',
+  'last',
+  'lapCount',
+  'delta',
+] as const satisfies readonly TimerSource[]
+
 const iconOnlyTopBarItemShape = z.object({ position: TopBarItemPositionSchema })
 
 const signalBoundTopBarItemShape = z.object({
   signal: z.string().min(1, 'signal must be a non-empty string').max(STRING_CAPS.SIGNAL_NAME),
   position: TopBarItemPositionSchema,
 })
+
+const convertibleValueShape = {
+  format: TopBarFormatSchema.optional(),
+  unit: TopBarUnitSchema.optional(),
+  showUnit: z.boolean().optional(),
+}
 
 export const TopBarItemSchema = z.discriminatedUnion('type', [
   signalBoundTopBarItemShape.extend({ type: z.literal('statusDot') }).strict(),
@@ -75,7 +92,7 @@ export const TopBarItemSchema = z.discriminatedUnion('type', [
     .strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('separator') }).strict(),
   signalBoundTopBarItemShape
-    .extend({ type: z.literal('signal'), format: TopBarFormatSchema.optional() })
+    .extend({ type: z.literal('signal'), ...convertibleValueShape })
     .strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('bleIcon') }).strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('themeToggle') }).strict(),
@@ -85,11 +102,17 @@ export const TopBarItemSchema = z.discriminatedUnion('type', [
   iconOnlyTopBarItemShape.extend({ type: z.literal('trackBadge') }).strict(),
   iconOnlyTopBarItemShape.extend({ type: z.literal('canRate') }).strict(),
   signalBoundTopBarItemShape
+    .extend({ type: z.literal('signalMax'), text: TopBarTextSchema, ...convertibleValueShape })
+    .strict(),
+  iconOnlyTopBarItemShape
     .extend({
-      type: z.literal('signalMax'),
-      text: TopBarTextSchema,
-      format: TopBarFormatSchema.optional(),
+      type: z.literal('timer'),
+      source: z.enum(TOP_BAR_TIMER_SOURCES),
+      text: TopBarTextSchema.optional(),
     })
+    .strict(),
+  signalBoundTopBarItemShape
+    .extend({ type: z.literal('flagWord'), text: TopBarTextSchema, offText: TopBarTextSchema })
     .strict(),
 ])
 

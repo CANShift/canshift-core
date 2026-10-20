@@ -22,6 +22,7 @@ export {
   DEFAULT_PAGE_PALETTE,
   DEFAULT_TOP_BAR_LAYOUT,
   DashboardConfigSchema,
+  TOP_BAR_TIMER_SOURCES,
 } from './schemas/dashboard.js'
 export { DAY_BG_DEFAULT, DAY_PALETTE_DEFAULT } from './day-theme-defaults.js'
 export type { ThemePresetEntry } from './theme-presets.js'
