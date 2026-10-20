@@ -1,7 +1,7 @@
 import { hex } from '../colors/hex.js'
 
 export const SECONDARY_BAR = {
-  heightPx: 3,
+  heightPx: 2,
   topGapPx: 7,
 } as const
 
