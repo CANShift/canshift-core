@@ -121,7 +121,8 @@ export {
   placementsOverlap,
   resolveGridRect,
 } from './layout-grid.js'
-export { pageHasShiftStrip, resolveContentRect } from './page-band.js'
+export type { PlacedWidget } from './page-band.js'
+export { pageHasShiftStrip, resolveContentRect, resolvePageWidgetRect } from './page-band.js'
 
 export { parseCanXml } from './can-xml/parse-can-xml.js'
 export { PROJECT_FILE_VERSION } from './schemas/project.js'
