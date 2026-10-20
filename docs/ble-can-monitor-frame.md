@@ -9,7 +9,7 @@ how many arrived, and reports the IDs that moved since their last report.
 
 | Property | Value                                                                                                                       |
 | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| UUID     | `4fa0b6a0-0000-0000-0000-00000000000a` (same service as TELE)                                                               |
+| UUID     | `4fa0b6a0-0000-0000-0000-00000000000b` (same service as TELE)                                                               |
 | Access   | read + notify + write, encrypted and authenticated like every other char.                                                   |
 | On       | only while subscribed; unsubscribing or disconnecting stops the monitor and clears the dash's ID table and filter           |
 | Cadence  | checked every BLE tick (TELE's 100 ms); up to two notifies per tick, each carrying only the IDs that received a frame since |
