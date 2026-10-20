@@ -1,4 +1,5 @@
 import type { HexColor } from '../schemas/common.js'
+import type { TimerSource } from '../schemas/widgets/timer.js'
 
 import { WIDGET_ACCENT_COLOR, WIDGET_DIM_COLORS } from './colors.js'
 import { sizeForHeight } from './scale.js'
@@ -10,6 +11,24 @@ export const TIMER_BORDER_COLORS = {
   running: WIDGET_ACCENT_COLOR,
   paused: WIDGET_DIM_COLORS.night,
 } as const satisfies Record<'running' | 'paused', HexColor>
+
+export interface TimerSourceKicker {
+  metric: string
+  imperial: string
+}
+
+const sameInBoth = (kicker: string): TimerSourceKicker => ({ metric: kicker, imperial: kicker })
+
+export const TIMER_SOURCE_KICKERS: Readonly<Record<TimerSource, TimerSourceKicker>> = {
+  elapsed: sameInBoth('TIMER'),
+  lap: sameInBoth('LAP'),
+  best: sameInBoth('BEST'),
+  last: sameInBoth('LAST'),
+  lapCount: sameInBoth('LAPS'),
+  delta: sameInBoth('DELTA'),
+  launchSprint: { metric: '0-100', imperial: '0-60' },
+  launchStrip: { metric: '400 M', imperial: '1/4 MI' },
+}
 
 export const TIMER_FONT_BREAKPOINTS = [
   { minHeight: 55, size: 40 },

@@ -1,6 +1,15 @@
 import * as z from 'zod'
 
-export const TIMER_SOURCES = ['elapsed', 'lap', 'best', 'last', 'lapCount', 'delta'] as const
+export const TIMER_SOURCES = [
+  'elapsed',
+  'lap',
+  'best',
+  'last',
+  'lapCount',
+  'delta',
+  'launchSprint',
+  'launchStrip',
+] as const
 
 const TimerSourceSchema = z.enum(TIMER_SOURCES)
 

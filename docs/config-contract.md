@@ -221,6 +221,13 @@ declares no `imu` the dash renders the widget unavailable, `G · NO IMU`, so a
 config stays portable between boards; `boardHasImu(getBoardProfile(id))` tells
 an editor which case it is in.
 
+**A timer can show a launch.** Besides the stopwatch and lap sources, a `timer`
+widget's `source` may be `launchSprint` (0–100 km/h, or 0–60 mph under
+`units: "imperial"`) or `launchStrip` (400 m, or a quarter mile). The dash times
+them from a standing start detected on the IMU, so they need a board that
+declares one and a `speed_kph` signal; `TIMER_SOURCE_KICKERS` gives the label
+the dash draws for each source in either unit system.
+
 A gauge colours itself in three tiers: normal, amber from `warnLevel`, red from
 `dangerLevel`. `dangerBelow` sets the direction of both — `true` means the
 reading is in trouble when it **falls**, which is how an oil-pressure gauge is
