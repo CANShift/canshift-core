@@ -60,10 +60,12 @@ export {
   TIMER_STATE_BORDER_WIDTH,
   TIMER_BORDER_COLORS,
   TIMER_FONT_BREAKPOINTS,
+  TIMER_SOURCE_KICKERS,
   timerFontSize,
   formatTimerMmSs,
   formatTimerSsMmm,
 } from './timer.js'
+export type { TimerSourceKicker } from './timer.js'
 export type { SensorDangerBand } from './sensor.js'
 export {
   SENSOR_DEFAULT_RANGES,

@@ -5,6 +5,7 @@ export type {
   GMeterPlotBox,
   SensorDangerBand,
   SignalLimits,
+  TimerSourceKicker,
 } from '../widget-metrics/index.js'
 export {
   G_METER,
@@ -14,6 +15,7 @@ export {
   SECONDARY_BAR,
   SHIFT_LIGHT,
   STALE_PLACEHOLDER,
+  TIMER_SOURCE_KICKERS,
   WIDGET_ACCENT_COLOR,
   WIDGET_DIM_COLORS,
   WIDGET_LOCK_INK_COLORS,
