@@ -53,6 +53,7 @@ export type { PageButtonRole, PageButtons } from './schemas/page-buttons.js'
 export type { WheelButtonSignal } from './constants/dash-signals.js'
 export { WHEEL_BUTTON_SIGNALS } from './constants/dash-signals.js'
 export { signalDisplayLabel } from './constants/signal-labels.js'
+export { signalUnitOnDash } from './constants/signal-units.js'
 
 export type {
   ButtonAction,
@@ -120,6 +121,7 @@ export {
   placementsOverlap,
   resolveGridRect,
 } from './layout-grid.js'
+export { pageHasShiftStrip, resolveContentRect } from './page-band.js'
 
 export { parseCanXml } from './can-xml/parse-can-xml.js'
 export { PROJECT_FILE_VERSION } from './schemas/project.js'
