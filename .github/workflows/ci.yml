@@ -111,6 +111,7 @@ jobs:
             canshift-firmware/rust/layout-grid/src/lib.rs \
             canshift-firmware/rust/signal-map/src/lib.rs \
             canshift-firmware/rust/format-float/src/lib.rs \
+            canshift-firmware/rust/unit-convert/src/lib.rs \
             canshift-firmware/src/ui/font_manager.cpp \
             canshift-firmware/src/ui/widgets/widget_helpers.h \
             canshift-firmware/src/ui/fonts/lv_font_jbmono_medium_10_nk.c \

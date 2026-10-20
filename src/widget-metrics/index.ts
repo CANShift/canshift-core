@@ -25,6 +25,8 @@ export {
 } from './value-font.js'
 export { gaugeDeviceValuePx, measureValueFit, widestConfiguredValue } from './value-fit.js'
 export type { GaugeFontInputs, ValueFit, ValueFitSpec } from './value-fit.js'
+export { measureGaugeFit } from './gauge-fit.js'
+export type { GaugeFitInput } from './gauge-fit.js'
 export {
   GAUGE_ARC,
   GAUGE_TRACK_COLORS,

@@ -9,6 +9,8 @@ export interface UnitPair {
   imperial: string
   toImperial: (value: number) => number
   toMetric: (value: number) => number
+  toImperialDrop: number
+  toMetricDrop: number
 }
 
 const KMH_PER_MPH = 1.609344
@@ -34,25 +36,40 @@ export const UNIT_PAIRS: readonly UnitPair[] = [
     imperial: 'mph',
     toImperial: linear(KMH_PER_MPH),
     toMetric: inverse(KMH_PER_MPH),
+    toImperialDrop: 0,
+    toMetricDrop: 0,
   },
-  { metric: 'km', imperial: 'mi', toImperial: linear(KM_PER_MI), toMetric: inverse(KM_PER_MI) },
+  {
+    metric: 'km',
+    imperial: 'mi',
+    toImperial: linear(KM_PER_MI),
+    toMetric: inverse(KM_PER_MI),
+    toImperialDrop: 0,
+    toMetricDrop: 0,
+  },
   {
     metric: 'kPa',
     imperial: 'psi',
     toImperial: linear(KPA_PER_PSI),
     toMetric: inverse(KPA_PER_PSI),
+    toImperialDrop: 0,
+    toMetricDrop: 1,
   },
   {
     metric: 'bar',
     imperial: 'psi',
     toImperial: linear(BAR_PER_PSI),
     toMetric: inverse(BAR_PER_PSI),
+    toImperialDrop: 1,
+    toMetricDrop: 0,
   },
   {
     metric: '°C',
     imperial: '°F',
     toImperial: (value) => value * FAHRENHEIT_PER_CELSIUS + FAHRENHEIT_OFFSET,
     toMetric: (value) => (value - FAHRENHEIT_OFFSET) / FAHRENHEIT_PER_CELSIUS,
+    toImperialDrop: 0,
+    toMetricDrop: 0,
   },
 ]
 
@@ -110,4 +127,13 @@ export const canonicalValue = (value: number, unit: string, system: UnitSystem):
   const to = systemOf(pair, unit)
   if (to === system) return value
   return to === 'imperial' ? pair.toImperial(value) : pair.toMetric(value)
+}
+
+export const displayDecimals = (decimals: number, unit: string, system: UnitSystem): number => {
+  const pair = unitPairFor(unit)
+  if (!pair) return decimals
+  const from = systemOf(pair, unit)
+  if (from === system) return decimals
+  const drop = system === 'imperial' ? pair.toImperialDrop : pair.toMetricDrop
+  return Math.max(decimals - drop, 0)
 }

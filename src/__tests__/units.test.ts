@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   canonicalValue,
+  displayDecimals,
   displayUnit,
   displayValue,
   hasUnitPair,
@@ -98,5 +99,32 @@ describe('canonicalValue', () => {
 
   it('leaves an unpaired unit untouched', () => {
     expect(canonicalValue(7000, 'rpm', 'imperial')).toBe(7000)
+  })
+})
+
+describe('displayDecimals', () => {
+  it('drops a decimal where the converted reading gains a digit', () => {
+    expect(displayDecimals(1, 'bar', 'imperial')).toBe(0)
+    expect(displayDecimals(2, 'bar', 'imperial')).toBe(1)
+    expect(displayDecimals(1, 'psi', 'metric')).toBe(0)
+  })
+
+  it('never goes below zero', () => {
+    expect(displayDecimals(0, 'bar', 'imperial')).toBe(0)
+  })
+
+  it('keeps the decimals when nothing is converted', () => {
+    expect(displayDecimals(2, 'bar', 'metric')).toBe(2)
+    expect(displayDecimals(2, 'rpm', 'imperial')).toBe(2)
+    expect(displayDecimals(2, '', 'imperial')).toBe(2)
+  })
+
+  it('keeps the decimals on a conversion that gains no digit', () => {
+    for (const unit of ['km/h', 'km', '°C', 'kPa']) {
+      expect(displayDecimals(2, unit, 'imperial')).toBe(2)
+    }
+    for (const unit of ['mph', 'mi', '°F']) {
+      expect(displayDecimals(2, unit, 'metric')).toBe(2)
+    }
   })
 })

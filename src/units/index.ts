@@ -5,5 +5,6 @@ export {
   hasUnitPair,
   displayUnit,
   displayValue,
+  displayDecimals,
   canonicalValue,
 } from './convert.js'
