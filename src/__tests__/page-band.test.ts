@@ -1,7 +1,12 @@
 import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { resolveGridRect } from '../layout-grid.js'
-import { SHIFT_STRIP, pageHasShiftStrip, resolveContentRect } from '../page-band.js'
+import { LAYOUT_GRID, resolveGridRect } from '../layout-grid.js'
+import {
+  SHIFT_STRIP,
+  pageHasShiftStrip,
+  resolveContentRect,
+  resolvePageWidgetRect,
+} from '../page-band.js'
 import { firmwareConstant, firmwarePath, readFirmwareSource } from './firmware-source.js'
 
 const DASH_METRICS = firmwarePath('src/ui/dash_metrics.h')
@@ -36,6 +41,25 @@ describe('resolveContentRect', () => {
   })
 })
 
+describe('resolvePageWidgetRect', () => {
+  const strip = { type: 'shift_light', layout: { col: 0, colSpan: 12, row: 0, rowSpan: 1 } }
+
+  it('pins the shift light to the strip under the top bar', () => {
+    expect(resolvePageWidgetRect(strip, AREA, true)).toEqual({ x: 8, y: 8, w: 304, h: 7 })
+  })
+
+  it('places a gauge below the strip band', () => {
+    const gauge = { type: 'gauge', layout: { col: 0, colSpan: 7, row: 1, rowSpan: 5 } }
+    expect(resolvePageWidgetRect(gauge, AREA, true)).toEqual(
+      resolveContentRect(gauge.layout, AREA, true)
+    )
+  })
+
+  it('treats a shift light as a grid widget when the page has no strip', () => {
+    expect(resolvePageWidgetRect(strip, AREA, false)).toEqual(resolveGridRect(strip.layout, AREA))
+  })
+})
+
 describe('pageHasShiftStrip', () => {
   it('is set by a shift light anywhere on the page', () => {
     expect(pageHasShiftStrip({ widgets: [] })).toBe(false)
@@ -58,5 +82,14 @@ describeIfFirmware('page band firmware parity', () => {
       /band\.hasStrip && L\.row > 0 \? static_cast<uint8_t>\(L\.row - 1\) : L\.row/
     )
     expect(resolver).toMatch(/w\.type == WidgetType::SHIFT_LIGHT/)
+  })
+
+  it('lays the strip out on one row across the width, at the frame padding', () => {
+    expect(resolver).toMatch(
+      /layout_grid_resolve_rs\(L\.col, L\.colSpan, 0, 1, designWidth, designWidth, &rect\)/
+    )
+    expect(resolver).toMatch(/L\.y = DashMetrics::kFramePaddingPx;/)
+    expect(resolver).toMatch(/L\.h = DashMetrics::kShiftStripHeightPx;/)
+    expect(firmwareConstant(metrics, 'kFramePaddingPx')).toBe(LAYOUT_GRID.FRAME_PADDING)
   })
 })

@@ -1,4 +1,10 @@
-import { resolveGridRect, type GridArea, type GridPlacement, type GridRect } from './layout-grid.js'
+import {
+  LAYOUT_GRID,
+  resolveGridRect,
+  type GridArea,
+  type GridPlacement,
+  type GridRect,
+} from './layout-grid.js'
 
 export const SHIFT_STRIP = {
   HEIGHT: 7,
@@ -22,3 +28,24 @@ export const resolveContentRect = (
 
 export const pageHasShiftStrip = (page: { widgets: readonly { type: string }[] }): boolean =>
   page.widgets.some((widget) => widget.type === 'shift_light')
+
+const resolveStripRect = (placement: GridPlacement, width: number): GridRect => {
+  const strip = { col: placement.col, colSpan: placement.colSpan, row: 0, rowSpan: 1 }
+  const rect = resolveGridRect(strip, { width, height: width })
+  return { x: rect.x, w: rect.w, y: LAYOUT_GRID.FRAME_PADDING, h: SHIFT_STRIP.HEIGHT }
+}
+
+export interface PlacedWidget {
+  type: string
+  layout: GridPlacement
+}
+
+export const resolvePageWidgetRect = (
+  widget: PlacedWidget,
+  area: GridArea,
+  hasShiftStrip: boolean
+): GridRect => {
+  if (hasShiftStrip && widget.type === 'shift_light')
+    return resolveStripRect(widget.layout, area.width)
+  return resolveContentRect(widget.layout, area, hasShiftStrip)
+}
