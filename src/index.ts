@@ -98,7 +98,7 @@ export {
 } from './schemas/device.js'
 
 export type { ScreenSettings } from './schemas/screen-settings.js'
-export { SCREEN_SETTINGS_BOUNDS } from './schemas/screen-settings.js'
+export { SCREEN_SETTINGS_BOUNDS, screenSettingsToWire } from './schemas/screen-settings.js'
 export type { ScreenProfile, ScreenProfileId } from './schemas/screen-profile.js'
 export { resolveScreenProfile } from './schemas/screen-profile.js'
 

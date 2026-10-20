@@ -16,6 +16,7 @@ export { DEVICE_COMMANDS } from '../wire/device-commands.js'
 export { parseUntrustedJsonObject } from '../wire/parse-envelope.js'
 
 export { parseBleStatus } from '../schemas/ble-status.js'
+export type { SoundSettings } from '../schemas/sound-settings.js'
 export type { UsbStatus } from '../schemas/usb-status.js'
 export { USB_SEQ_MAX, parseUsbStatus } from '../schemas/usb-status.js'
 export type { TimerBleLap, TimerBleState, TimerCommand } from '../schemas/ble-timer.js'

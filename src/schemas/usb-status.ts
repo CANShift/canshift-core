@@ -1,5 +1,11 @@
 import * as z from 'zod'
 import { parseJsonObject, type WireEnvelopeFailure } from '../wire/parse-envelope.js'
+import {
+  soundSettingsFromWire,
+  SoundsWireSchema,
+  VolumeSchema,
+  type SoundSettings,
+} from './sound-settings.js'
 
 const USB_STATUS_MAX_STRING_LEN = 64
 
@@ -19,6 +25,8 @@ export const UsbStatusWireSchema = z
     is_day: ZeroOrOneSchema,
     board_id: CappedStringSchema.optional(),
     seq: UsbSeqSchema.optional(),
+    volume: VolumeSchema.optional(),
+    sounds: SoundsWireSchema.optional(),
   })
   .loose()
 
@@ -30,6 +38,7 @@ export interface UsbStatus {
   isDay: boolean
   boardId?: string
   seq?: number
+  sound?: SoundSettings
 }
 
 export const usbStatusFromWire = (wire: UsbStatusWire): UsbStatus => {
@@ -40,6 +49,8 @@ export const usbStatusFromWire = (wire: UsbStatusWire): UsbStatus => {
   }
   if (wire.board_id !== undefined) out.boardId = wire.board_id
   if (wire.seq !== undefined) out.seq = wire.seq
+  if (wire.volume !== undefined && wire.sounds !== undefined)
+    out.sound = soundSettingsFromWire(wire.volume, wire.sounds)
   return out
 }
 
