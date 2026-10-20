@@ -159,6 +159,36 @@ describe('parseBoardProfile rejection paths', () => {
   })
 })
 
+describe('board-profile SD slot', () => {
+  it('maps the SDMMC slot fields to the firmware storage struct', () => {
+    expect(boardProfileToWire(getBoardProfile('waveshare_s3_28')!).storage).toMatchObject({
+      sd_bus: 'sdmmc_1bit',
+      sd_pin_clk: 14,
+      sd_pin_cmd: 17,
+      sd_pin_d0: 16,
+      sd_pin_d3: 21,
+    })
+  })
+
+  it('accepts a blob written before the slot fields existed', () => {
+    const legacyStorage = {
+      spiffs_present: true,
+      spiffs_size_kb: 1024,
+      sd_present: false,
+      sd_pin_cs: -1,
+    }
+    const result = parseBoardProfile(blobWith((p) => ({ ...p, storage: legacyStorage })))
+    expect(result.kind === 'ok' ? result.profile.storage.sdBus : 'refused').toBeUndefined()
+  })
+
+  it('rejects an SD bus the firmware cannot drive', () => {
+    const result = parseBoardProfile(
+      blobWith((p) => ({ ...p, storage: { ...(p.storage as object), sd_bus: 'sdmmc_4bit' } }))
+    )
+    expect(result.kind).toBe('wrong_shape')
+  })
+})
+
 describe('parseBoardProfile prototype-pollution hardening', () => {
   it('strips a __proto__ key without polluting Object.prototype', () => {
     const raw = serializeBoardProfile(crowpanel).replace(
