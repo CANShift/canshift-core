@@ -20,6 +20,8 @@ The firmware answers `CMD_GET_STATUS` (opcode `0x10`) with:
 
 `board_id` names the board profile the running image was built for. The handshake reports it but does not gate on it.
 
+A board with a speaker also reports its sound settings, `"volume": 70, "sounds": { "boot": true, "shift_tone": false }`; `parseUsbStatus` maps them to `sound`, and a status without them means the board has no audio. The same keys, each optional, are written through `CMD_SCREEN_SETTINGS`; `screenSettingsToWire` produces them from a `ScreenSettings`. There is deliberately no key for the critical alert: it cannot be muted, and plays at no less than half volume.
+
 ## Rule
 
 **Major must match.** Minor and patch may differ.
