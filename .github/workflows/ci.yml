@@ -117,7 +117,17 @@ jobs:
             canshift-firmware/src/ui/font_manager.cpp \
             canshift-firmware/src/ui/widgets/widget_helpers.h \
             canshift-firmware/src/ui/fonts/lv_font_jbmono_medium_10_nk.c \
-            canshift-firmware/data/fonts/jbmono_extrabold_22.bin; do
+            canshift-firmware/data/fonts/jbmono_extrabold_22.bin \
+            canshift-firmware/platformio.ini \
+            canshift-firmware/include/boards/*.h \
+            canshift-firmware/include/datalog_rs.h \
+            canshift-firmware/test/test_datalog_frame/test_main.cpp \
+            canshift-firmware/src/ui/widgets/g_meter_metrics.h \
+            canshift-firmware/src/ui/widgets/g_meter_widget.cpp \
+            canshift-firmware/src/ui/widgets/label_widget.cpp \
+            canshift-firmware/src/config/config_validators.inc \
+            canshift-firmware/src/ui/widgets/timer_sources.cpp \
+            canshift-firmware/src/hal/ble/ble_status.cpp; do
             if [ ! -f "$f" ]; then
               echo "::error::firmware parity source missing: $f"
               missing=1
