@@ -65,8 +65,7 @@ const parseFirmwareBoard = (source: string): WireProfile => {
 
 const headerFor = (boardId: string): string => firmwarePath(`include/boards/${boardId}.h`)
 
-const firmwarePresent = BOARD_PROFILES.every((profile) => existsSync(headerFor(profile.boardId)))
-const describeIfFirmware = firmwarePresent ? describe : describe.skip
+const describeIfFirmware = existsSync(firmwarePath('include/boards')) ? describe : describe.skip
 
 describeIfFirmware('board catalog firmware parity', () => {
   it.each(BOARD_PROFILES.map((profile) => profile.boardId))(
