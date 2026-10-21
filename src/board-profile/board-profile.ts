@@ -97,6 +97,26 @@ const ImuProfileWireSchema = z
     message: 'imu: screen_x, screen_y and screen_z must name each axis once',
   })
 
+const audioPinsWired = (audio: {
+  present: boolean
+  pin_bck: number
+  pin_ws: number
+  pin_dout: number
+}): boolean =>
+  !audio.present || [audio.pin_bck, audio.pin_ws, audio.pin_dout].every((pin) => pin >= 0)
+
+const AudioProfileWireSchema = z
+  .object({
+    present: z.boolean(),
+    pin_bck: Int8Schema,
+    pin_ws: Int8Schema,
+    pin_dout: Int8Schema,
+  })
+  .strict()
+  .refine(audioPinsWired, {
+    message: 'audio: a present speaker needs pin_bck, pin_ws and pin_dout wired',
+  })
+
 const CanProfileWireSchema = z
   .object({
     controller: z.enum(CAN_CONTROLLERS),
@@ -140,6 +160,7 @@ export const BoardProfileWireSchema = z
     storage: StorageProfileWireSchema,
     conn: ConnectivityProfileWireSchema,
     imu: ImuProfileWireSchema.optional(),
+    audio: AudioProfileWireSchema.optional(),
   })
   .strict()
 
@@ -197,6 +218,13 @@ interface ImuProfile {
   screenZ: ImuAxis
 }
 
+interface AudioProfile {
+  present: boolean
+  pinBck: number
+  pinWs: number
+  pinDout: number
+}
+
 interface CanProfile {
   controller: CanController
   pinTx: number
@@ -233,6 +261,7 @@ export interface BoardProfile {
   storage: StorageProfile
   conn: ConnectivityProfile
   imu?: ImuProfile
+  audio?: AudioProfile
 }
 
 export const boardHasImu = (profile: BoardProfile): boolean =>
