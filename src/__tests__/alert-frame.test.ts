@@ -114,6 +114,25 @@ describe('alert-frame encode refusals', () => {
   })
 })
 
+describe('alert-frame decode of an entry the dash should not have sent', () => {
+  const SPACE = 0x20
+  const coolantEntry = CONFIGURED_AND_COOLANT_VECTOR.slice(20)
+  const oilPressureEntry = OIL_PRESSURE_VECTOR.slice(2)
+
+  it('skips a signal name with a space and keeps the oil pressure entry', () => {
+    const spaced = [...coolantEntry]
+    spaced[13 + 'coolant'.length] = SPACE
+    const bytes = [ALERT_FRAME_VERSION, 0x02, ...spaced, ...oilPressureEntry]
+    expect(decodeAlertFrame(Uint8Array.from(bytes))).toEqual([OIL_PRESSURE_ALERT])
+  })
+
+  it('skips an empty signal name and keeps the oil pressure entry', () => {
+    const unnamed = [...coolantEntry.slice(0, 12), 0x00]
+    const bytes = [ALERT_FRAME_VERSION, 0x02, ...oilPressureEntry, ...unnamed]
+    expect(decodeAlertFrame(Uint8Array.from(bytes))).toEqual([OIL_PRESSURE_ALERT])
+  })
+})
+
 describe('alert-frame decode refusals', () => {
   it('rejects an unknown version byte, the single-alert version 1 included', () => {
     expect(decodeAlertFrame(Uint8Array.from([0x01, 0x00]))).toBeNull()

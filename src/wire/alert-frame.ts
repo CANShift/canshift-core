@@ -96,12 +96,11 @@ export const encodeAlertFrame = (alerts: readonly ActiveAlert[]): Uint8Array | n
 }
 
 interface DecodedEntry {
-  alert: ActiveAlert
+  alert: ActiveAlert | null
   next: number
 }
 
 const readSignal = (bytes: Uint8Array, start: number, length: number): string | null => {
-  if (length === 0 || start + length > bytes.length) return null
   const signal = String.fromCharCode(...bytes.subarray(start, start + length))
   return isEncodableSignal(signal) ? signal : null
 }
@@ -118,8 +117,10 @@ const readEntry = (view: DataView, bytes: Uint8Array, offset: number): DecodedEn
   const flags = view.getUint8(offset + 1)
   if (origin === undefined || (flags & ~KNOWN_FLAGS) !== 0) return null
   const signalLength = view.getUint8(offset + 12)
+  const next = offset + ENTRY_FIXED_BYTES + signalLength
+  if (next > bytes.length) return null
   const signal = readSignal(bytes, offset + ENTRY_FIXED_BYTES, signalLength)
-  if (signal === null) return null
+  if (signal === null) return { alert: null, next }
   const alert: ActiveAlert = {
     ...origin,
     signal,
@@ -129,7 +130,7 @@ const readEntry = (view: DataView, bytes: Uint8Array, offset: number): DecodedEn
     displayed: (flags & FLAG_DISPLAYED) !== 0,
     activeSeconds: view.getUint16(offset + 10, true),
   }
-  return { alert, next: offset + ENTRY_FIXED_BYTES + signalLength }
+  return { alert, next }
 }
 
 const readEntries = (view: DataView, bytes: Uint8Array, count: number): ActiveAlert[] | null => {
@@ -138,7 +139,7 @@ const readEntries = (view: DataView, bytes: Uint8Array, count: number): ActiveAl
   for (let index = 0; index < count; index++) {
     const entry = readEntry(view, bytes, offset)
     if (entry === null) return null
-    alerts.push(entry.alert)
+    if (entry.alert !== null) alerts.push(entry.alert)
     offset = entry.next
   }
   return offset === bytes.length ? alerts : null
