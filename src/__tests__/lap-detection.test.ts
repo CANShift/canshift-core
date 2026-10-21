@@ -100,6 +100,30 @@ describe('createLapCrossingDetector', () => {
     expect(det.update({ t: 2000, lat: -0.5, lng: 0 })).toBeNull()
   })
 
+  it('records no lap from GPS jitter while the car stands on the line', () => {
+    const startLine = { a: { lat: 46.5, lng: 6.6 }, b: { lat: 46.5, lng: 6.7 } }
+    const det = createLapCrossingDetector(startLine, { forwardBearingDeg: 0 })
+    const laps = Array.from({ length: 60 }, (_, second) =>
+      det.update({
+        t: 1000 + second * 1000,
+        lat: 46.5 + (second % 2 === 0 ? -2e-5 : 2e-5),
+        lng: 6.65,
+      })
+    ).filter((crossing) => crossing !== null)
+    expect(laps).toHaveLength(1)
+  })
+
+  it('does not count a forward re-crossing after backing over the line, then counts the next lap', () => {
+    const det = createLapCrossingDetector(line)
+    det.update({ t: 1000, lat: 0.5, lng: 0 })
+    expect(det.update({ t: 2000, lat: -0.5, lng: 0 })).not.toBeNull()
+    expect(det.update({ t: 10000, lat: 0.5, lng: 0 })).toBeNull()
+    expect(det.update({ t: 20000, lat: -0.5, lng: 0 })).toBeNull()
+    det.update({ t: 90000, lat: 0.5, lng: 5 })
+    det.update({ t: 90500, lat: 0.5, lng: 0 })
+    expect(det.update({ t: 91000, lat: -0.5, lng: 0 })).not.toBeNull()
+  })
+
   it('returns null when the trace passes near the line without crossing it', () => {
     const det = createLapCrossingDetector(line)
     det.update({ t: 1000, lat: 0.1, lng: 0 })

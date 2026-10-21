@@ -22,6 +22,7 @@ export interface LapCrossingDetector {
 interface InternalState {
   prev: { t: number; lat: number; lng: number } | null
   lastCrossingMs: number
+  behindLine: boolean
 }
 
 type TimedPoint = NonNullable<InternalState['prev']>
@@ -49,6 +50,18 @@ const travelsBackwards = (
   return Math.abs(signedAngleDelta(travelBearing, forwardBearingDeg)) > 90
 }
 
+const completesLap = (
+  state: InternalState,
+  interpolatedMs: number,
+  backwards: boolean,
+  hysteresisMs: number
+): boolean => {
+  const wasBehindLine = state.behindLine
+  state.behindLine = backwards
+  if (backwards || wasBehindLine) return false
+  return state.lastCrossingMs === 0 || interpolatedMs - state.lastCrossingMs >= hysteresisMs
+}
+
 export const createLapCrossingDetector = (
   line: LineSegment,
   opts: LapCrossingDetectorOptions = {}
@@ -58,7 +71,7 @@ export const createLapCrossingDetector = (
   const lineBearingDeg = bearingDeg(line.a, line.b)
   const forwardBearingDeg = opts.forwardBearingDeg ?? (lineBearingDeg + 90) % 360
 
-  const state: InternalState = { prev: null, lastCrossingMs: 0 }
+  const state: InternalState = { prev: null, lastCrossingMs: 0, behindLine: false }
 
   return {
     update(sample) {
@@ -67,16 +80,15 @@ export const createLapCrossingDetector = (
       if (prev === null) return null
       const interpolatedMs = crossingMs(line, prev, sample)
       if (interpolatedMs === null) return null
-      if (state.lastCrossingMs !== 0 && interpolatedMs - state.lastCrossingMs < hysteresis) {
-        return null
-      }
-      if (enforceDir && travelsBackwards(prev, sample, forwardBearingDeg)) return null
+      const backwards = enforceDir && travelsBackwards(prev, sample, forwardBearingDeg)
+      if (!completesLap(state, interpolatedMs, backwards, hysteresis)) return null
       state.lastCrossingMs = interpolatedMs
       return interpolatedMs
     },
     reset() {
       state.prev = null
       state.lastCrossingMs = 0
+      state.behindLine = false
     },
   }
 }
