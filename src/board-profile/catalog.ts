@@ -208,6 +208,12 @@ const waveshareS328: BoardProfile = {
     screenY: 'y',
     screenZ: 'z',
   },
+  audio: {
+    present: true,
+    pinBck: 48,
+    pinWs: 38,
+    pinDout: 47,
+  },
 }
 
 export const BOARD_PROFILES: readonly BoardProfile[] = [

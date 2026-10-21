@@ -13,7 +13,6 @@ const SECTION_OPEN = /^\s*\.(\w+) =\s*$/
 const FIELD = /^\s*\.(\w+) = (.+),$/
 const SECTION_CLOSE = /^\s*},$/
 const ABSENT_SECTION = /^kNo[A-Z]/
-const FIRMWARE_ONLY_SECTIONS = ['audio']
 
 const ENUM_SLUGS: Record<string, string> = {
   PosX: 'x',
@@ -61,7 +60,6 @@ const readLine = (state: ParseState, line: string): void => {
 const parseFirmwareBoard = (source: string): WireProfile => {
   const state: ParseState = { profile: {}, section: null }
   for (const line of source.split('\n')) readLine(state, line)
-  for (const section of FIRMWARE_ONLY_SECTIONS) Reflect.deleteProperty(state.profile, section)
   return state.profile
 }
 
@@ -123,10 +121,14 @@ describe('firmware board header parser — sections', () => {
     expect(parseFirmwareBoard(source)).toEqual({ imu: { i2c_addr: 0x6b, screen_x: '-y' } })
   })
 
-  it('drops the sections only the firmware models', () => {
-    const source = ['    .audio =', '        {', '            .present = true,', '        },'].join(
-      '\n'
-    )
-    expect(parseFirmwareBoard(source)).toEqual({})
+  it('reads the audio section', () => {
+    const source = [
+      '    .audio =',
+      '        {',
+      '            .present = true,',
+      '            .pin_bck = 48,',
+      '        },',
+    ].join('\n')
+    expect(parseFirmwareBoard(source)).toEqual({ audio: { present: true, pin_bck: 48 } })
   })
 })
